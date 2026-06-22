@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>the little library · read shelf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:      #1a0814; --dark2: #26101e; --brown: #6b1838;
+      --burgundy:  #c03870; --rust:  #d9607a; --gold:  #e890aa;
+      --gold-l:    #f5c0d4; --parchment: #fde8f0; --cream: #fff2f7;
+      --moss:      #b83878; --ink:  #22081a; --ink-mid: #541830; --ink-l: #a05878;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Lato', sans-serif; color: var(--ink); min-height: 100vh; background: var(--parchment); }
+
+    /* ── NAV ── */
+    nav { display:flex; align-items:center; justify-content:space-between; padding:1rem 2rem; background:var(--dark2); border-bottom:1px solid rgba(196,154,74,.13); position:sticky; top:0; z-index:100; }
+    .nav-logo { font-family:'Playfair Display',serif; font-style:italic; font-size:1rem; color:var(--parchment); cursor:pointer; text-decoration:none; }
+    .nav-logo .g { color:var(--gold); }
+    .nav-btn { background:none; border:none; font-family:'Lato',sans-serif; font-size:.73rem; color:rgba(245,232,204,.42); cursor:pointer; padding:.4rem .9rem; border-radius:2px; transition:color .18s,background .18s; letter-spacing:.07em; text-transform:uppercase; text-decoration:none; display:inline-block; }
+    .nav-btn:hover,.nav-btn.active { color:var(--gold-l); background:rgba(196,154,74,.08); }
+    .nav-user { font-family:'IM Fell English',serif; font-style:italic; font-size:.8rem; color:rgba(245,232,204,.27); }
+
+    /* ── STICKERS ── */
+    .stk { position:fixed; pointer-events:none; user-select:none; z-index:0; filter:drop-shadow(0 4px 10px rgba(0,0,0,.22)); }
+    .stk-float  { animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate; }
+    .stk-wiggle { animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite; }
+    .stk-pulse  { animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite; }
+    @keyframes stkfloat  { from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)} }
+    @keyframes stkwiggle { 0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))} }
+    @keyframes stkpulse  { 0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)} }
+    .cutout { font-family:'Impact','Arial Black',sans-serif; font-weight:900; display:flex; align-items:center; justify-content:center; line-height:1; box-shadow:3px 4px 10px rgba(0,0,0,.28); }
+
+    /* ── HERO ── */
+    .read-hero { background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 55%,rgba(248,192,212,.15) 100%); padding:clamp(2.2rem,4vw,3.5rem) 1.5rem clamp(1.8rem,3vw,2.8rem); text-align:center; position:relative; overflow:hidden; border-bottom:1px solid rgba(192,56,112,.1); }
+    .read-hero::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:radial-gradient(circle at 8% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 20px,transparent 20px),radial-gradient(circle at 92% 20%,rgba(192,56,112,.08) 0,rgba(192,56,112,.08) 14px,transparent 14px),radial-gradient(circle at 55% 85%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 18px,transparent 18px); background-size:120px 120px,95px 95px,105px 105px; }
+    .hero-orn { font-family:'IM Fell English',serif; font-size:.7rem; color:var(--ink-l); letter-spacing:.22em; opacity:.45; display:block; margin-bottom:1rem; }
+    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(1.8rem,4.5vw,3rem); color:var(--ink); line-height:1.1; margin-bottom:.4rem; }
+    .hero-title em { color:var(--burgundy); }
+    .hero-sub { font-family:'IM Fell English',serif; font-style:italic; color:var(--ink-l); font-size:clamp(.8rem,1.6vw,.95rem); }
+    .hero-count { display:inline-flex; align-items:center; gap:.5rem; margin-top:1rem; background:white; border:1px solid rgba(192,56,112,.14); border-radius:999px; padding:.3rem .9rem; font-family:'IM Fell English',serif; font-style:italic; font-size:.82rem; color:var(--ink-l); box-shadow:0 2px 10px rgba(0,0,0,.05); }
+    .hero-count strong { font-style:normal; font-family:'Playfair Display',serif; font-size:1rem; color:var(--burgundy); }
+
+    /* ── ADD FORM ── */
+    .form-wrap { max-width:860px; margin:0 auto; padding:1.8rem 1.2rem .8rem; }
+    .add-form { background:var(--cream); border:1px solid rgba(196,154,74,.16); border-radius:3px; padding:1.3rem 1.6rem; margin-bottom:.6rem; box-shadow:0 2px 14px rgba(0,0,0,.045); }
+    .add-form h2 { font-family:'IM Fell English',serif; font-style:italic; font-size:.9rem; color:var(--ink-l); margin-bottom:.9rem; }
+    .form-row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:flex-end; }
+    .fg { display:flex; flex-direction:column; gap:.22rem; flex:1; min-width:120px; }
+    .fg label { font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-l); }
+    .fg input,.fg select { border:1px solid rgba(196,154,74,.22); border-radius:2px; padding:.5rem .72rem; font-family:'IM Fell English',serif; font-size:.92rem; color:var(--ink); background:var(--parchment); outline:none; transition:border-color .2s; }
+    .fg input:focus,.fg select:focus { border-color:var(--gold); }
+    .fg input::placeholder { color:rgba(122,92,60,.3); }
+    .add-btn { padding:.52rem 1.2rem; background:var(--brown); color:var(--parchment); border:1px solid rgba(196,154,74,.19); border-radius:2px; font-family:'Lato',sans-serif; font-size:.74rem; letter-spacing:.07em; text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0; align-self:flex-end; }
+    .add-btn:hover { background:var(--ink); transform:translateY(-1px); }
+    .cover-pick-row { display:flex; align-items:center; gap:.5rem; margin-top:.85rem; flex-wrap:wrap; }
+    .cpl { font-size:.61rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-l); flex-shrink:0; }
+    .cover-opts { display:flex; gap:.38rem; flex-wrap:wrap; }
+    .cover-opt { width:22px; height:30px; border-radius:1px 3px 3px 1px; cursor:pointer; position:relative; transition:transform .15s,box-shadow .15s; border:2px solid transparent; box-shadow:1px 1px 5px rgba(0,0,0,.28); flex-shrink:0; }
+    .cover-opt:hover { transform:translateY(-2px) scale(1.07); }
+    .cover-opt.sel { border-color:var(--gold-l); transform:translateY(-3px) scale(1.1); box-shadow:0 0 0 2px var(--gold),2px 4px 8px rgba(0,0,0,.3); }
+    .cover-opt::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:rgba(0,0,0,.28); border-radius:1px 0 0 1px; }
+    .cover-opt::after  { content:''; position:absolute; right:-3px; top:2px; bottom:2px; width:3px; background:repeating-linear-gradient(to bottom,rgba(255,255,255,.38) 0,rgba(255,255,255,.38) 1px,rgba(200,188,170,.35) 1px,rgba(200,188,170,.35) 3px); border-radius:0 1px 1px 0; }
+
+    /* ── VIEW TOGGLE ── */
+    .shelf-vt { max-width:860px; margin:0 auto; padding:.5rem 1.2rem .9rem; display:flex; justify-content:flex-end; gap:.35rem; }
+    .svt-btn { background:none; border:1px solid rgba(196,154,74,.2); border-radius:3px; padding:.26rem .62rem; cursor:pointer; font-size:.69rem; color:var(--ink-l); transition:all .18s; font-family:'Lato',sans-serif; letter-spacing:.04em; }
+    .svt-btn.active,.svt-btn:hover { background:rgba(196,154,74,.12); color:var(--ink); border-color:rgba(196,154,74,.38); }
+
+    /* ══ BOOKCASE ══ */
+    .bookcase-section { padding:0 1rem 5rem; }
+    .bookcase {
+      max-width:780px; margin:0 auto; position:relative;
+      background: linear-gradient(to right, #3d1a08 28px, #1a0804 28px, #1a0804 calc(100% - 28px), #3d1a08 calc(100% - 28px));
+      border-radius:8px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.35), 6px 6px 0 #0e0402;
+      overflow:visible;
+    }
+    /* top rail */
+    .bc-rail {
+      height:22px;
+      background:linear-gradient(180deg,#6a3820 0%,#4e2610 60%,#3a1c08 100%);
+      border-radius:8px 8px 0 0;
+      box-shadow:inset 0 2px 6px rgba(255,255,255,.06),inset 0 -2px 8px rgba(0,0,0,.4);
+      position:relative; z-index:2;
+    }
+    /* bottom base */
+    .bc-base {
+      height:26px;
+      background:linear-gradient(180deg,#4e2610 0%,#3a1c08 50%,#2a1006 100%);
+      border-radius:0 0 8px 8px;
+      box-shadow:0 8px 24px rgba(0,0,0,.55),inset 0 2px 8px rgba(0,0,0,.4);
+      position:relative; z-index:2;
+    }
+    .bc-inner { padding:4px 28px 6px; }
+    .bshelf-row {
+      display:flex; align-items:flex-end; gap:5px;
+      flex-wrap:nowrap; position:relative;
+      min-height:148px; padding-top:10px;
+      margin-bottom:14px; /* gap before plank */
+    }
+    .bshelf-plank {
+      position:absolute; bottom:-16px;
+      left:-28px; right:-28px; height:16px;
+      background:linear-gradient(180deg,#c08848 0%,#9a6432 45%,#6e4220 100%);
+      box-shadow:0 6px 18px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,220,140,.18),inset 0 -1px 0 rgba(0,0,0,.35);
+      z-index:1;
+    }
+    .bshelf-plank::after {
+      content:''; position:absolute; inset:0;
+      background:repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(0,0,0,.06) 48px,rgba(0,0,0,.06) 50px);
+    }
+    /* last row has extra bottom margin to clear base */
+    .bshelf-row:last-child { margin-bottom:20px; }
+
+    /* ── BOOKS ── */
+    .sbook {
+      width:34px; border-radius:2px 3px 3px 2px; cursor:pointer;
+      transition:transform .22s ease,box-shadow .22s ease;
+      box-shadow:2px 0 8px rgba(0,0,0,.4),inset -5px 0 12px rgba(0,0,0,.25);
+      flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      position:relative; z-index:2;
+    }
+    .sbook:hover { transform:translateY(-20px); box-shadow:5px 20px 28px rgba(0,0,0,.65),inset -5px 0 12px rgba(0,0,0,.25); z-index:20; }
+    .sbook::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:rgba(0,0,0,.32); border-radius:2px 0 0 2px; pointer-events:none; }
+    .sbook::after  { content:''; position:absolute; right:-4px; top:3px; bottom:3px; width:4px; background:repeating-linear-gradient(to bottom,rgba(255,255,255,.42) 0,rgba(255,255,255,.42) 1px,rgba(210,198,178,.34) 1px,rgba(210,198,178,.34) 3px); border-radius:0 1px 1px 0; pointer-events:none; }
+    .sbook-title { writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg); font-family:'Playfair Display',serif; font-size:.58rem; font-weight:600; color:rgba(255,255,255,.9); padding:8px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-height:82%; letter-spacing:.05em; text-shadow:0 1px 4px rgba(0,0,0,.5); position:relative; z-index:2; pointer-events:none; }
+    .sbook-shine { position:absolute; top:0; left:6px; right:0; bottom:0; background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 42%); border-radius:0 3px 3px 0; z-index:3; pointer-events:none; }
+    .empty-slot { width:34px; flex-shrink:0; }
+
+    /* ── DECORATIONS ── */
+    .shelf-deco { flex-shrink:0; display:flex; align-items:flex-end; z-index:2; position:relative; }
+    .shelf-deco svg { display:block; }
+
+    /* ── POPUP ── */
+    #bshelf-popup { position:fixed; background:var(--cream); border:1px solid rgba(192,56,112,.22); border-radius:8px; padding:1.1rem 1.2rem; width:224px; box-shadow:0 12px 40px rgba(0,0,0,.22); z-index:9999; display:none; }
+    #bshelf-popup.visible { display:block; animation:bspopIn .18s ease; }
+    @keyframes bspopIn { from{opacity:0;transform:translateY(8px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    .bsp-title  { font-family:'Playfair Display',serif; font-size:.92rem; font-weight:600; color:var(--ink); margin-bottom:.18rem; line-height:1.3; }
+    .bsp-author { font-family:'IM Fell English',serif; font-style:italic; font-size:.73rem; color:var(--ink-l); margin-bottom:.5rem; }
+    .bsp-genre  { display:inline-block; font-size:.58rem; padding:.12rem .48rem; border-radius:999px; background:rgba(184,56,120,.1); color:var(--moss); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.6rem; }
+    .bsp-stars  { display:flex; gap:.08rem; margin-bottom:.45rem; }
+    .bsp-star   { font-size:.9rem; cursor:pointer; filter:grayscale(1) opacity(.2); transition:filter .12s; }
+    .bsp-star.lit { filter:grayscale(0) opacity(1); }
+    .bsp-date   { font-size:.62rem; color:rgba(122,92,60,.4); margin-bottom:.6rem; }
+    .bsp-notes  { width:100%; border:1px solid rgba(196,154,74,.15); border-radius:2px; padding:.35rem .5rem; font-size:.76rem; font-family:'IM Fell English',serif; font-style:italic; color:var(--ink-mid); resize:none; background:rgba(245,232,204,.28); outline:none; min-height:46px; }
+    .bsp-notes:focus { border-color:var(--gold); }
+    .bsp-del { margin-top:.6rem; background:none; border:1px solid rgba(192,56,112,.2); border-radius:3px; padding:.28rem .8rem; font-size:.68rem; color:var(--burgundy); cursor:pointer; font-family:'Lato',sans-serif; width:100%; transition:background .18s; text-align:center; display:block; }
+    .bsp-del:hover { background:rgba(192,56,112,.1); }
+
+    /* ── GRID VIEW ── */
+    .grid-wrap { max-width:860px; margin:0 auto; padding:0 1.2rem 4rem; }
+    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:1.1rem; }
+    .book-card { background:var(--cream); border-radius:2px 7px 7px 2px; padding:1.1rem 1rem 1rem 1.4rem; box-shadow:0 2px 18px rgba(0,0,0,.07); border:1px solid rgba(196,154,74,.12); position:relative; animation:fadeUp .3s ease both; transition:transform .25s,box-shadow .25s; }
+    .book-card:hover { transform:translateY(-4px) rotate(-.3deg); box-shadow:0 10px 30px rgba(0,0,0,.1); }
+    .book-card::after { content:''; position:absolute; right:-4px; top:5px; bottom:5px; width:4px; background:repeating-linear-gradient(to bottom,rgba(196,154,74,.12) 0,rgba(196,154,74,.12) 1px,rgba(250,243,230,.8) 1px,rgba(250,243,230,.8) 3px); border-radius:0 1px 1px 0; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .bspine { position:absolute; left:0; top:0; bottom:0; width:8px; border-radius:2px 0 0 2px; background:linear-gradient(180deg,#d460a0,var(--moss)); }
+    .del-btn { position:absolute; top:.6rem; right:.6rem; background:none; border:none; cursor:pointer; color:rgba(122,92,60,.19); font-size:.8rem; padding:2px; transition:color .18s; line-height:1; }
+    .del-btn:hover { color:var(--burgundy); }
+    .mini-cover { width:48px; height:62px; border-radius:1px 4px 4px 1px; position:relative; margin:0 auto .75rem; box-shadow:2px 2px 9px rgba(0,0,0,.28),inset -3px 0 7px rgba(0,0,0,.22); transform:perspective(280px) rotateY(-9deg); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .mini-cover::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:rgba(0,0,0,.3); border-radius:1px 0 0 1px; z-index:1; }
+    .mini-cover::after  { content:''; position:absolute; right:-3px; top:2px; bottom:2px; width:3px; background:repeating-linear-gradient(to bottom,rgba(255,255,255,.32) 0,rgba(255,255,255,.32) 1px,rgba(210,198,178,.32) 1px,rgba(210,198,178,.32) 3px); border-radius:0 1px 1px 0; }
+    .mini-cover .ce { position:relative; z-index:2; }
+    .mini-cover .shine { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 50%); border-radius:0 3px 3px 0; z-index:3; pointer-events:none; }
+    .btitle  { font-family:'Playfair Display',serif; font-size:.93rem; font-weight:600; color:var(--ink); line-height:1.3; padding-right:1.1rem; }
+    .bauthor { font-family:'IM Fell English',serif; font-style:italic; font-size:.73rem; color:var(--ink-l); margin-top:.16rem; }
+    .bgenre  { display:inline-block; margin-top:.42rem; font-size:.6rem; padding:.14rem .5rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase; background:rgba(184,56,120,.1); color:var(--moss); }
+    .star-row { margin-top:.6rem; display:flex; gap:.1rem; }
+    .star { font-size:.88rem; cursor:pointer; filter:grayscale(1) opacity(.19); transition:filter .12s,transform .12s; }
+    .star.lit { filter:grayscale(0) opacity(1) sepia(.15); }
+    .bdate { font-size:.64rem; color:rgba(122,92,60,.38); margin-top:.3rem; }
+    .bnotes { margin-top:.55rem; }
+    .bnotes textarea { width:100%; border:1px solid rgba(196,154,74,.15); border-radius:2px; padding:.38rem .55rem; font-size:.78rem; font-family:'IM Fell English',serif; font-style:italic; color:var(--ink-mid); resize:none; background:rgba(245,232,204,.28); outline:none; min-height:46px; }
+    .bnotes textarea:focus { border-color:var(--gold); }
+
+    /* ── EMPTY ── */
+    .empty-state { text-align:center; padding:4rem 2rem; }
+    .empty-icon  { font-size:2rem; display:block; margin-bottom:.6rem; opacity:.35; }
+    .empty-state p { font-family:'IM Fell English',serif; font-style:italic; color:var(--ink-l); font-size:.93rem; }
+
+    @media(max-width:520px) {
+      .form-row { flex-direction:column; }
+      .add-btn  { width:100%; }
+      nav { padding:.8rem 1rem; }
+      .bookcase { border-radius:4px; }
+      .bc-inner { padding:4px 16px 6px; }
+      .bshelf-plank { left:-16px; right:-16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STICKERS -->
+<div class="stk stk-float" style="top:80px;right:1.2%;--dur:7s;--dly:0s;--r0:rotate(-8deg);--r1:rotate(5deg);">
+  <svg viewBox="0 0 90 90" width="78" height="78" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="45" cy="45" r="42" fill="white" stroke="#c02858" stroke-width="3"/>
+    <circle cx="45" cy="45" r="35" fill="none" stroke="#f090b0" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <circle cx="45" cy="45" r="28" fill="#fff5f8"/>
+    <text x="45" y="27" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">HOT GIRLS</text>
+    <text x="45" y="42" text-anchor="middle" font-size="11.5" font-family="Impact,Arial Black,sans-serif" fill="#22081a" font-weight="900">READ</text>
+    <text x="45" y="56" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">BOOKS</text>
+    <text x="45" y="71" text-anchor="middle" font-size="14">📚</text>
+  </svg>
+</div>
+<div class="stk stk-wiggle cutout" style="top:90px;left:1.2%;width:46px;height:50px;font-size:32px;background:#c82878;color:white;border-radius:6px;--dur:2.4s;--dly:0s;--ra:-11deg;--rb:9deg;">R</div>
+<div class="stk stk-pulse" style="bottom:14%;left:.8%;--dur:3.2s;--dly:.6s;--rot:4deg;">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 10px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.5;text-align:center;max-width:115px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">one more<br>chapter 📖</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn active" href="read.html">read</a>
+    <a class="nav-btn" href="index.html#reading">reading</a>
+    <a class="nav-btn" href="index.html#wishlist">wishlist</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- HERO -->
+<section class="read-hero">
+  <span class="hero-orn">✦ &nbsp; the read shelf &nbsp; ✦</span>
+  <h1 class="hero-title">books i've <em>finished</em></h1>
+  <p class="hero-sub">every page turned, every world visited, every story lived</p>
+  <div class="hero-count"><strong id="book-count">0</strong> books on the shelf</div>
+</section>
+
+<!-- ADD FORM -->
+<div class="form-wrap">
+  <div class="add-form">
+    <h2>add a book you've finished</h2>
+    <div class="form-row">
+      <div class="fg" style="flex:2;min-width:130px;"><label>title</label><input id="read-title" type="text" placeholder="book title…"/></div>
+      <div class="fg" style="flex:1.4;"><label>author</label><input id="read-author" type="text" placeholder="author…"/></div>
+      <div class="fg"><label>genre</label>
+        <select id="read-genre">
+          <option value="">— genre —</option><option>fiction</option><option>fantasy</option>
+          <option>sci-fi</option><option>romance</option><option>thriller</option>
+          <option>mystery</option><option>non-fiction</option><option>poetry</option>
+          <option>classics</option><option>other</option>
+        </select>
+      </div>
+      <button class="add-btn" onclick="addBook()">+ add</button>
+    </div>
+    <div class="cover-pick-row">
+      <span class="cpl">cover</span>
+      <div class="cover-opts" id="cp-read"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW TOGGLE -->
+<div class="shelf-vt">
+  <button class="svt-btn active" id="svt-shelf" onclick="setView('shelf')">⊟ shelf</button>
+  <button class="svt-btn"        id="svt-grid"  onclick="setView('grid')">⊞ grid</button>
+</div>
+
+<!-- CONTENT -->
+<div id="main-content"></div>
+
+<!-- POPUP -->
+<div id="bshelf-popup"></div>
+
+<script>
+/* ── data ── */
+const COVERS = [
+  {id:'hotpink',c:'#e0306a'},{id:'rose',c:'#c83878'},{id:'blush',c:'#e87898'},
+  {id:'mauve',c:'#b85880'},{id:'berry',c:'#9a1858'},{id:'coral',c:'#e85878'},
+  {id:'magenta',c:'#cc2888'},{id:'dusty',c:'#d480a0'},{id:'ballet',c:'#e8a8c0'},
+  {id:'wine',c:'#8a1848'},
+];
+const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
+
+/* ── shelf templates ──
+   Each template is a sequence of segments:
+   {type:'books', n:N}  →  N book slots (filled or empty)
+   {type:'deco',  id:S} →  a decoration always rendered
+*/
+const SHELF_TEMPLATES = [
+  [{type:'books',n:3},{type:'deco',id:'plant'},{type:'books',n:4},{type:'deco',id:'jar'}],
+  [{type:'deco',id:'frame'},{type:'books',n:5},{type:'deco',id:'flower'},{type:'books',n:2}],
+  [{type:'books',n:4},{type:'deco',id:'kettle'},{type:'books',n:3},{type:'deco',id:'mushroom'}],
+  [{type:'deco',id:'candle'},{type:'books',n:3},{type:'deco',id:'stack'},{type:'books',n:4}],
+  [{type:'books',n:3},{type:'deco',id:'vase'},{type:'books',n:4}],
+];
+
+/* ── SVG decorations ── */
+const DECOS = {
+  plant: `<svg width="66" height="138" viewBox="0 0 66 138" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="33" cy="136" rx="24" ry="5" fill="rgba(0,0,0,.28)"/>
+    <path d="M13 104 Q9 124 20 130 H46 Q57 124 53 104 Z" fill="#c87840"/>
+    <rect x="11" y="101" width="44" height="9" rx="4.5" fill="#a86028"/>
+    <path d="M13 102 Q33 100 53 102" stroke="rgba(255,190,120,.35)" stroke-width="1.5" fill="none"/>
+    <ellipse cx="33" cy="102" rx="20" ry="4.5" fill="#2e1406"/>
+    <path d="M33 97 Q18 80 11 55" stroke="#4a7828" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M33 97 Q38 72 31 42" stroke="#3a6820" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M33 97 Q50 78 56 55" stroke="#4a7828" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M33 88 Q16 74 8 62" stroke="#3a6020" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M33 88 Q52 72 60 66" stroke="#3a6020" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M33 78 Q20 68 14 74" stroke="#4a6820" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="9" cy="52" rx="13" ry="8" fill="#5a9840" transform="rotate(-28 9 52)"/>
+    <ellipse cx="30" cy="38" rx="12" ry="8" fill="#4a8830" transform="rotate(5 30 38)"/>
+    <ellipse cx="57" cy="52" rx="13" ry="8" fill="#5a9840" transform="rotate(32 57 52)"/>
+    <ellipse cx="6" cy="62" rx="10" ry="6.5" fill="#3a7820" transform="rotate(-18 6 62)"/>
+    <ellipse cx="61" cy="65" rx="10" ry="6.5" fill="#4a8830" transform="rotate(22 61 65)"/>
+    <ellipse cx="14" cy="74" rx="9" ry="5.5" fill="#4a8028" transform="rotate(-10 14 74)"/>
+    <path d="M9 52 Q11 49 14 46" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <path d="M30 38 Q32 35 35 32" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+  </svg>`,
+
+  jar: `<svg width="50" height="88" viewBox="0 0 50 88" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="25" cy="86" rx="18" ry="4.5" fill="rgba(0,0,0,.28)"/>
+    <rect x="9" y="30" width="32" height="50" rx="4" fill="rgba(210,235,255,.6)"/>
+    <rect x="9" y="30" width="32" height="50" rx="4" fill="none" stroke="rgba(160,200,240,.75)" stroke-width="1.5"/>
+    <rect x="8" y="22" width="34" height="12" rx="3.5" fill="#8a8060"/>
+    <rect x="10" y="24" width="30" height="7" rx="2" fill="#aaaa80"/>
+    <path d="M11 28 H39" stroke="rgba(255,255,255,.22)" stroke-width="1" fill="none"/>
+    <rect x="11" y="56" width="28" height="22" rx="3" fill="rgba(200,170,60,.35)"/>
+    <path d="M13 35 Q15 50 13 66" stroke="rgba(255,255,255,.48)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <rect x="12" y="38" width="26" height="14" rx="2" fill="rgba(255,250,230,.62)"/>
+    <line x1="14" y1="44" x2="36" y2="44" stroke="rgba(180,160,80,.4)" stroke-width=".8"/>
+  </svg>`,
+
+  frame: `<svg width="90" height="108" viewBox="0 0 90 108" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="45" cy="106" rx="34" ry="5.5" fill="rgba(0,0,0,.25)"/>
+    <rect x="5" y="5" width="80" height="96" rx="4" fill="#7a4e22"/>
+    <rect x="9" y="9" width="72" height="88" rx="3" fill="#9a6a36"/>
+    <rect x="14" y="14" width="62" height="78" rx="2" fill="#f2ede4"/>
+    <rect x="16" y="16" width="58" height="76" fill="#b8d8f0"/>
+    <rect x="16" y="16" width="58" height="40" fill="#90c8f0"/>
+    <circle cx="62" cy="30" r="9" fill="#f8e858" opacity=".9"/>
+    <rect x="16" y="56" width="58" height="36" fill="#88b040"/>
+    <rect x="28" y="54" width="22" height="18" fill="#c84828"/>
+    <polygon points="28,54 50,54 39,44" fill="#a03818"/>
+    <rect x="34" y="58" width="10" height="9" fill="#f0e8c0"/>
+    <line x1="39" y1="58" x2="39" y2="67" stroke="#7a4e22" stroke-width="1"/>
+    <line x1="34" y1="62.5" x2="44" y2="62.5" stroke="#7a4e22" stroke-width="1"/>
+    <rect x="52" y="60" width="4" height="12" fill="#6a3818"/>
+    <ellipse cx="54" cy="56" rx="8" ry="10" fill="#3a7820"/>
+    <ellipse cx="26" cy="72" rx="7" ry="5" fill="#5a9030" transform="rotate(-20 26 72)"/>
+    <ellipse cx="68" cy="74" rx="7" ry="5" fill="#4a8020" transform="rotate(15 68 74)"/>
+    <circle cx="13" cy="13" r="3.5" fill="#5a3210"/>
+    <circle cx="77" cy="13" r="3.5" fill="#5a3210"/>
+    <circle cx="13" cy="97" r="3.5" fill="#5a3210"/>
+    <circle cx="77" cy="97" r="3.5" fill="#5a3210"/>
+    <rect x="5" y="5" width="80" height="96" rx="4" fill="none" stroke="#5a3210" stroke-width="1"/>
+  </svg>`,
+
+  flower: `<svg width="52" height="120" viewBox="0 0 52 120" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="26" cy="118" rx="16" ry="4" fill="rgba(0,0,0,.25)"/>
+    <path d="M20 74 Q16 96 19 114 H33 Q36 96 32 74 Z" fill="#5888c8"/>
+    <rect x="17" y="68" width="18" height="9" rx="2.5" fill="#4070a8"/>
+    <ellipse cx="26" cy="68" rx="10" ry="3" fill="#3060a0"/>
+    <ellipse cx="26" cy="68" rx="7.5" ry="2" fill="rgba(190,220,255,.5)"/>
+    <path d="M26 66 Q26 42 26 22" stroke="#3a6820" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M26 50 Q14 42 10 32" stroke="#3a6820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M26 40 Q40 34 44 24" stroke="#3a6820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="10" cy="30" rx="10" ry="6" fill="#5a9030" transform="rotate(-38 10 30)"/>
+    <ellipse cx="44" cy="22" rx="10" ry="6" fill="#4a8020" transform="rotate(32 44 22)"/>
+    <ellipse cx="26" cy="8"  rx="6" ry="9" fill="#e87898"/>
+    <ellipse cx="26" cy="36" rx="6" ry="9" fill="#e87898"/>
+    <ellipse cx="13" cy="22" rx="9" ry="6" fill="#f090b0"/>
+    <ellipse cx="39" cy="22" rx="9" ry="6" fill="#f090b0"/>
+    <ellipse cx="9"  cy="14" rx="5" ry="7" fill="#e87098" transform="rotate(-28 9 14)"/>
+    <ellipse cx="43" cy="14" rx="5" ry="7" fill="#e87098" transform="rotate(28 43 14)"/>
+    <circle cx="26" cy="22" r="6" fill="#f8d020"/>
+    <circle cx="26" cy="22" r="3.5" fill="#e0a010"/>
+    <circle cx="26" cy="22" r="1.5" fill="#c08000"/>
+  </svg>`,
+
+  kettle: `<svg width="74" height="96" viewBox="0 0 74 96" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="37" cy="94" rx="28" ry="5.5" fill="rgba(0,0,0,.3)"/>
+    <ellipse cx="37" cy="62" rx="28" ry="26" fill="#b06820"/>
+    <ellipse cx="37" cy="62" rx="28" ry="26" fill="none" stroke="#8a4c10" stroke-width="1.5"/>
+    <ellipse cx="37" cy="38" rx="24" ry="7" fill="rgba(255,170,70,.28)"/>
+    <ellipse cx="37" cy="38" rx="16" ry="5.5" fill="#8a4c10"/>
+    <ellipse cx="37" cy="36" rx="16" ry="4.5" fill="#c07828"/>
+    <ellipse cx="37" cy="32" rx="5" ry="3.5" fill="#8a4c10"/>
+    <ellipse cx="37" cy="30" rx="5" ry="3" fill="#c07828"/>
+    <path d="M65 56 Q74 48 69 38" stroke="#8a4c10" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M65 56 Q74 48 69 38" stroke="#c07828" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M9 52 Q1 62 9 72" stroke="#6a3408" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M9 52 Q1 62 9 72" stroke="#a05c18" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="27" cy="50" rx="9" ry="14" fill="rgba(255,170,70,.2)" transform="rotate(-22 27 50)"/>
+    <path d="M24 62 Q31 55 38 62 Q45 69 52 62" stroke="rgba(255,190,90,.42)" stroke-width="1.5" fill="none"/>
+    <circle cx="37" cy="70" r="3.5" fill="rgba(255,190,90,.35)"/>
+    <circle cx="28" cy="56" r="2" fill="rgba(255,190,90,.3)"/>
+    <circle cx="46" cy="56" r="2" fill="rgba(255,190,90,.3)"/>
+  </svg>`,
+
+  mushroom: `<svg width="44" height="72" viewBox="0 0 44 72" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="22" cy="70" rx="14" ry="4" fill="rgba(0,0,0,.25)"/>
+    <path d="M16 68 Q14 50 17 43 H27 Q30 50 28 68 Z" fill="#ede0cc"/>
+    <path d="M17 55 Q14 52 16 49" stroke="rgba(220,200,170,.5)" stroke-width="1.2" fill="none"/>
+    <path d="M3 43 Q10 18 22 16 Q34 18 41 43 Z" fill="#c83020"/>
+    <path d="M3 43 Q10 18 22 16 Q34 18 41 43 Z" fill="none" stroke="#a02010" stroke-width="1"/>
+    <ellipse cx="22" cy="43" rx="19" ry="6" fill="#f0a898"/>
+    <circle cx="14" cy="27" r="4.5" fill="rgba(255,255,255,.82)"/>
+    <circle cx="28" cy="24" r="3.5" fill="rgba(255,255,255,.82)"/>
+    <circle cx="22" cy="36" r="4" fill="rgba(255,255,255,.82)"/>
+    <circle cx="9" cy="36" r="3" fill="rgba(255,255,255,.82)"/>
+    <circle cx="35" cy="33" r="3" fill="rgba(255,255,255,.82)"/>
+    <circle cx="19" cy="24" r="2" fill="rgba(255,255,255,.5)"/>
+    <circle cx="33" cy="28" r="2" fill="rgba(255,255,255,.5)"/>
+  </svg>`,
+
+  candle: `<svg width="38" height="96" viewBox="0 0 38 96" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="19" cy="94" rx="14" ry="4" fill="rgba(0,0,0,.25)"/>
+    <rect x="10" y="38" width="18" height="54" rx="3.5" fill="#f5e8d0"/>
+    <rect x="10" y="38" width="18" height="54" rx="3.5" fill="none" stroke="rgba(200,175,135,.45)" stroke-width="1"/>
+    <path d="M10 50 Q7 56 9 62" stroke="#f5e8d0" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M28 53 Q31 59 30 64" stroke="#f5e8d0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <line x1="10" y1="54" x2="28" y2="54" stroke="rgba(200,175,135,.3)" stroke-width=".8"/>
+    <line x1="10" y1="64" x2="28" y2="64" stroke="rgba(200,175,135,.3)" stroke-width=".8"/>
+    <line x1="10" y1="74" x2="28" y2="74" stroke="rgba(200,175,135,.3)" stroke-width=".8"/>
+    <line x1="19" y1="38" x2="19" y2="28" stroke="#1e1008" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M19 26 Q14 19 16 12 Q18 6 19 4 Q20 6 22 12 Q24 19 19 26 Z" fill="#f8a020"/>
+    <path d="M19 24 Q15 18 16 13 Q18 8 19 6 Q20 8 22 13 Q23 18 19 24 Z" fill="#ffd040"/>
+    <path d="M19 22 Q16 17 17 13 Q18 10 19 8 Q20 10 21 13 Q22 17 19 22 Z" fill="rgba(255,255,255,.65)"/>
+    <ellipse cx="19" cy="15" rx="11" ry="13" fill="rgba(255,200,50,.1)"/>
+  </svg>`,
+
+  stack: `<svg width="60" height="64" viewBox="0 0 60 64" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="30" cy="62" rx="26" ry="5" fill="rgba(0,0,0,.28)"/>
+    <rect x="5"  y="46" width="52" height="14" rx="2.5" fill="#4a80b0" transform="rotate(-3 31 53)"/>
+    <rect x="5"  y="46" width="9"  height="14" rx="2"   fill="#3a6090" transform="rotate(-3 31 53)"/>
+    <line x1="18" y1="46" x2="17" y2="60" stroke="rgba(255,255,255,.2)" stroke-width=".8"/>
+    <rect x="7"  y="31" width="48" height="14" rx="2.5" fill="#e05870" transform="rotate(2 31 38)"/>
+    <rect x="7"  y="31" width="8"  height="14" rx="2"   fill="#c03858" transform="rotate(2 31 38)"/>
+    <line x1="20" y1="31" x2="21" y2="45" stroke="rgba(255,255,255,.2)" stroke-width=".8"/>
+    <rect x="9"  y="17" width="44" height="13" rx="2.5" fill="#60a840" transform="rotate(-1 31 23)"/>
+    <rect x="9"  y="17" width="7"  height="13" rx="2"   fill="#408030" transform="rotate(-1 31 23)"/>
+    <rect x="13" y="8"  width="36" height="8"  rx="2"   fill="#f0c030" transform="rotate(3 31 12)"/>
+    <rect x="13" y="8"  width="6"  height="8"  rx="1.5" fill="#c09000" transform="rotate(3 31 12)"/>
+  </svg>`,
+
+  vase: `<svg width="54" height="118" viewBox="0 0 54 118" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="27" cy="116" rx="19" ry="5" fill="rgba(0,0,0,.25)"/>
+    <path d="M20 76 Q14 98 18 114 H36 Q40 98 34 76 Z" fill="#7090c8"/>
+    <path d="M20 76 Q16 88 17 98" stroke="rgba(160,190,240,.45)" stroke-width="1.5" fill="none"/>
+    <rect x="18" y="68" width="18" height="11" rx="2" fill="#5070a8"/>
+    <ellipse cx="27" cy="68" rx="10" ry="3.5" fill="#4060a0"/>
+    <ellipse cx="27" cy="68" rx="7.5" ry="2" fill="rgba(190,220,255,.48)"/>
+    <path d="M27 66 L27 24" stroke="#3a6820" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M27 48 Q14 38 10 26" stroke="#3a6820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M27 36 Q40 28 44 18" stroke="#3a6820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="9" cy="23" rx="10" ry="6" fill="#5a9030" transform="rotate(-36 9 23)"/>
+    <ellipse cx="44" cy="16" rx="10" ry="6" fill="#4a8020" transform="rotate(30 44 16)"/>
+    <ellipse cx="27" cy="10" rx="7" ry="10" fill="#e87098"/>
+    <ellipse cx="27" cy="38" rx="7" ry="10" fill="#f09ab8"/>
+    <ellipse cx="14" cy="24" rx="10" ry="7" fill="#f090b0"/>
+    <ellipse cx="40" cy="24" rx="10" ry="7" fill="#e87098"/>
+    <ellipse cx="10" cy="16" rx="6" ry="8" fill="#f090b0" transform="rotate(-25 10 16)"/>
+    <ellipse cx="44" cy="16" rx="6" ry="8" fill="#e87098" transform="rotate(25 44 16)"/>
+    <circle cx="27" cy="24" r="6.5" fill="#f8d020"/>
+    <circle cx="27" cy="24" r="4"   fill="#e0a010"/>
+    <circle cx="27" cy="24" r="1.8" fill="#c08000"/>
+  </svg>`,
+};
+
+/* ── state ── */
+let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let selCover = 'hotpink';
+let view     = 'shelf';
+let popupId  = null;
+
+if (!user) { window.location.href = 'index.html'; }
+document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
+initPicker();
+render();
+
+/* ── cover picker ── */
+function initPicker() {
+  const wrap = document.getElementById('cp-read');
+  COVERS.forEach(cov => {
+    const btn = document.createElement('div');
+    btn.className = 'cover-opt' + (selCover === cov.id ? ' sel' : '');
+    btn.style.background = cov.c;
+    btn.title = cov.id;
+    btn.onclick = () => {
+      selCover = cov.id;
+      wrap.querySelectorAll('.cover-opt').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── add / delete ── */
+function addBook() {
+  const title  = document.getElementById('read-title').value.trim();
+  const author = document.getElementById('read-author').value.trim();
+  const genre  = document.getElementById('read-genre').value;
+  if (!title) { document.getElementById('read-title').focus(); return; }
+  data.read.unshift({
+    id: Date.now(), title, author, genre, notes:'', cover: selCover, rating: 0,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+  });
+  save();
+  document.getElementById('read-title').value  = '';
+  document.getElementById('read-author').value = '';
+  document.getElementById('read-genre').value  = '';
+  render();
+}
+['read-title','read-author'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') addBook(); });
+});
+
+function delBook(id) {
+  data.read = data.read.filter(x => x.id !== id);
+  save(); closePopup(); render();
+}
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+
+/* ── view ── */
+function setView(v) {
+  view = v;
+  document.getElementById('svt-shelf').classList.toggle('active', v==='shelf');
+  document.getElementById('svt-grid').classList.toggle('active', v==='grid');
+  closePopup(); render();
+}
+
+/* ── render ── */
+function render() {
+  document.getElementById('book-count').textContent = data.read.length;
+  const wrap = document.getElementById('main-content');
+  if (view === 'shelf') {
+    wrap.innerHTML = `<div class="bookcase-section">${buildBookcase()}</div>`;
+  } else {
+    if (!data.read.length) {
+      wrap.innerHTML = `<div class="empty-state"><span class="empty-icon">🍵</span><p>your shelf is waiting for its first story…</p></div>`;
+      return;
+    }
+    wrap.innerHTML = `<div class="grid-wrap"><div class="books-grid">${data.read.map(bookCard).join('')}</div></div>`;
+    data.read.forEach(b => {
+      const ta = document.getElementById('n-'+b.id);
+      if (ta) ta.addEventListener('input', e => setNotes(b.id, e.target.value));
+    });
+  }
+}
+
+/* ── bookcase builder ── */
+function getHeight(id) {
+  const h = [102,120,108,126,94,115,132,98,110,107,95,122,105,116,130,90,112,138,100,118];
+  return h[id % h.length];
+}
+
+function booksPerTemplate(tmpl) {
+  return tmpl.filter(s => s.type==='books').reduce((a,s) => a + s.n, 0);
+}
+
+function buildBookcase() {
+  const MIN_SHELVES = 3;
+  const books = data.read;
+
+  /* figure out how many shelves we need */
+  let nShelves = MIN_SHELVES;
+  while (true) {
+    let slots = 0;
+    for (let i = 0; i < nShelves; i++) slots += booksPerTemplate(SHELF_TEMPLATES[i % SHELF_TEMPLATES.length]);
+    if (books.length <= slots) break;
+    nShelves++;
+  }
+  nShelves = Math.max(nShelves, MIN_SHELVES);
+
+  let bookIdx = 0;
+  let rows = '';
+
+  for (let si = 0; si < nShelves; si++) {
+    const tmpl = SHELF_TEMPLATES[si % SHELF_TEMPLATES.length];
+    let rowHtml = '';
+    for (const seg of tmpl) {
+      if (seg.type === 'deco') {
+        rowHtml += `<div class="shelf-deco">${DECOS[seg.id] || ''}</div>`;
+      } else {
+        for (let bi = 0; bi < seg.n; bi++) {
+          const b = books[bookIdx++];
+          if (b) {
+            const cov = COVERS.find(c => c.id === (b.cover||'hotpink')) || COVERS[0];
+            const h   = getHeight(b.id);
+            const rot = [0,0,0,-1.5,0,0,0,1,0,0,0,-1,0,0,1.5,0,0][b.id % 17];
+            rowHtml += `<div class="sbook" style="background:${cov.c};height:${h}px;${rot?`transform:rotate(${rot}deg);`:''}" onclick="openPopup(${b.id},this)" title="${esc(b.title)}"><span class="sbook-title">${esc(b.title)}</span><div class="sbook-shine"></div></div>`;
+          } else {
+            rowHtml += `<div class="empty-slot"></div>`;
+          }
+        }
+      }
+    }
+    rows += `<div class="bshelf-row">${rowHtml}<div class="bshelf-plank"></div></div>`;
+  }
+
+  return `<div class="bookcase"><div class="bc-rail"></div><div class="bc-inner">${rows}</div><div class="bc-base"></div></div>`;
+}
+
+/* ── popup ── */
+function openPopup(id, el) {
+  if (popupId === id) { closePopup(); return; }
+  popupId = id;
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  const stars = [1,2,3,4,5].map(i =>
+    `<span class="bsp-star${i<=b.rating?' lit':''}" onclick="setPopupRating(${b.id},${i})">★</span>`
+  ).join('');
+  const popup = document.getElementById('bshelf-popup');
+  popup.innerHTML = `
+    <div class="bsp-title">${esc(b.title)}</div>
+    ${b.author ? `<div class="bsp-author">by ${esc(b.author)}</div>` : ''}
+    ${b.genre  ? `<span class="bsp-genre">${esc(b.genre)}</span>`   : ''}
+    <div class="bsp-stars">${stars}</div>
+    <div class="bsp-date">${b.date}</div>
+    <textarea class="bsp-notes" rows="2" placeholder="a note, a feeling…" oninput="setNotes(${b.id},this.value)">${b.notes||''}</textarea>
+    <button class="bsp-del" onclick="delBook(${b.id})">✕ remove from shelf</button>
+  `;
+  popup.classList.add('visible');
+  const rect = el.getBoundingClientRect();
+  const pw = 224, ph = popup.offsetHeight || 210;
+  let left = rect.left + rect.width/2 - pw/2;
+  let top  = rect.top - ph - 14;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  if (top < 8) top = rect.bottom + 14;
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+}
+
+function closePopup() {
+  popupId = null;
+  document.getElementById('bshelf-popup').classList.remove('visible');
+}
+
+function setPopupRating(id, r) {
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  b.rating = r; save();
+  document.querySelectorAll('#bshelf-popup .bsp-star').forEach((s,i) => s.classList.toggle('lit', i+1<=r));
+}
+
+function setNotes(id, val) {
+  const b = data.read.find(x => x.id === id);
+  if (b) { b.notes = val; save(); }
+}
+
+document.addEventListener('click', e => {
+  if (!popupId) return;
+  const popup = document.getElementById('bshelf-popup');
+  if (popup.contains(e.target) || e.target.closest('.sbook')) return;
+  closePopup();
+});
+
+/* ── grid card ── */
+function bookCard(b) {
+  const emoji = EMOJIS[b.genre] || '📓';
+  const cov   = COVERS.find(c => c.id === (b.cover||'hotpink')) || COVERS[0];
+  const genre = b.genre ? `<span class="bgenre">${b.genre}</span>` : '';
+  const stars = [1,2,3,4,5].map(i => `<span class="star${i<=b.rating?' lit':''}" onclick="gridRating(${b.id},${i})">★</span>`).join('');
+  return `<div class="book-card">
+    <button class="del-btn" onclick="delBook(${b.id})" title="remove">✕</button>
+    <div class="bspine"></div>
+    <div class="mini-cover" style="background:${cov.c};"><span class="ce">${emoji}</span><div class="shine"></div></div>
+    <div class="btitle">${esc(b.title)}</div>
+    ${b.author ? `<div class="bauthor">by ${esc(b.author)}</div>` : ''}
+    ${genre}
+    <div class="star-row">${stars}</div>
+    <div class="bdate">${b.date}</div>
+    <div class="bnotes"><textarea id="n-${b.id}" rows="2" placeholder="a note, a feeling…">${b.notes||''}</textarea></div>
+  </div>`;
+}
+
+function gridRating(id, r) {
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  b.rating = r; save(); render();
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+window.addEventListener('resize', () => { if (view==='shelf') render(); });
+</script>
+</body>
+</html>

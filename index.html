@@ -3,737 +3,1160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>my little library ✦</title>
+  <title>the little library</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
 
     :root {
-      --cream: #fdf6ec;
-      --blush: #f2c4b0;
-      --rose: #d4856a;
-      --mauve: #c9a8b4;
-      --lavender: #b5aac8;
-      --sage: #a8bfb0;
-      --ink: #3d2e2e;
-      --soft: #7a6060;
-      --card: #fffaf5;
-      --shadow: rgba(61,46,46,0.10);
+      --dark:      #1a0814;
+      --dark2:     #26101e;
+      --brown:     #6b1838;
+      --burgundy:  #c03870;
+      --rust:      #d9607a;
+      --gold:      #e890aa;
+      --gold-l:    #f5c0d4;
+      --parchment: #fde8f0;
+      --cream:     #fff2f7;
+      --moss:      #b83878;
+      --dusty:     #e880a0;
+      --ink:       #22081a;
+      --ink-mid:   #541830;
+      --ink-l:     #a05878;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Lato', sans-serif; color: var(--ink); min-height: 100vh; background: var(--parchment); }
 
-    body {
-      background: var(--cream);
-      font-family: 'Lato', sans-serif;
-      color: var(--ink);
-      min-height: 100vh;
-      background-image:
-        radial-gradient(circle at 15% 20%, #f7e8d8 0%, transparent 40%),
-        radial-gradient(circle at 85% 75%, #e8dff0 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, #e8f0eb 0%, transparent 60%);
+    .page { display: none; min-height: 100vh; position: relative; overflow-x: hidden; }
+    .page.active { display: flex; flex-direction: column; }
+
+    /* ── STICKERS ── */
+    .stk { position:absolute; pointer-events:none; user-select:none; z-index:2; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+    .stk-float  { animation:stkfloat  var(--dur,6s)  var(--dly,0s) ease-in-out infinite alternate; }
+    .stk-bounce { animation:stkbounce var(--dur,4.5s) var(--dly,0s) ease-in-out infinite; }
+    .stk-pulse  { animation:stkpulse  var(--dur,3s)   var(--dly,0s) ease-in-out infinite; }
+    .stk-wiggle { animation:stkwiggle var(--dur,2.2s)  var(--dly,0s) ease-in-out infinite; }
+    .stk-shake  { animation:stkshake  var(--dur,2.8s)  var(--dly,0s) ease-in-out infinite; }
+    .stk-spin   { animation:stkspin 18s linear infinite; }
+    @keyframes stkfloat  { from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)} }
+    @keyframes stkbounce { 0%,100%{transform:rotate(var(--rot,0deg)) translateY(0)} 45%{transform:rotate(var(--rot,0deg)) translateY(-22px)} }
+    @keyframes stkpulse  { 0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)} }
+    @keyframes stkwiggle { 0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))} }
+    @keyframes stkshake  { 0%,100%{transform:rotate(-5deg) translateX(0)} 25%{transform:rotate(4deg) translateX(5px)} 75%{transform:rotate(-4deg) translateX(-4px)} }
+    @keyframes stkspin   { from{transform:rotate(var(--rot,0deg))} to{transform:rotate(calc(var(--rot,0deg) + 360deg))} }
+    .cutout { font-family:'Impact','Arial Black',sans-serif; font-weight:900; display:flex; align-items:center; justify-content:center; line-height:1; box-shadow:3px 4px 10px rgba(0,0,0,0.28); }
+
+    /* ══ WELCOME ══ */
+    #page-welcome {
+      background: var(--dark);
+      align-items: center;
+      justify-content: center;
+    }
+    #particles { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .pt {
+      position: absolute; border-radius: 50%;
+      animation: drift var(--dur) var(--dly) ease-in-out infinite;
+    }
+    @keyframes drift {
+      0%   { opacity: 0; transform: translateY(0); }
+      25%  { opacity: 0.65; }
+      100% { opacity: 0; transform: translateY(-110px) scale(0.3); }
+    }
+    .glow-orb { position: absolute; border-radius: 50%; pointer-events: none; }
+
+    .welcome-inner {
+      position: relative; z-index: 2;
+      width: min(450px, 90vw);
+      animation: riseIn 0.85s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── HEADER ── */
-    header {
-      text-align: center;
-      padding: 3.5rem 1rem 2rem;
+    .welcome-box {
+      border: 1px solid rgba(196,154,74,0.27);
+      border-radius: 3px;
+      padding: 3rem 2.5rem 2.8rem;
+      background: rgba(26,16,8,0.9);
+      backdrop-filter: blur(8px);
       position: relative;
     }
-    header .sparkles {
-      font-size: 1.1rem;
-      letter-spacing: 0.5rem;
-      color: var(--mauve);
-      margin-bottom: 0.5rem;
-      opacity: 0.8;
-    }
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
-      color: var(--ink);
-      line-height: 1.1;
-    }
-    header h1 em {
-      color: var(--rose);
-      font-style: italic;
-    }
-    header p {
-      margin-top: 0.6rem;
-      color: var(--soft);
-      font-size: 0.95rem;
-      font-weight: 300;
-      letter-spacing: 0.04em;
-    }
+    .cb { position: absolute; width: 18px; height: 18px; border-color: var(--gold); border-style: solid; opacity: 0.52; }
+    .cb-tl { top:-1px; left:-1px;   border-width: 2px 0 0 2px; }
+    .cb-tr { top:-1px; right:-1px;  border-width: 2px 2px 0 0; }
+    .cb-bl { bottom:-1px; left:-1px;  border-width: 0 0 2px 2px; }
+    .cb-br { bottom:-1px; right:-1px; border-width: 0 2px 2px 0; }
 
-    /* ── TABS ── */
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin: 0 1rem 2rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      padding: 0.55rem 1.4rem;
-      border: 2px solid transparent;
-      border-radius: 999px;
-      background: white;
-      font-family: 'Lato', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 400;
-      cursor: pointer;
-      color: var(--soft);
-      transition: all 0.25s ease;
-      box-shadow: 0 2px 8px var(--shadow);
-      letter-spacing: 0.03em;
-    }
-    .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
-    .tab-btn.active[data-tab="read"]     { background: var(--sage);     color: #2d3d34; border-color: var(--sage); }
-    .tab-btn.active[data-tab="reading"]  { background: var(--blush);    color: #5a2e20; border-color: var(--blush); }
-    .tab-btn.active[data-tab="wishlist"] { background: var(--lavender); color: #2e2a40; border-color: var(--lavender); }
+    .w-orn { text-align: center; color: var(--gold); letter-spacing: 0.6rem; font-size: 0.58rem; margin-bottom: 1.5rem; opacity: 0.48; }
+    .welcome-box h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(1.9rem,5vw,2.5rem); color: var(--parchment); text-align: center; line-height: 1.15; margin-bottom: 0.4rem; }
+    .welcome-box h1 .g { color: var(--gold-l); }
+    .w-sub { font-family: 'IM Fell English', serif; font-style: italic; text-align: center; color: rgba(245,232,204,0.34); font-size: 0.86rem; margin-bottom: 2rem; }
+    .w-div { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.7rem; }
+    .w-div hr { flex: 1; border: none; border-top: 1px solid rgba(196,154,74,0.17); }
+    .w-div span { color: var(--gold); font-size: 0.5rem; opacity: 0.43; letter-spacing: 0.28rem; }
+    .w-label { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(245,232,204,0.34); display: block; margin-bottom: 0.38rem; }
+    .opt-tag { font-size: 0.6rem; color: rgba(245,232,204,0.19); text-transform: none; letter-spacing: 0; }
+    .w-field { margin-bottom: 0.9rem; }
+    .w-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(196,154,74,0.19); border-radius: 2px; padding: 0.7rem 1rem; font-family: 'IM Fell English', serif; font-size: 1rem; color: var(--parchment); outline: none; transition: border-color .25s, background .25s; }
+    .w-input:focus { border-color: rgba(196,154,74,0.5); background: rgba(255,255,255,0.06); }
+    .w-input::placeholder { color: rgba(245,232,204,0.15); }
+    .w-err { font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.78rem; color: var(--dusty); text-align: center; min-height: 1.1rem; margin-bottom: 0.4rem; }
+    .w-btn { width: 100%; padding: 0.85rem; background: var(--gold); color: var(--dark); border: none; border-radius: 2px; font-family: 'Playfair Display', serif; font-size: 0.87rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background .2s, transform .15s; }
+    .w-btn:hover { background: var(--gold-l); transform: translateY(-1px); }
 
-    /* ── MAIN LAYOUT ── */
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 1.2rem 4rem;
-    }
+    /* ══ NAV ══ */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--dark2); border-bottom: 1px solid rgba(196,154,74,0.13); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem; color: var(--parchment); cursor: pointer; }
+    .nav-logo .g { color: var(--gold); }
+    .nav-btn { background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.73rem; color: rgba(245,232,204,0.42); cursor: pointer; padding: .4rem .9rem; border-radius: 2px; transition: color .18s, background .18s; letter-spacing: .07em; text-transform: uppercase; }
+    .nav-btn:hover, .nav-btn.active { color: var(--gold-l); background: rgba(196,154,74,0.08); }
+    .nav-user { font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.8rem; color: rgba(245,232,204,0.27); }
+
+    /* ══ HOME ══ */
+    #page-home { background: var(--cream); display: block !important; }
+
+    /* hero */
+    .hp-hero { position:relative; background:linear-gradient(165deg,#fff2f7 0%,#fde8f0 50%,rgba(248,192,212,.18) 100%); display:flex; align-items:center; justify-content:center; gap:clamp(.8rem,3vw,3rem); padding:clamp(2rem,5vw,4rem) clamp(1rem,5vw,5rem); overflow:hidden; min-height:46vh; }
+    .hp-hero::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:radial-gradient(circle at 15% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 28px,transparent 28px),radial-gradient(circle at 85% 70%,rgba(192,56,112,.1) 0,rgba(192,56,112,.1) 18px,transparent 18px),radial-gradient(circle at 50% 90%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 22px,transparent 22px); background-size:160px 160px,120px 120px,100px 100px; }
+    .polaroid { background:white; padding:12px 12px 42px; box-shadow:0 6px 24px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.07); flex-shrink:0; width:clamp(120px,16vw,185px); position:relative; z-index:2; }
+    .pol-left  { transform:rotate(-8deg) translateY(14px); }
+    .pol-right { transform:rotate(6deg) translateY(-10px); }
+    .pol-img { width:100%; aspect-ratio:1; background:var(--parchment); overflow:hidden; }
+    .pol-cap { position:absolute; bottom:9px; left:0; right:0; text-align:center; font-family:'IM Fell English',serif; font-style:italic; font-size:.6rem; color:#b09098; }
+
+    .hp-center { text-align:center; flex:1; min-width:160px; position:relative; z-index:2; }
+    .hp-bow { font-size:clamp(1.6rem,3.5vw,2.6rem); display:block; margin-bottom:.3rem; line-height:1; }
+    .hp-title { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(2rem,5.5vw,4rem); color:var(--ink); line-height:1.1; margin-bottom:.5rem; }
+    .hp-title em { color:var(--burgundy); display:block; }
+    .hp-tagline { font-family:'IM Fell English',serif; font-style:italic; font-size:clamp(.85rem,2vw,1.05rem); color:var(--ink-l); line-height:1.5; }
+    .hp-uname { display:block; margin-top:.55rem; font-family:'Lato',sans-serif; font-size:.67rem; color:var(--ink-l); letter-spacing:.1em; text-transform:uppercase; opacity:.55; }
+
+    /* pink banner */
+    .hp-banner { background:linear-gradient(90deg,var(--brown) 0%,var(--burgundy) 35%,var(--rust) 65%,var(--brown) 100%); display:flex; align-items:center; justify-content:center; gap:clamp(1rem,3vw,3rem); padding:2rem 1.5rem; position:relative; overflow:hidden; }
+    .hp-banner::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.03) 60px,rgba(255,255,255,.03) 61px); pointer-events:none; }
+    .hp-banner-txt { text-align:center; }
+    .hp-banner-txt p { font-family:'IM Fell English',serif; font-style:italic; font-size:clamp(.95rem,2.5vw,1.35rem); color:white; line-height:1.65; }
+    .hp-banner-txt em { color:var(--gold-l); font-style:normal; }
+
+    /* grid cards */
+    .hp-grid { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid rgba(192,56,112,.12); border-bottom:1px solid rgba(192,56,112,.12); }
+    @media(max-width:680px){ .hp-grid{ grid-template-columns:repeat(2,1fr); } }
+    .hp-card { cursor:pointer; display:flex; flex-direction:column; align-items:center; padding:2.8rem 1rem 2rem; border-right:1px solid rgba(192,56,112,.1); background:var(--parchment); transition:background .22s; text-align:center; }
+    .hp-card:last-child { border-right:none; }
+    .hp-card:hover { background:var(--cream); }
+    .hp-card-art { width:clamp(70px,10vw,120px); height:clamp(70px,10vw,120px); margin-bottom:1rem; }
+    .hp-card-num { font-family:'Playfair Display',serif; font-size:clamp(2rem,4vw,3.2rem); color:var(--ink); line-height:1; }
+    .hp-card-lbl { font-family:'IM Fell English',serif; font-style:italic; font-size:.8rem; color:var(--ink-l); margin-top:.35rem; }
+
+    /* floral quote + currently reading section */
+    .hp-floral { background:var(--cream); position:relative; padding:4rem 1.5rem 5.5rem; text-align:center; overflow:hidden; }
+    .hp-floral::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:radial-gradient(circle at 12% 20%,rgba(232,144,170,.09) 0,rgba(232,144,170,.09) 14px,transparent 14px),radial-gradient(circle at 88% 35%,rgba(192,56,112,.07) 0,rgba(192,56,112,.07) 10px,transparent 10px),radial-gradient(circle at 30% 75%,rgba(248,192,212,.1) 0,rgba(248,192,212,.1) 18px,transparent 18px),radial-gradient(circle at 70% 80%,rgba(232,144,170,.08) 0,rgba(232,144,170,.08) 12px,transparent 12px),radial-gradient(circle at 50% 50%,rgba(245,192,212,.06) 0,rgba(245,192,212,.06) 8px,transparent 8px); background-size:110px 110px,90px 90px,130px 130px,100px 100px,80px 80px; }
+    .q-section-inner { max-width:680px; margin:0 auto; position:relative; z-index:1; }
+    .hp-orn { font-family:'IM Fell English',serif; font-size:.74rem; color:var(--ink-l); letter-spacing:.2em; opacity:.5; margin-bottom:1.8rem; display:block; }
+    .sec-eye { display:flex; align-items:center; justify-content:center; gap:1rem; margin-bottom:1.1rem; font-family:'IM Fell English',serif; font-style:italic; font-size:.8rem; color:var(--ink-l); letter-spacing:.06em; }
+    .sec-eye::before,.sec-eye::after { content:'─── ✦ ───'; font-size:.46rem; letter-spacing:.2rem; color:var(--gold); opacity:.36; }
+    .open-book { background:white; border:1px solid rgba(192,56,112,.15); border-radius:3px 12px 12px 3px; padding:2.5rem 3rem 2rem; position:relative; box-shadow:inset 8px 0 18px -8px rgba(0,0,0,.05),0 4px 22px rgba(0,0,0,.06); text-align:center; }
+    .open-book::before { content:''; position:absolute; left:0; top:0; bottom:0; width:7px; background:linear-gradient(to right,rgba(192,56,112,.28),transparent); border-radius:3px 0 0 3px; }
+    .q-mark { font-family:'Playfair Display',serif; font-size:5rem; color:rgba(192,56,112,.1); line-height:.4; display:block; margin-bottom:.5rem; user-select:none; }
+    .q-text { font-family:'IM Fell English',serif; font-style:italic; font-size:1.1rem; color:var(--ink-mid); line-height:1.85; max-width:520px; margin:0 auto; transition:opacity .35s; }
+    .q-author { margin-top:1rem; font-family:'Lato',sans-serif; font-size:.7rem; color:var(--ink-l); letter-spacing:.1em; text-transform:uppercase; transition:opacity .35s; }
+    .q-dots { display:flex; gap:.48rem; justify-content:center; margin-top:1rem; }
+    .qdot { width:5px; height:5px; border-radius:50%; background:rgba(192,56,112,.18); cursor:pointer; transition:background .2s,transform .2s; }
+    .qdot.on { background:var(--burgundy); transform:scale(1.4); }
+    .curr-section { margin-top:2.8rem; max-width:680px; margin-left:auto; margin-right:auto; position:relative; z-index:1; }
+    .curr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; text-align:left; }
+    .curr-card { background:white; border-radius:2px 6px 6px 2px; padding:1.2rem 1.1rem; border:1px solid rgba(192,56,112,.12); border-left:5px solid var(--burgundy); box-shadow:0 2px 14px rgba(0,0,0,.05); transition:transform .22s,box-shadow .22s; }
+    .curr-card:hover { transform:translateY(-3px) rotate(.3deg); box-shadow:0 6px 20px rgba(0,0,0,.09); }
+    .cc-t { font-family:'Playfair Display',serif; font-size:.92rem; color:var(--ink); font-weight:600; line-height:1.3; }
+    .cc-a { font-family:'IM Fell English',serif; font-style:italic; font-size:.75rem; color:var(--ink-l); margin-top:.2rem; }
+    .cc-bar { margin-top:.85rem; background:rgba(192,56,112,.1); border-radius:999px; height:4px; overflow:hidden; }
+    .cc-fill { height:100%; background:linear-gradient(90deg,#c03870,#e880a0); border-radius:999px; }
+    .cc-pct { font-size:.67rem; color:var(--ink-l); margin-top:.33rem; }
+    .curr-empty { font-family:'IM Fell English',serif; font-style:italic; text-align:center; color:var(--ink-l); padding:2rem; background:white; border:1px dashed rgba(192,56,112,.15); border-radius:3px; font-size:.9rem; }
+    .hp-bye { font-family:'IM Fell English',serif; font-style:italic; font-size:1rem; color:var(--ink-l); margin-top:2.8rem; opacity:.65; position:relative; z-index:1; }
+
+    /* ══ LIBRARY ══ */
+    #page-library { background: var(--parchment); }
+    .library-inner { max-width: 960px; margin: 0 auto; padding: 2rem 1.2rem 5rem; position: relative; z-index: 1; }
+
+    .tabs { display: flex; justify-content: center; border-bottom: 1px solid rgba(196,154,74,.17); margin-bottom: 2rem; }
+    .tab-btn { padding: .72rem 1.9rem; border: none; border-bottom: 2px solid transparent; background: none; font-family: 'IM Fell English', serif; font-style: italic; font-size: .95rem; color: var(--ink-l); cursor: pointer; transition: all .2s; margin-bottom: -1px; }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.active { color: var(--ink); }
+    .tab-btn.active[data-tab="read"]     { border-bottom-color: var(--moss); }
+    .tab-btn.active[data-tab="reading"]  { border-bottom-color: var(--burgundy); }
+    .tab-btn.active[data-tab="wishlist"] { border-bottom-color: var(--gold); }
 
     .shelf { display: none; }
     .shelf.active { display: block; }
 
-    /* ── ADD FORM ── */
-    .add-form {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 1.6rem 1.8rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 24px var(--shadow);
-      border: 1px solid rgba(255,255,255,0.8);
-    }
-    .add-form h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      color: var(--soft);
-      margin-bottom: 1rem;
-      font-weight: 400;
-      font-style: italic;
-    }
-    .form-row {
-      display: flex;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      flex: 1;
-      min-width: 140px;
-    }
-    .form-group label {
-      font-size: 0.78rem;
-      color: var(--soft);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .form-group input, .form-group select {
-      border: 1.5px solid #e8dcd4;
-      border-radius: 10px;
-      padding: 0.6rem 0.9rem;
-      font-family: 'Lato', sans-serif;
-      font-size: 0.92rem;
-      color: var(--ink);
-      background: white;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--mauve);
-    }
-    .form-group input::placeholder { color: #c8b8b0; }
+    .add-form { background: var(--cream); border: 1px solid rgba(196,154,74,.16); border-radius: 3px; padding: 1.4rem 1.7rem; margin-bottom: 1.8rem; box-shadow: 0 2px 14px rgba(0,0,0,.045); }
+    .add-form h2 { font-family: 'IM Fell English', serif; font-style: italic; font-size: .9rem; color: var(--ink-l); margin-bottom: .95rem; }
+    .form-row { display: flex; gap: .65rem; flex-wrap: wrap; align-items: flex-end; }
+    .fg { display: flex; flex-direction: column; gap: .24rem; flex: 1; min-width: 128px; }
+    .fg label { font-size: .64rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-l); }
+    .fg input, .fg select { border: 1px solid rgba(196,154,74,.22); border-radius: 2px; padding: .52rem .76rem; font-family: 'IM Fell English', serif; font-size: .93rem; color: var(--ink); background: var(--parchment); outline: none; transition: border-color .2s; }
+    .fg input:focus, .fg select:focus { border-color: var(--gold); }
+    .fg input::placeholder { color: rgba(122,92,60,.3); }
+    .add-btn { padding: .54rem 1.3rem; background: var(--brown); color: var(--parchment); border: 1px solid rgba(196,154,74,.19); border-radius: 2px; font-family: 'Lato', sans-serif; font-size: .75rem; letter-spacing: .07em; text-transform: uppercase; cursor: pointer; transition: all .2s; flex-shrink: 0; align-self: flex-end; }
+    .add-btn:hover { background: var(--ink); transform: translateY(-1px); }
 
-    .add-btn {
-      padding: 0.65rem 1.6rem;
-      background: var(--rose);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Lato', sans-serif;
-      font-size: 0.92rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-      align-self: flex-end;
-      box-shadow: 0 3px 12px rgba(212,133,106,0.35);
-    }
-    .add-btn:hover { background: #c87055; transform: translateY(-1px); }
-
-    /* ── PROGRESS SPECIFIC ── */
-    .progress-row {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      margin-top: 0.6rem;
-    }
-    .progress-row input[type="number"] {
-      width: 70px;
+    /* COVER PICKER */
+    .cover-pick-row { display: flex; align-items: center; gap: .55rem; margin-top: .9rem; flex-wrap: wrap; }
+    .cover-pick-label { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-l); flex-shrink: 0; }
+    .cover-opts { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .cover-opt {
+      width: 24px; height: 34px;
+      border-radius: 1px 3px 3px 1px;
+      cursor: pointer; position: relative;
+      transition: transform .15s, box-shadow .15s;
+      border: 2px solid transparent;
+      box-shadow: 1px 1px 5px rgba(0,0,0,.28);
       flex-shrink: 0;
     }
-    .progress-row span { font-size: 0.85rem; color: var(--soft); }
+    .cover-opt:hover { transform: translateY(-2px) scale(1.07); }
+    .cover-opt.sel { border-color: var(--gold-l); transform: translateY(-3px) scale(1.1); box-shadow: 0 0 0 2px var(--gold), 2px 4px 8px rgba(0,0,0,.3); }
+    .cover-opt::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: rgba(0,0,0,.28); border-radius: 1px 0 0 1px; }
+    .cover-opt::after  { content: ''; position: absolute; right: -3px; top: 2px; bottom: 2px; width: 3px; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.38) 0, rgba(255,255,255,.38) 1px, rgba(200,188,170,.35) 1px, rgba(200,188,170,.35) 3px); border-radius: 0 1px 1px 0; }
 
-    /* ── BOOK CARDS ── */
-    .books-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.2rem;
-    }
-    .book-card {
-      background: var(--card);
-      border-radius: 18px;
-      padding: 1.4rem 1.3rem 1.2rem;
-      box-shadow: 0 3px 18px var(--shadow);
-      border: 1px solid rgba(255,255,255,0.9);
-      position: relative;
-      transition: transform 0.2s, box-shadow 0.2s;
-      animation: fadeUp 0.35s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .book-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px var(--shadow);
-    }
-    .book-card .delete-btn {
-      position: absolute;
-      top: 0.8rem;
-      right: 0.8rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #d8c4c0;
-      font-size: 1rem;
-      line-height: 1;
-      transition: color 0.2s;
-      padding: 2px;
-    }
-    .book-card .delete-btn:hover { color: var(--rose); }
+    /* BOOK CARDS */
+    .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(222px,1fr)); gap: 1.2rem; }
+    .book-card { background: var(--cream); border-radius: 2px 7px 7px 2px; padding: 1.2rem 1.1rem 1rem 1.5rem; box-shadow: 0 2px 18px rgba(0,0,0,.07); border: 1px solid rgba(196,154,74,.12); position: relative; animation: fadeUp .3s ease both; transition: transform .25s, box-shadow .25s; overflow: visible; }
+    .book-card:hover { transform: translateY(-4px) rotate(-.3deg); box-shadow: 0 10px 30px rgba(0,0,0,.1); }
+    .book-card::after { content: ''; position: absolute; right: -4px; top: 5px; bottom: 5px; width: 4px; background: repeating-linear-gradient(to bottom, rgba(196,154,74,.12) 0, rgba(196,154,74,.12) 1px, rgba(250,243,230,.8) 1px, rgba(250,243,230,.8) 3px); border-radius: 0 1px 1px 0; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .book-spine {
-      width: 4px;
-      height: 100%;
-      position: absolute;
-      left: 0;
-      top: 0;
-      border-radius: 18px 0 0 18px;
-    }
-    .shelf-read    .book-spine { background: var(--sage); }
-    .shelf-reading .book-spine { background: var(--blush); }
-    .shelf-wishlist .book-spine { background: var(--lavender); }
+    .bspine { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; border-radius: 2px 0 0 2px; }
+    .shelf-read    .bspine { background: linear-gradient(180deg, #d460a0, var(--moss)); }
+    .shelf-reading .bspine { background: linear-gradient(180deg, var(--burgundy), var(--rust)); }
+    .shelf-wishlist .bspine { background: linear-gradient(180deg, var(--gold), #e060a0); }
 
-    .book-emoji {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-    .book-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--ink);
-      line-height: 1.3;
-      padding-right: 1.2rem;
-    }
-    .book-author {
-      font-size: 0.82rem;
-      color: var(--soft);
-      margin-top: 0.25rem;
-      font-style: italic;
-    }
-    .book-genre {
-      display: inline-block;
-      margin-top: 0.6rem;
-      background: #f3ebe8;
-      color: var(--rose);
-      font-size: 0.72rem;
-      padding: 0.2rem 0.65rem;
-      border-radius: 999px;
-      letter-spacing: 0.04em;
-    }
+    .del-btn { position: absolute; top: .6rem; right: .6rem; background: none; border: none; cursor: pointer; color: rgba(122,92,60,.19); font-size: .8rem; padding: 2px; transition: color .18s; line-height: 1; }
+    .del-btn:hover { color: var(--burgundy); }
 
-    /* ── PROGRESS BAR ── */
-    .progress-wrap {
-      margin-top: 0.9rem;
+    /* MINI 3D BOOK COVER */
+    .mini-cover {
+      width: 50px; height: 66px;
+      border-radius: 1px 4px 4px 1px;
+      position: relative; margin: 0 auto .8rem;
+      box-shadow: 2px 2px 9px rgba(0,0,0,.28), inset -3px 0 7px rgba(0,0,0,.22);
+      transform: perspective(280px) rotateY(-9deg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
     }
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.78rem;
-      color: var(--soft);
-      margin-bottom: 0.35rem;
-    }
-    .progress-bar {
-      background: #f0e8e4;
-      border-radius: 999px;
-      height: 7px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--blush), var(--rose));
-      border-radius: 999px;
-      transition: width 0.5s ease;
-    }
-    .update-pages {
-      display: flex;
-      gap: 0.4rem;
-      margin-top: 0.7rem;
-      align-items: center;
-    }
-    .update-pages input {
-      width: 68px;
-      border: 1.5px solid #e8dcd4;
-      border-radius: 8px;
-      padding: 0.3rem 0.5rem;
-      font-size: 0.82rem;
-      color: var(--ink);
-      font-family: 'Lato', sans-serif;
-      outline: none;
-    }
-    .update-pages input:focus { border-color: var(--blush); }
-    .update-pages button {
-      background: var(--blush);
-      border: none;
-      border-radius: 8px;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.8rem;
-      color: #5a2e20;
-      cursor: pointer;
-      font-family: 'Lato', sans-serif;
-      transition: background 0.2s;
-    }
-    .update-pages button:hover { background: #e8b09a; }
+    .mini-cover::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: rgba(0,0,0,.3); border-radius: 1px 0 0 1px; z-index: 1; }
+    .mini-cover::after  { content: ''; position: absolute; right: -3px; top: 2px; bottom: 2px; width: 3px; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.32) 0, rgba(255,255,255,.32) 1px, rgba(210,198,178,.32) 1px, rgba(210,198,178,.32) 3px); border-radius: 0 1px 1px 0; }
+    .mini-cover .ce { position: relative; z-index: 2; }
+    /* shine */
+    .mini-cover .shine { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 50%); border-radius: 0 3px 3px 0; z-index: 3; pointer-events: none; }
 
-    /* ── RATING STARS ── */
-    .star-row {
-      margin-top: 0.8rem;
-      display: flex;
-      gap: 0.15rem;
-    }
-    .star {
-      font-size: 1.05rem;
-      cursor: pointer;
-      filter: grayscale(1) opacity(0.35);
-      transition: filter 0.15s, transform 0.15s;
-    }
-    .star.lit { filter: grayscale(0) opacity(1); }
-    .star:hover { transform: scale(1.2); }
+    .btitle { font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 600; color: var(--ink); line-height: 1.3; padding-right: 1.1rem; }
+    .bauthor { font-family: 'IM Fell English', serif; font-style: italic; font-size: .75rem; color: var(--ink-l); margin-top: .18rem; }
+    .bgenre { display: inline-block; margin-top: .46rem; font-size: .62rem; padding: .16rem .56rem; border-radius: 999px; letter-spacing: .05em; text-transform: uppercase; }
+    .shelf-read    .bgenre { background: rgba(184,56,120,.1); color: var(--moss); }
+    .shelf-reading .bgenre { background: rgba(192,56,112,.1); color: var(--burgundy); }
+    .shelf-wishlist .bgenre { background: rgba(232,144,170,.2); color: #c0306a; }
 
-    /* ── DATE READ ── */
-    .book-date {
-      font-size: 0.75rem;
-      color: #b8a8a0;
-      margin-top: 0.5rem;
-    }
+    .prog-wrap { margin-top: .8rem; }
+    .prog-meta { display: flex; justify-content: space-between; font-size: .67rem; color: var(--ink-l); margin-bottom: .27rem; }
+    .prog-bar { background: rgba(196,154,74,.13); border-radius: 999px; height: 5px; overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, #c03870, #e880a0); border-radius: 999px; transition: width .5s; }
+    .prog-upd { display: flex; gap: .37rem; margin-top: .56rem; }
+    .prog-upd input { width: 60px; border: 1px solid rgba(196,154,74,.19); border-radius: 2px; padding: .24rem .46rem; font-size: .75rem; color: var(--ink); background: var(--parchment); outline: none; }
+    .prog-upd input:focus { border-color: var(--gold); }
+    .prog-upd button { background: rgba(192,56,112,.09); border: 1px solid rgba(192,56,112,.2); border-radius: 2px; padding: .24rem .66rem; font-size: .71rem; color: var(--burgundy); cursor: pointer; font-family: 'Lato',sans-serif; transition: background .18s; }
+    .prog-upd button:hover { background: rgba(192,56,112,.18); }
 
-    /* ── NOTES ── */
-    .book-notes {
-      margin-top: 0.7rem;
-    }
-    .book-notes textarea {
-      width: 100%;
-      border: 1.5px solid #ece4e0;
-      border-radius: 10px;
-      padding: 0.5rem 0.7rem;
-      font-size: 0.82rem;
-      font-family: 'Lato', sans-serif;
-      color: var(--ink);
-      resize: none;
-      background: #fdf9f7;
-      outline: none;
-      min-height: 60px;
-      transition: border-color 0.2s;
-    }
-    .book-notes textarea:focus { border-color: var(--mauve); }
-    .book-notes textarea::placeholder { color: #c8b8b0; }
+    .star-row { margin-top: .66rem; display: flex; gap: .1rem; }
+    .star { font-size: .9rem; cursor: pointer; filter: grayscale(1) opacity(.19); transition: filter .12s, transform .12s; }
+    .star.lit { filter: grayscale(0) opacity(1) sepia(.15); }
+    .star:hover { transform: scale(1.25); }
 
-    /* ── EMPTY STATE ── */
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--soft);
-    }
-    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
-    .empty-state p { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.05rem; }
+    .bdate { font-size: .66rem; color: rgba(122,92,60,.38); margin-top: .32rem; }
 
-    /* ── STATS BAR ── */
-    .stats-bar {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 2.5rem;
-    }
-    .stat-chip {
-      background: white;
-      border-radius: 999px;
-      padding: 0.45rem 1.1rem;
-      font-size: 0.83rem;
-      color: var(--soft);
-      box-shadow: 0 2px 10px var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .stat-chip strong { color: var(--ink); font-weight: 600; }
+    .bnotes { margin-top: .6rem; }
+    .bnotes textarea { width: 100%; border: 1px solid rgba(196,154,74,.15); border-radius: 2px; padding: .4rem .6rem; font-size: .79rem; font-family: 'IM Fell English',serif; font-style: italic; color: var(--ink-mid); resize: none; background: rgba(245,232,204,.28); outline: none; min-height: 48px; transition: border-color .18s; }
+    .bnotes textarea:focus { border-color: var(--gold); }
+    .bnotes textarea::placeholder { color: rgba(122,92,60,.24); }
 
-    /* ── FLOATING DECO ── */
-    .deco {
-      position: fixed;
-      pointer-events: none;
-      opacity: 0.12;
-      font-size: 5rem;
-      z-index: 0;
-      user-select: none;
-    }
-    .deco-1 { top: 8%; left: 3%;  transform: rotate(-15deg); }
-    .deco-2 { top: 60%; right: 2%; transform: rotate(10deg);  font-size: 4rem; }
-    .deco-3 { bottom: 10%; left: 6%; transform: rotate(5deg);  font-size: 3.5rem; }
+    .empty-state { text-align: center; padding: 3.5rem 2rem; }
+    .empty-icon { font-size: 1.9rem; display: block; margin-bottom: .65rem; opacity: .36; }
+    .empty-state p { font-family: 'IM Fell English',serif; font-style: italic; color: var(--ink-l); font-size: .95rem; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 480px) {
+    /* ══ BOOKSHELF ══ */
+    .bookshelf-outer{background:#2c0f06;border-radius:8px;padding:2rem 1.5rem 2.4rem;box-shadow:inset 0 0 80px rgba(0,0,0,.5),0 8px 36px rgba(0,0,0,.3);}
+    .bshelf-row{display:flex;align-items:flex-end;gap:4px;flex-wrap:nowrap;margin-bottom:2.6rem;position:relative;min-height:110px;}
+    .bshelf-row:last-child{margin-bottom:.3rem;}
+    .bshelf-plank{position:absolute;bottom:-14px;left:-1.5rem;right:-1.5rem;height:14px;background:linear-gradient(180deg,#a87840 0%,#7c5228 52%,#5c3a18 100%);box-shadow:0 5px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);z-index:1;}
+    .bshelf-plank::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 44px,rgba(0,0,0,.07) 44px,rgba(0,0,0,.07) 46px);}
+    .sbook{width:30px;border-radius:2px 3px 3px 2px;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease;box-shadow:2px 0 7px rgba(0,0,0,.35),inset -4px 0 10px rgba(0,0,0,.22);flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;}
+    .sbook:hover{transform:translateY(-16px);box-shadow:4px 16px 24px rgba(0,0,0,.55),inset -4px 0 10px rgba(0,0,0,.22);z-index:20;}
+    .sbook::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.3);border-radius:2px 0 0 2px;pointer-events:none;}
+    .sbook::after{content:'';position:absolute;right:-3px;top:3px;bottom:3px;width:3px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.4) 0,rgba(255,255,255,.4) 1px,rgba(210,198,178,.32) 1px,rgba(210,198,178,.32) 3px);border-radius:0 1px 1px 0;pointer-events:none;}
+    .sbook-title{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Playfair Display',serif;font-size:.58rem;font-weight:600;color:rgba(255,255,255,.88);padding:6px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-height:82%;letter-spacing:.05em;text-shadow:0 1px 3px rgba(0,0,0,.4);position:relative;z-index:2;pointer-events:none;}
+    .sbook-shine{position:absolute;top:0;left:5px;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 45%);border-radius:0 3px 3px 0;z-index:3;pointer-events:none;}
+    /* Spine popup */
+    #bshelf-popup{position:fixed;background:var(--cream);border:1px solid rgba(192,56,112,.22);border-radius:8px;padding:1.1rem 1.2rem;width:224px;box-shadow:0 12px 40px rgba(0,0,0,.22);z-index:9999;display:none;}
+    #bshelf-popup.visible{display:block;animation:bspopIn .18s ease;}
+    @keyframes bspopIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .bsp-title{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:.18rem;line-height:1.3;}
+    .bsp-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.73rem;color:var(--ink-l);margin-bottom:.5rem;}
+    .bsp-genre{display:inline-block;font-size:.58rem;padding:.12rem .48rem;border-radius:999px;background:rgba(184,56,120,.1);color:var(--moss);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;}
+    .bsp-stars{display:flex;gap:.08rem;margin-bottom:.45rem;}
+    .bsp-star{font-size:.9rem;cursor:pointer;filter:grayscale(1) opacity(.2);transition:filter .12s;}
+    .bsp-star.lit{filter:grayscale(0) opacity(1);}
+    .bsp-date{font-size:.62rem;color:rgba(122,92,60,.4);margin-bottom:.6rem;}
+    .bsp-notes{width:100%;border:1px solid rgba(196,154,74,.15);border-radius:2px;padding:.35rem .5rem;font-size:.76rem;font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-mid);resize:none;background:rgba(245,232,204,.28);outline:none;min-height:46px;}
+    .bsp-notes:focus{border-color:var(--gold);}
+    .bsp-del{margin-top:.6rem;background:none;border:1px solid rgba(192,56,112,.2);border-radius:3px;padding:.28rem .8rem;font-size:.68rem;color:var(--burgundy);cursor:pointer;font-family:'Lato',sans-serif;width:100%;transition:background .18s;text-align:center;display:block;}
+    .bsp-del:hover{background:rgba(192,56,112,.1);}
+    /* View toggle */
+    .shelf-vt{display:flex;justify-content:flex-end;gap:.35rem;margin-bottom:.85rem;}
+    .svt-btn{background:none;border:1px solid rgba(196,154,74,.2);border-radius:3px;padding:.28rem .65rem;cursor:pointer;font-size:.7rem;color:var(--ink-l);transition:all .18s;font-family:'Lato',sans-serif;letter-spacing:.04em;}
+    .svt-btn.active,.svt-btn:hover{background:rgba(196,154,74,.12);color:var(--ink);border-color:rgba(196,154,74,.38);}
+
+    @media (max-width: 500px) {
       .form-row { flex-direction: column; }
-      .add-btn  { width: 100%; }
+      .add-btn { width: 100%; }
       .books-grid { grid-template-columns: 1fr; }
+      nav { padding: .8rem 1rem; }
+      .hp-hero { flex-direction: column; min-height: auto; padding: 2rem 1rem; }
+      .polaroid { width: 110px; }
+      .pol-left,.pol-right { transform: none; }
+      .hp-banner-flowers { display: none; }
     }
   </style>
 </head>
 <body>
 
-<div class="deco deco-1">📚</div>
-<div class="deco deco-2">🕯️</div>
-<div class="deco deco-3">🌿</div>
+<!-- ══════ WELCOME ══════ -->
+<div class="page active" id="page-welcome">
+  <div id="particles"></div>
+  <div class="glow-orb" style="position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(232,144,170,.1) 0%,transparent 65%);top:-200px;left:50%;transform:translateX(-50%);border-radius:50%;pointer-events:none;"></div>
+  <div class="glow-orb" style="position:absolute;width:480px;height:480px;background:radial-gradient(circle,rgba(192,56,112,.15) 0%,transparent 65%);bottom:-140px;right:5%;border-radius:50%;pointer-events:none;"></div>
 
-<header>
-  <div class="sparkles">✦ ✦ ✦</div>
-  <h1>my little <em>library</em></h1>
-  <p>a cozy corner for all your books</p>
-</header>
+  <!-- STICKER: Cherry blossom stamp top-right -->
+  <div class="stk stk-float" style="top:4%;right:3%;--dur:7s;--dly:0s;--r0:rotate(-9deg);--r1:rotate(4deg);">
+    <svg viewBox="0 0 120 82" width="115" height="79" xmlns="http://www.w3.org/2000/svg">
+      <defs><mask id="pm1"><rect width="120" height="82" fill="white"/><circle cy="3" r="3.2" fill="black" cx="7"/><circle cy="3" r="3.2" fill="black" cx="17"/><circle cy="3" r="3.2" fill="black" cx="27"/><circle cy="3" r="3.2" fill="black" cx="37"/><circle cy="3" r="3.2" fill="black" cx="47"/><circle cy="3" r="3.2" fill="black" cx="57"/><circle cy="3" r="3.2" fill="black" cx="67"/><circle cy="3" r="3.2" fill="black" cx="77"/><circle cy="3" r="3.2" fill="black" cx="87"/><circle cy="3" r="3.2" fill="black" cx="97"/><circle cy="3" r="3.2" fill="black" cx="107"/><circle cy="79" r="3.2" fill="black" cx="7"/><circle cy="79" r="3.2" fill="black" cx="17"/><circle cy="79" r="3.2" fill="black" cx="27"/><circle cy="79" r="3.2" fill="black" cx="37"/><circle cy="79" r="3.2" fill="black" cx="47"/><circle cy="79" r="3.2" fill="black" cx="57"/><circle cy="79" r="3.2" fill="black" cx="67"/><circle cy="79" r="3.2" fill="black" cx="77"/><circle cy="79" r="3.2" fill="black" cx="87"/><circle cy="79" r="3.2" fill="black" cx="97"/><circle cy="79" r="3.2" fill="black" cx="107"/><circle cx="3" r="3.2" fill="black" cy="13"/><circle cx="3" r="3.2" fill="black" cy="23"/><circle cx="3" r="3.2" fill="black" cy="33"/><circle cx="3" r="3.2" fill="black" cy="43"/><circle cx="3" r="3.2" fill="black" cy="53"/><circle cx="3" r="3.2" fill="black" cy="63"/><circle cx="117" r="3.2" fill="black" cy="13"/><circle cx="117" r="3.2" fill="black" cy="23"/><circle cx="117" r="3.2" fill="black" cy="33"/><circle cx="117" r="3.2" fill="black" cy="43"/><circle cx="117" r="3.2" fill="black" cy="53"/><circle cx="117" r="3.2" fill="black" cy="63"/></mask></defs>
+      <rect width="120" height="82" fill="white" mask="url(#pm1)"/>
+      <rect x="7" y="7" width="106" height="68" fill="#e0f0f8"/>
+      <path d="M18 70 Q46 52 63 27 Q81 10 102 7" stroke="#8b5e3c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M63 27 Q71 39 85 34" stroke="#8b5e3c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <circle cx="55" cy="22" r="7" fill="#f8c0d4"/><circle cx="66" cy="17" r="6.5" fill="#f5b0c8"/><circle cx="71" cy="29" r="6" fill="#f8c8d8"/><circle cx="59" cy="33" r="5.5" fill="#f5b8cc"/><circle cx="47" cy="27" r="5" fill="#f0a8c0"/><circle cx="61" cy="24" r="2.5" fill="#e06888"/>
+      <circle cx="87" cy="13" r="6" fill="#f8c0d4"/><circle cx="96" cy="10" r="5.5" fill="#f5b0c8"/><circle cx="100" cy="20" r="5.5" fill="#f0b8c8"/><circle cx="92" cy="24" r="5" fill="#f8c0d4"/><circle cx="83" cy="18" r="5" fill="#f5c4d4"/><circle cx="93" cy="16" r="2.2" fill="#e06080"/>
+      <ellipse cx="32" cy="46" rx="3" ry="4.5" fill="#f8b8cc" opacity=".7" transform="rotate(22 32 46)"/>
+      <ellipse cx="103" cy="48" rx="2.5" ry="4" fill="#f5c4d4" opacity=".65" transform="rotate(-14 103 48)"/>
+      <rect x="7" y="65" width="106" height="10" fill="rgba(255,255,255,.72)"/>
+      <text x="60" y="72.5" text-anchor="middle" font-size="5.5" font-family="serif" fill="#2a3880" font-weight="bold">日本郵便 · NIPPON 62</text>
+    </svg>
+  </div>
 
-<div class="stats-bar">
-  <div class="stat-chip">📖 <strong id="stat-read">0</strong> read</div>
-  <div class="stat-chip">🌸 <strong id="stat-reading">0</strong> in progress</div>
-  <div class="stat-chip">✨ <strong id="stat-wishlist">0</strong> on wishlist</div>
+  <!-- STICKER: Cassette tape bottom-right -->
+  <div class="stk stk-bounce" style="bottom:5%;right:3%;--dur:4.5s;--dly:0.5s;--rot:-8deg;">
+    <svg viewBox="0 0 145 92" width="134" height="85" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="143" height="90" rx="9" fill="#f8f4f0" stroke="#d8c0c4" stroke-width="1.5"/>
+      <rect x="5" y="5" width="135" height="82" rx="6" fill="none" stroke="#ece4e4" stroke-width="1"/>
+      <rect x="18" y="20" width="109" height="48" rx="6" fill="#1e1018" stroke="#150810" stroke-width="1"/>
+      <circle cx="50" cy="44" r="18" fill="#3a1820" stroke="#2a0810" stroke-width="1"/>
+      <circle cx="50" cy="44" r="11" fill="#585055"/>
+      <circle cx="50" cy="44" r="4.5" fill="#998" stroke="#776" stroke-width=".5"/>
+      <circle cx="50" cy="44" r="2" fill="#201018"/>
+      <line x1="50" y1="33" x2="50" y2="39" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="50" y1="49" x2="50" y2="55" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="39" y1="44" x2="45" y2="44" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="55" y1="44" x2="61" y2="44" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="95" cy="44" r="18" fill="#3a1820" stroke="#2a0810" stroke-width="1"/>
+      <circle cx="95" cy="44" r="11" fill="#585055"/>
+      <circle cx="95" cy="44" r="4.5" fill="#998" stroke="#776" stroke-width=".5"/>
+      <circle cx="95" cy="44" r="2" fill="#201018"/>
+      <line x1="95" y1="33" x2="95" y2="39" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="95" y1="49" x2="95" y2="55" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="84" y1="44" x2="90" y2="44" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="100" y1="44" x2="106" y2="44" stroke="#998" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M63 63 Q72 70 82 63" stroke="#302028" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <rect x="26" y="6" width="93" height="13" rx="2" fill="#d82068"/>
+      <text x="72" y="15" text-anchor="middle" font-size="6.5" font-family="Arial,sans-serif" fill="white" font-weight="bold" letter-spacing="1">♫ MY PLAYLIST ♫</text>
+      <text x="72" y="86" text-anchor="middle" font-size="5" font-family="Arial" fill="#b09098">SIDE A  ·  60 MIN</text>
+      <rect x="58" y="76" width="7" height="5" rx="2" fill="#d8c8cc"/><rect x="69" y="76" width="7" height="5" rx="2" fill="#d8c8cc"/><rect x="80" y="76" width="7" height="5" rx="2" fill="#d8c8cc"/>
+    </svg>
+  </div>
+
+  <!-- STICKER: HOT GIRLS READ BOOKS badge bottom-left -->
+  <div class="stk stk-pulse" style="bottom:7%;left:3%;--dur:3s;--dly:0.8s;--rot:6deg;">
+    <svg viewBox="0 0 90 90" width="86" height="86" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="45" r="42" fill="white" stroke="#c02858" stroke-width="3.5"/>
+      <circle cx="45" cy="45" r="36" fill="none" stroke="#f090b0" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <circle cx="45" cy="45" r="30" fill="#fff5f8"/>
+      <text x="18" y="36" font-size="10" fill="#e060a0">✦</text><text x="67" y="36" font-size="10" fill="#e060a0">✦</text>
+      <text x="15" y="58" font-size="8" fill="#f090b8">★</text><text x="69" y="58" font-size="8" fill="#f090b8">★</text>
+      <text x="45" y="27" text-anchor="middle" font-size="8.5" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">HOT GIRLS</text>
+      <text x="45" y="42" text-anchor="middle" font-size="12" font-family="Impact,Arial Black,sans-serif" fill="#22081a" font-weight="900">READ</text>
+      <text x="45" y="56" text-anchor="middle" font-size="8.5" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">BOOKS</text>
+      <text x="45" y="72" text-anchor="middle" font-size="16">📚</text>
+    </svg>
+  </div>
+
+  <!-- STICKER: Cut-out letter B top-left -->
+  <div class="stk stk-wiggle cutout" style="top:6%;left:4%;width:50px;height:54px;font-size:36px;background:#ff5fa0;color:white;border-radius:6px;--dur:2.2s;--dly:0s;--ra:-11deg;--rb:9deg;">B</div>
+
+  <!-- STICKER: Cut-out letter K mid-left -->
+  <div class="stk stk-float" style="top:40%;left:2.5%;--dur:5.5s;--dly:1.2s;--r0:rotate(8deg);--r1:rotate(-5deg);">
+    <div class="cutout" style="width:44px;height:48px;font-size:30px;background:#ffd000;color:#22081a;border-radius:5px;">K</div>
+  </div>
+
+  <div class="welcome-inner">
+    <div class="welcome-box">
+      <span class="cb cb-tl"></span><span class="cb cb-tr"></span>
+      <span class="cb cb-bl"></span><span class="cb cb-br"></span>
+      <div class="w-orn">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <h1>the <span class="g">little</span><br>library</h1>
+      <p class="w-sub">a sanctuary for readers &amp; dreamers</p>
+      <div class="w-div"><hr><span>✦ ✦ ✦</span><hr></div>
+      <div class="w-field">
+        <label class="w-label">your name</label>
+        <input class="w-input" id="inp-first" type="text" placeholder="first name…" autocomplete="given-name" />
+      </div>
+      <div class="w-field">
+        <label class="w-label">last name <span class="opt-tag">(optional)</span></label>
+        <input class="w-input" id="inp-last" type="text" placeholder="last name…" autocomplete="family-name" />
+      </div>
+      <div class="w-err" id="w-err"></div>
+      <button class="w-btn" onclick="enterLib()">enter the library</button>
+    </div>
+  </div>
 </div>
 
-<div class="tabs">
-  <button class="tab-btn active" data-tab="read">✓ read</button>
-  <button class="tab-btn" data-tab="reading">◎ reading</button>
-  <button class="tab-btn" data-tab="wishlist">♡ wishlist</button>
+<!-- ══════ NAV ══════ -->
+<nav id="main-nav" style="display:none">
+  <div class="nav-logo" onclick="goTo('home')">the <span class="g">little</span> library</div>
+  <div class="nav-links">
+    <button class="nav-btn active" data-view="home"     onclick="goTo('home')">home</button>
+    <a      class="nav-btn"        data-view="read"     href="read.html">read</a>
+    <button class="nav-btn"        data-view="reading"  onclick="goTo('reading')">reading</button>
+    <button class="nav-btn"        data-view="wishlist" onclick="goTo('wishlist')">wishlist</button>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- ══════ HOME ══════ -->
+<div class="page" id="page-home">
+  <!-- STICKER: Indonesia orchid stamp top-right -->
+  <div class="stk stk-float" style="top:2%;right:1%;--dur:8s;--dly:0s;--r0:rotate(-7deg);--r1:rotate(5deg);">
+    <svg viewBox="0 0 110 78" width="100" height="71" xmlns="http://www.w3.org/2000/svg">
+      <defs><mask id="pm2"><rect width="110" height="78" fill="white"/><circle cy="3" r="2.9" fill="black" cx="7"/><circle cy="3" r="2.9" fill="black" cx="16"/><circle cy="3" r="2.9" fill="black" cx="25"/><circle cy="3" r="2.9" fill="black" cx="34"/><circle cy="3" r="2.9" fill="black" cx="43"/><circle cy="3" r="2.9" fill="black" cx="52"/><circle cy="3" r="2.9" fill="black" cx="61"/><circle cy="3" r="2.9" fill="black" cx="70"/><circle cy="3" r="2.9" fill="black" cx="79"/><circle cy="3" r="2.9" fill="black" cx="88"/><circle cy="3" r="2.9" fill="black" cx="97"/><circle cy="3" r="2.9" fill="black" cx="106"/><circle cy="75" r="2.9" fill="black" cx="7"/><circle cy="75" r="2.9" fill="black" cx="16"/><circle cy="75" r="2.9" fill="black" cx="25"/><circle cy="75" r="2.9" fill="black" cx="34"/><circle cy="75" r="2.9" fill="black" cx="43"/><circle cy="75" r="2.9" fill="black" cx="52"/><circle cy="75" r="2.9" fill="black" cx="61"/><circle cy="75" r="2.9" fill="black" cx="70"/><circle cy="75" r="2.9" fill="black" cx="79"/><circle cy="75" r="2.9" fill="black" cx="88"/><circle cy="75" r="2.9" fill="black" cx="97"/><circle cy="75" r="2.9" fill="black" cx="106"/><circle cx="3" r="2.9" fill="black" cy="12"/><circle cx="3" r="2.9" fill="black" cy="21"/><circle cx="3" r="2.9" fill="black" cy="30"/><circle cx="3" r="2.9" fill="black" cy="39"/><circle cx="3" r="2.9" fill="black" cy="48"/><circle cx="3" r="2.9" fill="black" cy="57"/><circle cx="3" r="2.9" fill="black" cy="66"/><circle cx="107" r="2.9" fill="black" cy="12"/><circle cx="107" r="2.9" fill="black" cy="21"/><circle cx="107" r="2.9" fill="black" cy="30"/><circle cx="107" r="2.9" fill="black" cy="39"/><circle cx="107" r="2.9" fill="black" cy="48"/><circle cx="107" r="2.9" fill="black" cy="57"/><circle cx="107" r="2.9" fill="black" cy="66"/></mask></defs>
+      <rect width="110" height="78" fill="white" mask="url(#pm2)"/>
+      <rect x="6" y="6" width="98" height="66" fill="#f0f4e8"/>
+      <ellipse cx="55" cy="36" rx="14" ry="22" fill="#d070b0" opacity=".9"/>
+      <ellipse cx="55" cy="36" rx="7" ry="10" fill="#e8a0d0"/>
+      <ellipse cx="35" cy="32" rx="12" ry="9" fill="#c060a8" transform="rotate(-30 35 32)"/>
+      <ellipse cx="75" cy="32" rx="12" ry="9" fill="#c060a8" transform="rotate(30 75 32)"/>
+      <ellipse cx="38" cy="50" rx="11" ry="8" fill="#b85098" transform="rotate(20 38 50)"/>
+      <ellipse cx="72" cy="50" rx="11" ry="8" fill="#b85098" transform="rotate(-20 72 50)"/>
+      <circle cx="55" cy="34" r="4" fill="#f5d000"/>
+      <circle cx="55" cy="34" r="2" fill="#e09000"/>
+      <path d="M20 65 Q38 50 55 20 Q72 50 90 65" stroke="#5a8030" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M30 68 Q40 58 35 48" stroke="#5a8030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M80 68 Q70 58 75 48" stroke="#5a8030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="6" y="62" width="98" height="10" fill="rgba(255,255,255,.8)"/>
+      <text x="55" y="69.5" text-anchor="middle" font-size="5" font-family="serif" fill="#204870" font-weight="bold">INDONESIA · ORKID 500</text>
+    </svg>
+  </div>
+
+  <!-- STICKER: BOOK CLUB oval badge left -->
+  <div class="stk stk-pulse" style="top:25%;left:0.5%;--dur:3.5s;--dly:0.6s;--rot:-6deg;">
+    <svg viewBox="0 0 100 64" width="92" height="59" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="32" rx="48" ry="30" fill="#2a7a38" stroke="white" stroke-width="2"/>
+      <ellipse cx="50" cy="32" rx="41" ry="24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.2" stroke-dasharray="3,2.5"/>
+      <text x="50" y="25" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="white" font-weight="900" letter-spacing="2">BOOK</text>
+      <text x="50" y="38" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#a0f080" font-weight="900" letter-spacing="2">CLUB</text>
+      <text x="50" y="50" text-anchor="middle" font-size="7" fill="#c8f0b0">✦ est. 2024 ✦</text>
+    </svg>
+  </div>
+
+  <!-- STICKER: literally obsessed text mid-right -->
+  <div class="stk stk-shake" style="bottom:20%;right:0.8%;--dur:3s;--dly:1s;">
+    <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 10px;font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:#b87800;line-height:1.4;text-align:center;max-width:130px;box-shadow:2px 3px 8px rgba(0,0,0,0.18);transform:rotate(5deg);">literally obsessed<br><span style="font-size:10px;color:#e87830;">with books 📖</span></div>
+  </div>
+
+  <!-- STICKER: Cut-out O bottom-left -->
+  <div class="stk stk-wiggle cutout" style="bottom:8%;left:1%;width:46px;height:50px;font-size:32px;background:#c82878;color:white;border-radius:5px;--dur:2s;--dly:0.4s;--ra:-10deg;--rb:8deg;">O</div>
+
+  <!-- STICKER: Cut-out R bottom-left (offset) -->
+  <div class="stk stk-wiggle cutout" style="bottom:8%;left:5%;width:46px;height:50px;font-size:32px;background:#ff8c00;color:white;border-radius:5px;--dur:2.5s;--dly:0.9s;--ra:8deg;--rb:-10deg;">R</div>
+
+  <!-- HERO -->
+  <section class="hp-hero">
+    <!-- Left polaroid: stacked books -->
+    <div class="polaroid pol-left">
+      <div class="pol-img">
+        <svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+          <rect x="20" y="80" width="90" height="12" rx="2" fill="#e86090" transform="rotate(-3 65 86)"/>
+          <rect x="22" y="66" width="86" height="13" rx="2" fill="#f5b0c8" transform="rotate(2 65 73)"/>
+          <rect x="18" y="52" width="94" height="13" rx="2" fill="#c03870" transform="rotate(-2 65 59)"/>
+          <rect x="24" y="38" width="82" height="13" rx="2" fill="#ff8c00" transform="rotate(3 65 45)"/>
+          <rect x="20" y="24" width="90" height="13" rx="2" fill="#d070b0" transform="rotate(-1 65 31)"/>
+          <rect x="22" y="10" width="86" height="13" rx="2" fill="#e05070" transform="rotate(2 65 17)"/>
+          <!-- spines -->
+          <rect x="20" y="80" width="8" height="12" rx="1" fill="#c04878" transform="rotate(-3 24 86)"/>
+          <rect x="22" y="66" width="7" height="13" rx="1" fill="#e898c0" transform="rotate(2 25 73)"/>
+          <rect x="18" y="52" width="8" height="13" rx="1" fill="#901850" transform="rotate(-2 22 59)"/>
+          <rect x="24" y="38" width="7" height="13" rx="1" fill="#c06800" transform="rotate(3 27 45)"/>
+          <rect x="20" y="24" width="8" height="13" rx="1" fill="#a050a0" transform="rotate(-1 24 31)"/>
+          <rect x="22" y="10" width="7" height="13" rx="1" fill="#b03858" transform="rotate(2 25 17)"/>
+          <!-- table shadow -->
+          <ellipse cx="65" cy="96" rx="45" ry="4" fill="rgba(0,0,0,.1)"/>
+        </svg>
+      </div>
+      <span class="pol-cap">my collection</span>
+    </div>
+
+    <!-- Center -->
+    <div class="hp-center">
+      <span class="hp-bow">🎀</span>
+      <h1 class="hp-title">the little<em>library</em></h1>
+      <p class="hp-tagline" id="day-note">your reading sanctuary</p>
+      <span class="hp-uname">hello, <span id="greeting-name">reader</span></span>
+    </div>
+
+    <!-- Right polaroid: open book with petals -->
+    <div class="polaroid pol-right">
+      <div class="pol-img">
+        <svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+          <!-- open book pages -->
+          <path d="M20 40 Q65 28 65 100 Q65 28 110 40 L110 105 Q65 90 65 100 Q65 90 20 105 Z" fill="white" stroke="#f0d0dc" stroke-width="1.5"/>
+          <path d="M65 28 L65 100" stroke="#e0b8c8" stroke-width="1" stroke-dasharray="3,2"/>
+          <!-- left page lines -->
+          <line x1="28" y1="52" x2="60" y2="48" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="28" y1="60" x2="60" y2="57" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="28" y1="68" x2="60" y2="66" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="28" y1="76" x2="60" y2="75" stroke="#f0c8d8" stroke-width="1.2"/>
+          <!-- right page lines -->
+          <line x1="70" y1="48" x2="102" y2="52" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="70" y1="57" x2="102" y2="60" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="70" y1="66" x2="102" y2="68" stroke="#f0c8d8" stroke-width="1.2"/>
+          <line x1="70" y1="75" x2="102" y2="76" stroke="#f0c8d8" stroke-width="1.2"/>
+          <!-- flowers on book -->
+          <circle cx="42" cy="38" r="8" fill="#f8c0d4"/><circle cx="42" cy="38" r="4" fill="#f590b8"/><circle cx="42" cy="38" r="2" fill="#c02860"/>
+          <circle cx="88" cy="36" r="7" fill="#ffd0e0"/><circle cx="88" cy="36" r="3.5" fill="#f8a0c0"/><circle cx="88" cy="36" r="1.8" fill="#d04070"/>
+          <circle cx="65" cy="20" r="6" fill="#f8b0c8"/><circle cx="65" cy="20" r="3" fill="#f080a0"/><circle cx="65" cy="20" r="1.5" fill="#c03060"/>
+          <!-- petals -->
+          <ellipse cx="34" cy="38" rx="5" ry="3" fill="#f8c0d4" transform="rotate(0 34 38)"/>
+          <ellipse cx="50" cy="38" rx="5" ry="3" fill="#f8c0d4" transform="rotate(0 50 38)"/>
+          <ellipse cx="42" cy="30" rx="3" ry="5" fill="#f8c0d4" transform="rotate(0 42 30)"/>
+          <ellipse cx="42" cy="46" rx="3" ry="5" fill="#f8c0d4" transform="rotate(0 42 46)"/>
+        </svg>
+      </div>
+      <span class="pol-cap">reading nook</span>
+    </div>
+  </section>
+
+  <!-- PINK BANNER -->
+  <section class="hp-banner">
+    <svg class="hp-banner-flowers" viewBox="0 0 80 60" width="80" height="60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 55 Q20 35 18 20" stroke="#f0a0c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M35 55 Q36 30 30 15" stroke="#e890b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M50 55 Q52 28 48 10" stroke="#f0a0c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="18" cy="18" rx="5" ry="10" fill="#ffb8d0" transform="rotate(-15 18 18)"/>
+      <ellipse cx="18" cy="18" rx="5" ry="10" fill="#ffa0c0" transform="rotate(15 18 18)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="10" fill="#f8c0d8" transform="rotate(-10 30 12)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="10" fill="#f5a8cc" transform="rotate(20 30 12)"/>
+      <ellipse cx="48" cy="8" rx="5" ry="10" fill="#ffc0d8" transform="rotate(-20 48 8)"/>
+      <ellipse cx="48" cy="8" rx="5" ry="10" fill="#f0a8c8" transform="rotate(10 48 8)"/>
+      <circle cx="18" cy="18" r="3" fill="#f0e050"/><circle cx="30" cy="12" r="3" fill="#f0e050"/><circle cx="48" cy="8" r="3" fill="#f0e050"/>
+    </svg>
+    <div class="hp-banner-txt">
+      <p>we invite you to dive into</p>
+      <p>your <em>romanticized reading life</em> ♡</p>
+    </div>
+    <svg class="hp-banner-flowers" viewBox="0 0 80 60" width="80" height="60" xmlns="http://www.w3.org/2000/svg" style="transform:scaleX(-1)">
+      <path d="M20 55 Q20 35 18 20" stroke="#f0a0c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M35 55 Q36 30 30 15" stroke="#e890b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M50 55 Q52 28 48 10" stroke="#f0a0c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="18" cy="18" rx="5" ry="10" fill="#ffb8d0" transform="rotate(-15 18 18)"/>
+      <ellipse cx="18" cy="18" rx="5" ry="10" fill="#ffa0c0" transform="rotate(15 18 18)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="10" fill="#f8c0d8" transform="rotate(-10 30 12)"/>
+      <ellipse cx="30" cy="12" rx="5" ry="10" fill="#f5a8cc" transform="rotate(20 30 12)"/>
+      <ellipse cx="48" cy="8" rx="5" ry="10" fill="#ffc0d8" transform="rotate(-20 48 8)"/>
+      <ellipse cx="48" cy="8" rx="5" ry="10" fill="#f0a8c8" transform="rotate(10 48 8)"/>
+      <circle cx="18" cy="18" r="3" fill="#f0e050"/><circle cx="30" cy="12" r="3" fill="#f0e050"/><circle cx="48" cy="8" r="3" fill="#f0e050"/>
+    </svg>
+  </section>
+
+  <!-- STATS GRID -->
+  <section class="hp-grid">
+    <div class="hp-card" onclick="goTo('read')">
+      <svg class="hp-card-art" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <rect x="22" y="70" width="66" height="10" rx="2" fill="#e86090"/>
+        <rect x="24" y="57" width="62" height="11" rx="2" fill="#f5b0c8"/>
+        <rect x="20" y="44" width="70" height="12" rx="2" fill="#c03870"/>
+        <rect x="24" y="31" width="62" height="12" rx="2" fill="#d070b0"/>
+        <rect x="22" y="18" width="66" height="12" rx="2" fill="#e05070"/>
+        <circle cx="78" cy="28" r="18" fill="#fff2f7" stroke="#e86090" stroke-width="2"/>
+        <polyline points="68,28 74,35 89,20" stroke="#c03870" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="hp-card-num" id="hs-read">0</div>
+      <p class="hp-card-lbl">books read</p>
+    </div>
+    <div class="hp-card" onclick="goTo('reading')">
+      <svg class="hp-card-art" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 25 Q55 15 55 90 Q55 15 95 25 L95 90 Q55 78 55 90 Q55 78 15 90 Z" fill="white" stroke="#f0c0d4" stroke-width="2"/>
+        <path d="M55 15 L55 90" stroke="#e0b0c8" stroke-width="1.2" stroke-dasharray="3,2"/>
+        <line x1="22" y1="40" x2="50" y2="37" stroke="#f0c8d8" stroke-width="1.5"/><line x1="22" y1="50" x2="50" y2="48" stroke="#f0c8d8" stroke-width="1.5"/><line x1="22" y1="60" x2="50" y2="59" stroke="#f0c8d8" stroke-width="1.5"/>
+        <line x1="60" y1="37" x2="88" y2="40" stroke="#f0c8d8" stroke-width="1.5"/><line x1="60" y1="48" x2="88" y2="50" stroke="#f0c8d8" stroke-width="1.5"/><line x1="60" y1="59" x2="88" y2="60" stroke="#f0c8d8" stroke-width="1.5"/>
+        <circle cx="55" cy="12" r="6" fill="#f8c0d4"/><circle cx="55" cy="12" r="3" fill="#e060a0"/>
+      </svg>
+      <div class="hp-card-num" id="hs-reading">0</div>
+      <p class="hp-card-lbl">currently reading</p>
+    </div>
+    <div class="hp-card" onclick="goTo('wishlist')">
+      <svg class="hp-card-art" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M55 90 L28 66 Q10 52 22 36 Q30 24 44 28 Q50 30 55 36 Q60 30 66 28 Q80 24 88 36 Q100 52 82 66 Z" fill="#f8c0d4" stroke="#e06090" stroke-width="2"/>
+        <path d="M55 80 L33 60 Q20 48 28 36 Q34 28 44 32 Q50 35 55 42 Q60 35 66 32 Q76 28 82 36 Q90 48 77 60 Z" fill="#f590b8"/>
+        <path d="M55 68 L40 55 Q32 46 38 38 Q43 32 50 36 Q53 38 55 42 Q57 38 60 36 Q67 32 72 38 Q78 46 70 55 Z" fill="#e06090"/>
+        <circle cx="55" cy="55" r="8" fill="#fff2f7" opacity=".6"/>
+      </svg>
+      <div class="hp-card-num" id="hs-wishlist">0</div>
+      <p class="hp-card-lbl">on my wishlist</p>
+    </div>
+    <div class="hp-card" onclick="goTo('reading')">
+      <svg class="hp-card-art" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M42 15 L42 80 L55 70 L68 80 L68 15 Z" fill="#f5b0c8" stroke="#e06090" stroke-width="2"/>
+        <path d="M42 15 L68 15" stroke="#c03870" stroke-width="2"/>
+        <line x1="48" y1="30" x2="62" y2="30" stroke="#e890aa" stroke-width="1.5"/><line x1="48" y1="40" x2="62" y2="40" stroke="#e890aa" stroke-width="1.5"/><line x1="48" y1="50" x2="62" y2="50" stroke="#e890aa" stroke-width="1.5"/>
+        <path d="M70 60 Q80 55 88 62 Q96 70 88 80 L70 95 L52 80 Q44 70 52 62 Q60 55 70 60 Z" fill="#ffe8f0" stroke="#f090b8" stroke-width="1.5"/>
+        <text x="70" y="82" text-anchor="middle" font-size="14" fill="#c03870">♡</text>
+      </svg>
+      <p class="hp-card-lbl" style="margin-top:.5rem;font-size:.88rem;color:var(--burgundy);font-style:italic;">keep reading →</p>
+    </div>
+  </section>
+
+  <!-- FLORAL QUOTE + CURRENTLY READING -->
+  <section class="hp-floral">
+    <div class="q-section-inner">
+      <span class="hp-orn">✦ words worth keeping ✦</span>
+      <div class="open-book">
+        <span class="q-mark">"</span>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-author" id="q-author"></div>
+      </div>
+      <div class="q-dots" id="q-dots"></div>
+    </div>
+    <div class="curr-section">
+      <div class="sec-eye">currently reading</div>
+      <div id="curr-wrap"></div>
+    </div>
+    <p class="hp-bye">happy reading ♡</p>
+  </section>
 </div>
 
-<main>
-
-  <!-- READ SHELF -->
-  <div class="shelf shelf-read active" id="shelf-read">
-    <div class="add-form">
-      <h2>add a book you've read</h2>
-      <div class="form-row">
-        <div class="form-group" style="flex:2; min-width:180px;">
-          <label>title</label>
-          <input id="read-title" type="text" placeholder="book title…" />
-        </div>
-        <div class="form-group" style="flex:1.5;">
-          <label>author</label>
-          <input id="read-author" type="text" placeholder="author name…" />
-        </div>
-        <div class="form-group">
-          <label>genre</label>
-          <select id="read-genre">
-            <option value="">— genre —</option>
-            <option>fiction</option>
-            <option>fantasy</option>
-            <option>sci-fi</option>
-            <option>romance</option>
-            <option>thriller</option>
-            <option>mystery</option>
-            <option>non-fiction</option>
-            <option>poetry</option>
-            <option>classics</option>
-            <option>other</option>
-          </select>
-        </div>
-        <button class="add-btn" onclick="addBook('read')">+ add</button>
-      </div>
-    </div>
-    <div class="books-grid" id="grid-read"></div>
-    <div class="empty-state" id="empty-read">
-      <span class="empty-icon">🍵</span>
-      <p>your read shelf is empty — what did you finish?</p>
-    </div>
+<!-- ══════ LIBRARY ══════ -->
+<div class="page" id="page-library">
+  <!-- STICKER: HOT GIRLS READ BOOKS spinning badge top-right -->
+  <div class="stk stk-spin" style="top:1%;right:0.8%;--rot:-12deg;">
+    <svg viewBox="0 0 88 88" width="82" height="82" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="44" cy="44" r="41" fill="white" stroke="#c02858" stroke-width="3"/>
+      <circle cx="44" cy="44" r="35" fill="none" stroke="#f090b0" stroke-width="1.2" stroke-dasharray="3.5,3"/>
+      <circle cx="44" cy="44" r="29" fill="#fff5f8"/>
+      <text x="13" y="33" font-size="9" fill="#e060a0">✦</text><text x="63" y="33" font-size="9" fill="#e060a0">✦</text>
+      <text x="44" y="26" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">HOT GIRLS</text>
+      <text x="44" y="41" text-anchor="middle" font-size="11" font-family="Impact,Arial Black,sans-serif" fill="#22081a" font-weight="900">READ</text>
+      <text x="44" y="54" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">BOOKS</text>
+      <text x="44" y="68" text-anchor="middle" font-size="14">📚</text>
+    </svg>
   </div>
 
-  <!-- READING SHELF -->
-  <div class="shelf shelf-reading" id="shelf-reading">
-    <div class="add-form">
-      <h2>add a book you're reading</h2>
-      <div class="form-row">
-        <div class="form-group" style="flex:2; min-width:180px;">
-          <label>title</label>
-          <input id="reading-title" type="text" placeholder="book title…" />
-        </div>
-        <div class="form-group" style="flex:1.5;">
-          <label>author</label>
-          <input id="reading-author" type="text" placeholder="author name…" />
-        </div>
-        <div class="form-group">
-          <label>total pages</label>
-          <input id="reading-pages" type="number" min="1" placeholder="e.g. 320" />
-        </div>
-        <div class="form-group">
-          <label>genre</label>
-          <select id="reading-genre">
-            <option value="">— genre —</option>
-            <option>fiction</option>
-            <option>fantasy</option>
-            <option>sci-fi</option>
-            <option>romance</option>
-            <option>thriller</option>
-            <option>mystery</option>
-            <option>non-fiction</option>
-            <option>poetry</option>
-            <option>classics</option>
-            <option>other</option>
-          </select>
-        </div>
-        <button class="add-btn" onclick="addBook('reading')">+ add</button>
-      </div>
-    </div>
-    <div class="books-grid" id="grid-reading"></div>
-    <div class="empty-state" id="empty-reading">
-      <span class="empty-icon">🌙</span>
-      <p>nothing in progress — start a new adventure</p>
-    </div>
+  <!-- STICKER: Small orchid stamp bottom-right -->
+  <div class="stk stk-float" style="bottom:8%;right:0.6%;--dur:6s;--dly:1.2s;--r0:rotate(6deg);--r1:rotate(-4deg);">
+    <svg viewBox="0 0 90 66" width="82" height="60" xmlns="http://www.w3.org/2000/svg">
+      <defs><mask id="pm3"><rect width="90" height="66" fill="white"/><circle cy="2.8" r="2.5" fill="black" cx="7"/><circle cy="2.8" r="2.5" fill="black" cx="15.5"/><circle cy="2.8" r="2.5" fill="black" cx="24"/><circle cy="2.8" r="2.5" fill="black" cx="32.5"/><circle cy="2.8" r="2.5" fill="black" cx="41"/><circle cy="2.8" r="2.5" fill="black" cx="49.5"/><circle cy="2.8" r="2.5" fill="black" cx="58"/><circle cy="2.8" r="2.5" fill="black" cx="66.5"/><circle cy="2.8" r="2.5" fill="black" cx="75"/><circle cy="2.8" r="2.5" fill="black" cx="83.5"/><circle cy="63.2" r="2.5" fill="black" cx="7"/><circle cy="63.2" r="2.5" fill="black" cx="15.5"/><circle cy="63.2" r="2.5" fill="black" cx="24"/><circle cy="63.2" r="2.5" fill="black" cx="32.5"/><circle cy="63.2" r="2.5" fill="black" cx="41"/><circle cy="63.2" r="2.5" fill="black" cx="49.5"/><circle cy="63.2" r="2.5" fill="black" cx="58"/><circle cy="63.2" r="2.5" fill="black" cx="66.5"/><circle cy="63.2" r="2.5" fill="black" cx="75"/><circle cy="63.2" r="2.5" fill="black" cx="83.5"/><circle cx="2.8" r="2.5" fill="black" cy="11"/><circle cx="2.8" r="2.5" fill="black" cy="19.5"/><circle cx="2.8" r="2.5" fill="black" cy="28"/><circle cx="2.8" r="2.5" fill="black" cy="36.5"/><circle cx="2.8" r="2.5" fill="black" cy="45"/><circle cx="2.8" r="2.5" fill="black" cy="53.5"/><circle cx="87.2" r="2.5" fill="black" cy="11"/><circle cx="87.2" r="2.5" fill="black" cy="19.5"/><circle cx="87.2" r="2.5" fill="black" cy="28"/><circle cx="87.2" r="2.5" fill="black" cy="36.5"/><circle cx="87.2" r="2.5" fill="black" cy="45"/><circle cx="87.2" r="2.5" fill="black" cy="53.5"/></mask></defs>
+      <rect width="90" height="66" fill="white" mask="url(#pm3)"/>
+      <rect x="5" y="5" width="80" height="56" fill="#f5f0e8"/>
+      <ellipse cx="45" cy="30" rx="11" ry="17" fill="#e080c0" opacity=".9"/>
+      <ellipse cx="45" cy="30" rx="5.5" ry="8" fill="#f0b8dc"/>
+      <ellipse cx="29" cy="27" rx="9" ry="7" fill="#cc6ab0" transform="rotate(-28 29 27)"/>
+      <ellipse cx="61" cy="27" rx="9" ry="7" fill="#cc6ab0" transform="rotate(28 61 27)"/>
+      <ellipse cx="31" cy="41" rx="8" ry="6" fill="#be5aa0" transform="rotate(18 31 41)"/>
+      <ellipse cx="59" cy="41" rx="8" ry="6" fill="#be5aa0" transform="rotate(-18 59 41)"/>
+      <circle cx="45" cy="28" r="3" fill="#f5d000"/><circle cx="45" cy="28" r="1.5" fill="#e09000"/>
+      <path d="M16 54 Q30 42 45 16 Q60 42 74 54" stroke="#4a7028" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="5" y="52" width="80" height="9" fill="rgba(255,255,255,.82)"/>
+      <text x="45" y="58.5" text-anchor="middle" font-size="4.5" font-family="serif" fill="#204870" font-weight="bold">INDONESIA · 1000</text>
+    </svg>
   </div>
 
-  <!-- WISHLIST SHELF -->
-  <div class="shelf shelf-wishlist" id="shelf-wishlist">
-    <div class="add-form">
-      <h2>add a book you want to read</h2>
-      <div class="form-row">
-        <div class="form-group" style="flex:2; min-width:180px;">
-          <label>title</label>
-          <input id="wishlist-title" type="text" placeholder="book title…" />
-        </div>
-        <div class="form-group" style="flex:1.5;">
-          <label>author</label>
-          <input id="wishlist-author" type="text" placeholder="author name…" />
-        </div>
-        <div class="form-group">
-          <label>genre</label>
-          <select id="wishlist-genre">
-            <option value="">— genre —</option>
-            <option>fiction</option>
-            <option>fantasy</option>
-            <option>sci-fi</option>
-            <option>romance</option>
-            <option>thriller</option>
-            <option>mystery</option>
-            <option>non-fiction</option>
-            <option>poetry</option>
-            <option>classics</option>
-            <option>other</option>
-          </select>
-        </div>
-        <button class="add-btn" onclick="addBook('wishlist')">+ add</button>
-      </div>
+  <!-- STICKER: Cut-out S left -->
+  <div class="stk stk-wiggle cutout" style="top:42%;left:0.4%;width:44px;height:48px;font-size:30px;background:#7030c0;color:white;border-radius:5px;--dur:2.3s;--dly:0.5s;--ra:-9deg;--rb:9deg;">S</div>
+
+  <div class="library-inner">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="read">read</button>
+      <button class="tab-btn" data-tab="reading">reading</button>
+      <button class="tab-btn" data-tab="wishlist">wishlist</button>
     </div>
-    <div class="books-grid" id="grid-wishlist"></div>
-    <div class="empty-state" id="empty-wishlist">
-      <span class="empty-icon">🌷</span>
-      <p>your wishlist awaits — which book calls to you?</p>
+
+    <!-- READ -->
+    <div class="shelf shelf-read active" id="shelf-read">
+      <div class="add-form">
+        <h2>add a book you've finished</h2>
+        <div class="form-row">
+          <div class="fg" style="flex:2;min-width:148px;"><label>title</label><input id="read-title" type="text" placeholder="book title…"/></div>
+          <div class="fg" style="flex:1.4;"><label>author</label><input id="read-author" type="text" placeholder="author…"/></div>
+          <div class="fg"><label>genre</label>
+            <select id="read-genre"><option value="">— genre —</option><option>fiction</option><option>fantasy</option><option>sci-fi</option><option>romance</option><option>thriller</option><option>mystery</option><option>non-fiction</option><option>poetry</option><option>classics</option><option>other</option></select>
+          </div>
+          <button class="add-btn" onclick="addBook('read')">+ add</button>
+        </div>
+        <div class="cover-pick-row"><span class="cover-pick-label">cover</span><div class="cover-opts" id="cp-read"></div></div>
+      </div>
+      <div class="shelf-vt">
+        <button class="svt-btn active" id="svt-shelf" onclick="setReadView('shelf')">⊟ shelf</button>
+        <button class="svt-btn" id="svt-grid" onclick="setReadView('grid')">⊞ grid</button>
+      </div>
+      <div id="grid-read"></div>
+      <div class="empty-state" id="empty-read"><span class="empty-icon">🍵</span><p>your read shelf is empty</p></div>
+    </div>
+
+    <!-- READING -->
+    <div class="shelf shelf-reading" id="shelf-reading">
+      <div class="add-form">
+        <h2>add a book you're reading now</h2>
+        <div class="form-row">
+          <div class="fg" style="flex:2;min-width:148px;"><label>title</label><input id="reading-title" type="text" placeholder="book title…"/></div>
+          <div class="fg" style="flex:1.4;"><label>author</label><input id="reading-author" type="text" placeholder="author…"/></div>
+          <div class="fg" style="min-width:86px;"><label>total pages</label><input id="reading-pages" type="number" min="1" placeholder="e.g. 320"/></div>
+          <div class="fg"><label>genre</label>
+            <select id="reading-genre"><option value="">— genre —</option><option>fiction</option><option>fantasy</option><option>sci-fi</option><option>romance</option><option>thriller</option><option>mystery</option><option>non-fiction</option><option>poetry</option><option>classics</option><option>other</option></select>
+          </div>
+          <button class="add-btn" onclick="addBook('reading')">+ add</button>
+        </div>
+        <div class="cover-pick-row"><span class="cover-pick-label">cover</span><div class="cover-opts" id="cp-reading"></div></div>
+      </div>
+      <div class="books-grid" id="grid-reading"></div>
+      <div class="empty-state" id="empty-reading"><span class="empty-icon">🕯️</span><p>nothing in progress yet</p></div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div class="shelf shelf-wishlist" id="shelf-wishlist">
+      <div class="add-form">
+        <h2>add a book you want to read</h2>
+        <div class="form-row">
+          <div class="fg" style="flex:2;min-width:148px;"><label>title</label><input id="wishlist-title" type="text" placeholder="book title…"/></div>
+          <div class="fg" style="flex:1.4;"><label>author</label><input id="wishlist-author" type="text" placeholder="author…"/></div>
+          <div class="fg"><label>genre</label>
+            <select id="wishlist-genre"><option value="">— genre —</option><option>fiction</option><option>fantasy</option><option>sci-fi</option><option>romance</option><option>thriller</option><option>mystery</option><option>non-fiction</option><option>poetry</option><option>classics</option><option>other</option></select>
+          </div>
+          <button class="add-btn" onclick="addBook('wishlist')">+ add</button>
+        </div>
+        <div class="cover-pick-row"><span class="cover-pick-label">cover</span><div class="cover-opts" id="cp-wishlist"></div></div>
+      </div>
+      <div class="books-grid" id="grid-wishlist"></div>
+      <div class="empty-state" id="empty-wishlist"><span class="empty-icon">🌿</span><p>your wishlist awaits</p></div>
     </div>
   </div>
+</div>
 
-</main>
+<div id="bshelf-popup"></div>
 
 <script>
-  const EMOJIS = {
-    fiction: '📖', fantasy: '🔮', 'sci-fi': '🚀', romance: '🌹',
-    thriller: '🌑', mystery: '🕵️', 'non-fiction': '📰', poetry: '🌸',
-    classics: '🏛️', other: '📚', '': '📓'
-  };
+const QUOTES = [
+  { t: "A reader lives a thousand lives before he dies. The man who never reads lives only one.", a: "George R.R. Martin" },
+  { t: "There is no friend as loyal as a book.", a: "Ernest Hemingway" },
+  { t: "One must always be careful of books, and what is inside them, for words have the power to change us.", a: "Cassandra Clare" },
+  { t: "I do believe something very magical can happen when you read a good book.", a: "J.K. Rowling" },
+  { t: "Books are a uniquely portable magic.", a: "Stephen King" },
+  { t: "A book is a dream that you hold in your hands.", a: "Neil Gaiman" },
+  { t: "Reading is dreaming with open eyes.", a: "Anissa Trisdianty" },
+  { t: "She is too fond of books, and it has turned her brain.", a: "Louisa May Alcott" },
+  { t: "If you only read the books that everyone else is reading, you can only think what everyone else is thinking.", a: "Haruki Murakami" },
+];
 
-  const GENRE_COLORS = {
-    fiction: '#f0e8e0', fantasy: '#ece5f5', 'sci-fi': '#dde8f5',
-    romance: '#f5dde8', thriller: '#e5e5e5', mystery: '#e0e0d8',
-    'non-fiction': '#e8f0e8', poetry: '#f5e8f0', classics: '#f0ece0',
-    other: '#f0ece8', '': '#f0ece8'
-  };
+const EMOJIS = { fiction:'📖', fantasy:'🔮', 'sci-fi':'🚀', romance:'🌹', thriller:'🌑', mystery:'🕵️', 'non-fiction':'📰', poetry:'🌸', classics:'🏛️', other:'📚', '':'📓' };
 
-  let data = JSON.parse(localStorage.getItem('myLibrary') || '{"read":[],"reading":[],"wishlist":[]}');
+// Book cover colour presets
+const COVERS = [
+  { id:'hotpink',  c:'#e0306a', s:'#a01848' },
+  { id:'rose',     c:'#c83878', s:'#8a1850' },
+  { id:'blush',    c:'#e87898', s:'#c04870' },
+  { id:'mauve',    c:'#b85880', s:'#804060' },
+  { id:'berry',    c:'#9a1858', s:'#680838' },
+  { id:'coral',    c:'#e85878', s:'#c03858' },
+  { id:'magenta',  c:'#cc2888', s:'#901060' },
+  { id:'dusty',    c:'#d480a0', s:'#a05878' },
+  { id:'ballet',   c:'#e8a8c0', s:'#c07898' },
+  { id:'wine',     c:'#8a1848', s:'#5a0828' },
+];
 
-  function save() {
-    localStorage.setItem('myLibrary', JSON.stringify(data));
-    updateStats();
+// Per-shelf currently selected cover in add form
+const selCover = { read: 'hotpink', reading: 'hotpink', wishlist: 'hotpink' };
+
+let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let qIdx = 0, qTimer;
+let readView = 'shelf';
+let popupBookId = null;
+
+/* ── particles ── */
+(function() {
+  const wrap = document.getElementById('particles');
+  const colors = ['#f5c0d4','#f090b8','#e860a0','#f5a0c8','#ffd0e8','#ffffff','#ffb8d8'];
+  for (let i = 0; i < 22; i++) {
+    const d = document.createElement('div');
+    const sz = Math.random() * 2.5 + 0.8;
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    d.className = 'pt';
+    d.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${Math.random()*35}%;background:${col};--dur:${7+Math.random()*9}s;--dly:${Math.random()*8}s;`;
+    wrap.appendChild(d);
   }
+})();
 
-  function updateStats() {
-    document.getElementById('stat-read').textContent     = data.read.length;
-    document.getElementById('stat-reading').textContent  = data.reading.length;
-    document.getElementById('stat-wishlist').textContent = data.wishlist.length;
-  }
-
-  function addBook(shelf) {
-    const title  = document.getElementById(`${shelf}-title`).value.trim();
-    const author = document.getElementById(`${shelf}-author`).value.trim();
-    const genre  = document.getElementById(`${shelf}-genre`).value;
-    if (!title) { document.getElementById(`${shelf}-title`).focus(); return; }
-
-    const book = { id: Date.now(), title, author, genre, notes: '', date: new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) };
-
-    if (shelf === 'reading') {
-      const pages = parseInt(document.getElementById('reading-pages').value) || 0;
-      book.totalPages   = pages;
-      book.currentPages = 0;
-    }
-    if (shelf === 'read') { book.rating = 0; }
-
-    data[shelf].unshift(book);
-    save();
-    renderShelf(shelf);
-
-    document.getElementById(`${shelf}-title`).value  = '';
-    document.getElementById(`${shelf}-author`).value = '';
-    document.getElementById(`${shelf}-genre`).value  = '';
-    if (shelf === 'reading') document.getElementById('reading-pages').value = '';
-  }
-
-  function deleteBook(shelf, id) {
-    data[shelf] = data[shelf].filter(b => b.id !== id);
-    save();
-    renderShelf(shelf);
-  }
-
-  function updateNotes(shelf, id, val) {
-    const b = data[shelf].find(b => b.id === id);
-    if (b) { b.notes = val; save(); }
-  }
-
-  function updateRating(shelf, id, r) {
-    const b = data[shelf].find(b => b.id === id);
-    if (b) { b.rating = r; save(); renderShelf(shelf); }
-  }
-
-  function updateProgress(shelf, id, val) {
-    const b = data[shelf].find(b => b.id === id);
-    if (!b) return;
-    b.currentPages = Math.min(Math.max(0, parseInt(val)||0), b.totalPages || 9999);
-    save();
-    renderShelf(shelf);
-  }
-
-  function renderShelf(shelf) {
-    const grid  = document.getElementById(`grid-${shelf}`);
-    const empty = document.getElementById(`empty-${shelf}`);
-    const books = data[shelf];
-
-    if (!books.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-
-    grid.innerHTML = books.map(b => bookCard(shelf, b)).join('');
-
-    // attach notes listeners
-    books.forEach(b => {
-      const ta = document.getElementById(`notes-${b.id}`);
-      if (ta) ta.addEventListener('input', e => updateNotes(shelf, b.id, e.target.value));
-    });
-  }
-
-  function bookCard(shelf, b) {
-    const emoji = EMOJIS[b.genre] || '📓';
-    const genreTag = b.genre ? `<span class="book-genre">${b.genre}</span>` : '';
-    const spineStyle = '';
-
-    let extra = '';
-
-    if (shelf === 'reading' && b.totalPages > 0) {
-      const pct = Math.round((b.currentPages / b.totalPages) * 100);
-      extra += `
-        <div class="progress-wrap">
-          <div class="progress-meta">
-            <span>${b.currentPages} / ${b.totalPages} pages</span>
-            <span>${pct}%</span>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <div class="update-pages">
-            <input type="number" id="pg-${b.id}" placeholder="page…" min="0" max="${b.totalPages}" />
-            <button onclick="updateProgress('reading', ${b.id}, document.getElementById('pg-${b.id}').value)">update</button>
-          </div>
-        </div>`;
-    } else if (shelf === 'reading') {
-      extra += `
-        <div class="progress-wrap">
-          <div class="update-pages">
-            <input type="number" id="pg-${b.id}" placeholder="current page…" />
-            <button onclick="updateProgress('reading', ${b.id}, document.getElementById('pg-${b.id}').value)">log</button>
-          </div>
-        </div>`;
-    }
-
-    if (shelf === 'read') {
-      const stars = [1,2,3,4,5].map(i =>
-        `<span class="star ${i <= b.rating ? 'lit' : ''}" onclick="updateRating('read',${b.id},${i})">★</span>`
-      ).join('');
-      extra += `<div class="star-row">${stars}</div>`;
-      extra += `<div class="book-date">${b.date}</div>`;
-    }
-
-    extra += `
-      <div class="book-notes">
-        <textarea id="notes-${b.id}" placeholder="write a note…" rows="2">${b.notes || ''}</textarea>
-      </div>`;
-
-    return `
-      <div class="book-card" style="background:${GENRE_COLORS[b.genre] || GENRE_COLORS['']}30, #fffaf5;">
-        <button class="delete-btn" onclick="deleteBook('${shelf}', ${b.id})" title="remove">✕</button>
-        <div class="book-spine"></div>
-        <span class="book-emoji">${emoji}</span>
-        <div class="book-title">${escHtml(b.title)}</div>
-        ${b.author ? `<div class="book-author">by ${escHtml(b.author)}</div>` : ''}
-        ${genreTag}
-        ${extra}
-      </div>`;
-  }
-
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // TABS
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.shelf').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(`shelf-${btn.dataset.tab}`).classList.add('active');
-    });
-  });
-
-  // Enter to submit
+/* ── cover pickers ── */
+function initPickers() {
   ['read','reading','wishlist'].forEach(shelf => {
-    ['title','author','genre'].forEach(field => {
-      const el = document.getElementById(`${shelf}-${field}`);
-      if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') addBook(shelf); });
+    const wrap = document.getElementById('cp-' + shelf);
+    COVERS.forEach(cov => {
+      const btn = document.createElement('div');
+      btn.className = 'cover-opt' + (selCover[shelf] === cov.id ? ' sel' : '');
+      btn.style.background = cov.c;
+      btn.title = cov.id;
+      btn.onclick = () => {
+        selCover[shelf] = cov.id;
+        wrap.querySelectorAll('.cover-opt').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+      };
+      wrap.appendChild(btn);
     });
   });
+}
 
-  // INIT
-  ['read','reading','wishlist'].forEach(renderShelf);
-  updateStats();
+/* ── welcome ── */
+function enterLib() {
+  const first = document.getElementById('inp-first').value.trim();
+  const last  = document.getElementById('inp-last').value.trim();
+  if (!first) {
+    document.getElementById('w-err').textContent = 'please share your name first…';
+    document.getElementById('inp-first').focus();
+    return;
+  }
+  user = { first, last };
+  localStorage.setItem('tll-user', JSON.stringify(user));
+  showApp();
+}
+document.getElementById('inp-first').addEventListener('keydown', e => e.key==='Enter' && enterLib());
+document.getElementById('inp-last').addEventListener('keydown',  e => e.key==='Enter' && enterLib());
+
+/* ── navigation ── */
+function showApp() {
+  document.getElementById('page-welcome').classList.remove('active');
+  document.getElementById('main-nav').style.display = 'flex';
+  initPickers();
+  const hash = window.location.hash.slice(1);
+  if (['reading','wishlist'].includes(hash)) {
+    goTo(hash);
+    history.replaceState(null, '', window.location.pathname);
+  } else {
+    goTo('home');
+  }
+}
+
+function goTo(view) {
+  const TAB_VIEWS = ['read','reading','wishlist'];
+  const isTab = TAB_VIEWS.includes(view);
+  const page = isTab ? 'library' : view;
+  ['home','library'].forEach(v => document.getElementById('page-'+v).classList.toggle('active', v===page));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view===view));
+  if (page === 'home') buildHome();
+  if (page === 'library') {
+    TAB_VIEWS.forEach(renderShelf);
+    if (isTab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===view));
+      document.querySelectorAll('.shelf').forEach(s => s.classList.toggle('active', s.id==='shelf-'+view));
+    }
+  }
+}
+
+/* ── home ── */
+function buildHome() {
+  const full = user.last ? user.first + ' ' + user.last : user.first;
+  document.getElementById('nav-user').textContent = full;
+  document.getElementById('greeting-name').textContent = user.first;
+  const h = new Date().getHours();
+  document.getElementById('day-note').textContent =
+    h < 12 ? 'good morning — ready to read?' :
+    h < 17 ? 'good afternoon — pick up where you left off' :
+              'good evening — time to get lost in a book';
+  document.getElementById('hs-read').textContent     = data.read.length;
+  document.getElementById('hs-reading').textContent  = data.reading.length;
+  document.getElementById('hs-wishlist').textContent = data.wishlist.length;
+  buildQuotes();
+  buildCurr();
+}
+
+function buildQuotes() {
+  const dots = document.getElementById('q-dots');
+  dots.innerHTML = QUOTES.map((_,i) => `<div class="qdot${i===qIdx?' on':''}" onclick="setQ(${i})"></div>`).join('');
+  showQ(qIdx);
+  clearInterval(qTimer);
+  qTimer = setInterval(() => setQ((qIdx+1) % QUOTES.length), 7000);
+}
+
+function setQ(i) {
+  qIdx = i;
+  showQ(i);
+  document.querySelectorAll('.qdot').forEach((d,j) => d.classList.toggle('on', j===i));
+  clearInterval(qTimer);
+  qTimer = setInterval(() => setQ((qIdx+1) % QUOTES.length), 7000);
+}
+
+function showQ(i) {
+  const qt = document.getElementById('q-text'), qa = document.getElementById('q-author');
+  qt.style.opacity = 0; qa.style.opacity = 0;
+  setTimeout(() => {
+    qt.textContent = QUOTES[i].t;
+    qa.textContent = '— ' + QUOTES[i].a;
+    qt.style.transition = qa.style.transition = 'opacity .4s';
+    qt.style.opacity = 1; qa.style.opacity = 1;
+  }, 170);
+}
+
+function buildCurr() {
+  const w = document.getElementById('curr-wrap');
+  if (!data.reading.length) {
+    w.innerHTML = '<div class="curr-empty">nothing in progress yet — start something new</div>';
+    return;
+  }
+  w.innerHTML = '<div class="curr-grid">' + data.reading.map(b => {
+    const pct = b.totalPages > 0 ? Math.round(b.currentPages / b.totalPages * 100) : 0;
+    return `<div class="curr-card">
+      <div class="cc-t">${esc(b.title)}</div>
+      ${b.author ? `<div class="cc-a">by ${esc(b.author)}</div>` : ''}
+      ${b.totalPages > 0 ? `<div class="cc-bar"><div class="cc-fill" style="width:${pct}%"></div></div><div class="cc-pct">${b.currentPages} / ${b.totalPages} pages · ${pct}%</div>` : ''}
+    </div>`;
+  }).join('') + '</div>';
+}
+
+/* ── library ── */
+function addBook(shelf) {
+  const title  = document.getElementById(shelf+'-title').value.trim();
+  const author = document.getElementById(shelf+'-author').value.trim();
+  const genre  = document.getElementById(shelf+'-genre').value;
+  if (!title) { document.getElementById(shelf+'-title').focus(); return; }
+
+  const book = {
+    id: Date.now(), title, author, genre, notes: '', cover: selCover[shelf],
+    date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+  };
+  if (shelf === 'reading') {
+    book.totalPages   = parseInt(document.getElementById('reading-pages').value) || 0;
+    book.currentPages = 0;
+  }
+  if (shelf === 'read') book.rating = 0;
+
+  data[shelf].unshift(book);
+  save(); renderShelf(shelf);
+
+  document.getElementById(shelf+'-title').value  = '';
+  document.getElementById(shelf+'-author').value = '';
+  document.getElementById(shelf+'-genre').value  = '';
+  if (shelf === 'reading') document.getElementById('reading-pages').value = '';
+}
+
+function delBook(shelf, id) {
+  data[shelf] = data[shelf].filter(b => b.id !== id);
+  save();
+  if (shelf === 'read') closeSpinePopup();
+  renderShelf(shelf);
+}
+function setRating(shelf, id, r)  { const b = data[shelf].find(b=>b.id===id); if(b){b.rating=r; save(); renderShelf(shelf);} }
+function setNotes(shelf, id, val) { const b = data[shelf].find(b=>b.id===id); if(b){b.notes=val; save();} }
+function setProgress(shelf, id, val) {
+  const b = data[shelf].find(b=>b.id===id);
+  if (!b) return;
+  b.currentPages = Math.min(Math.max(0, parseInt(val)||0), b.totalPages||9999);
+  save(); renderShelf(shelf);
+}
+
+function renderShelf(shelf) {
+  const grid  = document.getElementById('grid-'  + shelf);
+  const empty = document.getElementById('empty-' + shelf);
+  const books = data[shelf];
+  if (shelf === 'read') {
+    if (!books.length) { grid.innerHTML = ''; grid.className = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    if (readView === 'shelf') {
+      grid.className = '';
+      grid.innerHTML = renderBookshelf(books);
+    } else {
+      grid.className = 'books-grid';
+      grid.innerHTML = books.map(b => bookCard(shelf, b)).join('');
+      books.forEach(b => {
+        const ta = document.getElementById('n-'+b.id);
+        if (ta) ta.addEventListener('input', e => setNotes(shelf, b.id, e.target.value));
+      });
+    }
+    return;
+  }
+  if (!books.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = books.map(b => bookCard(shelf, b)).join('');
+  books.forEach(b => {
+    const ta = document.getElementById('n-'+b.id);
+    if (ta) ta.addEventListener('input', e => setNotes(shelf, b.id, e.target.value));
+  });
+}
+
+/* ── Bookshelf helpers ── */
+function getBookHeight(id) {
+  const h = [100,118,106,122,92,114,128,96,110,108,94,120,104,116,130,88,112];
+  return h[id % h.length];
+}
+
+function getBooksPerShelf() {
+  return window.innerWidth < 500 ? 4 : window.innerWidth < 720 ? 6 : 9;
+}
+
+function renderBookshelf(books) {
+  const n = getBooksPerShelf();
+  const rows = [];
+  for (let i = 0; i < books.length; i += n) rows.push(books.slice(i, i + n));
+  return `<div class="bookshelf-outer">` +
+    rows.map(row =>
+      `<div class="bshelf-row">` +
+      row.map(b => {
+        const cov = COVERS.find(c => c.id === (b.cover || 'hotpink')) || COVERS[0];
+        const h = getBookHeight(b.id);
+        return `<div class="sbook" style="background:${cov.c};height:${h}px;" onclick="openSpinePopup(${b.id},this)" title="${esc(b.title)}"><span class="sbook-title">${esc(b.title)}</span><div class="sbook-shine"></div></div>`;
+      }).join('') +
+      `<div class="bshelf-plank"></div></div>`
+    ).join('') +
+  `</div>`;
+}
+
+function openSpinePopup(id, el) {
+  if (popupBookId === id) { closeSpinePopup(); return; }
+  popupBookId = id;
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  const stars = [1,2,3,4,5].map(i =>
+    `<span class="bsp-star${i <= b.rating ? ' lit' : ''}" onclick="setBspRating(${b.id},${i})">★</span>`
+  ).join('');
+  const popup = document.getElementById('bshelf-popup');
+  popup.innerHTML = `
+    <div class="bsp-title">${esc(b.title)}</div>
+    ${b.author ? `<div class="bsp-author">by ${esc(b.author)}</div>` : ''}
+    ${b.genre ? `<span class="bsp-genre">${esc(b.genre)}</span>` : ''}
+    <div class="bsp-stars">${stars}</div>
+    <div class="bsp-date">${b.date}</div>
+    <textarea class="bsp-notes" rows="2" placeholder="a note, a feeling…" oninput="setNotes('read',${b.id},this.value)">${b.notes || ''}</textarea>
+    <button class="bsp-del" onclick="delBook('read',${b.id})">✕ remove from shelf</button>
+  `;
+  popup.classList.add('visible');
+  const rect = el.getBoundingClientRect();
+  const pw = 224;
+  const ph = popup.offsetHeight || 200;
+  let left = rect.left + rect.width / 2 - pw / 2;
+  let top  = rect.top - ph - 14;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  if (top < 8) top = rect.bottom + 14;
+  popup.style.left = left + 'px';
+  popup.style.top  = top + 'px';
+}
+
+function closeSpinePopup() {
+  popupBookId = null;
+  document.getElementById('bshelf-popup').classList.remove('visible');
+}
+
+function setBspRating(id, r) {
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  b.rating = r;
+  save();
+  document.querySelectorAll('#bshelf-popup .bsp-star').forEach((s, i) => s.classList.toggle('lit', i + 1 <= r));
+}
+
+function setReadView(v) {
+  readView = v;
+  document.getElementById('svt-shelf').classList.toggle('active', v === 'shelf');
+  document.getElementById('svt-grid').classList.toggle('active', v === 'grid');
+  closeSpinePopup();
+  renderShelf('read');
+}
+
+document.addEventListener('click', e => {
+  if (!popupBookId) return;
+  const popup = document.getElementById('bshelf-popup');
+  if (popup.contains(e.target) || e.target.closest('.sbook')) return;
+  closeSpinePopup();
+});
+
+function bookCard(shelf, b) {
+  const emoji = EMOJIS[b.genre] || '📓';
+  const cov   = COVERS.find(c => c.id === (b.cover||'crimson')) || COVERS[0];
+  const genre = b.genre ? `<span class="bgenre">${b.genre}</span>` : '';
+
+  const cover = `<div class="mini-cover" style="background:${cov.c};">
+    <span class="ce">${emoji}</span>
+    <div class="shine"></div>
+  </div>`;
+
+  let extra = '';
+  if (shelf === 'reading') {
+    if (b.totalPages > 0) {
+      const pct = Math.round(b.currentPages / b.totalPages * 100);
+      extra += `<div class="prog-wrap">
+        <div class="prog-meta"><span>${b.currentPages} / ${b.totalPages} pages</span><span>${pct}%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div class="prog-upd">
+          <input type="number" id="pg-${b.id}" placeholder="page…" min="0" max="${b.totalPages}"/>
+          <button onclick="setProgress('reading',${b.id},document.getElementById('pg-${b.id}').value)">update</button>
+        </div></div>`;
+    } else {
+      extra += `<div class="prog-wrap"><div class="prog-upd">
+        <input type="number" id="pg-${b.id}" placeholder="current page…"/>
+        <button onclick="setProgress('reading',${b.id},document.getElementById('pg-${b.id}').value)">log</button>
+      </div></div>`;
+    }
+  }
+  if (shelf === 'read') {
+    const stars = [1,2,3,4,5].map(i => `<span class="star${i<=b.rating?' lit':''}" onclick="setRating('read',${b.id},${i})">★</span>`).join('');
+    extra += `<div class="star-row">${stars}</div><div class="bdate">${b.date}</div>`;
+  }
+  extra += `<div class="bnotes"><textarea id="n-${b.id}" rows="2" placeholder="a note, a feeling, a line you loved…">${b.notes||''}</textarea></div>`;
+
+  return `<div class="book-card">
+    <button class="del-btn" onclick="delBook('${shelf}',${b.id})" title="remove">✕</button>
+    <div class="bspine"></div>
+    ${cover}
+    <div class="btitle">${esc(b.title)}</div>
+    ${b.author ? `<div class="bauthor">by ${esc(b.author)}</div>` : ''}
+    ${genre}${extra}
+  </div>`;
+}
+
+/* ── tabs ── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.shelf').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('shelf-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+['read','reading','wishlist'].forEach(shelf => {
+  ['title','author'].forEach(f => {
+    const el = document.getElementById(shelf+'-'+f);
+    if (el) el.addEventListener('keydown', e => { if (e.key==='Enter') addBook(shelf); });
+  });
+});
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+if (user) { initPickers(); showApp(); }
 </script>
 </body>
 </html>
