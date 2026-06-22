@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>the little library · recommendations</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:#1a0814; --dark2:#26101e; --brown:#6b1838;
+      --burgundy:#c03870; --rust:#d9607a; --gold:#e890aa;
+      --gold-l:#f5c0d4; --parchment:#fde8f0; --cream:#fff2f7;
+      --moss:#b83878; --ink:#22081a; --ink-mid:#541830; --ink-l:#a05878;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;color:var(--ink);min-height:100vh;background:var(--parchment);}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--dark2);border-bottom:1px solid rgba(196,154,74,.13);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--parchment);text-decoration:none;}
+    .nav-logo .g{color:var(--gold);}
+    .nav-btn{background:none;border:none;font-family:'Lato',sans-serif;font-size:.73rem;color:rgba(245,232,204,.42);cursor:pointer;padding:.4rem .9rem;border-radius:2px;transition:color .18s,background .18s;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;display:inline-block;}
+    .nav-btn:hover,.nav-btn.active{color:var(--gold-l);background:rgba(196,154,74,.08);}
+    .nav-user{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:rgba(245,232,204,.27);}
+
+    /* STICKERS */
+    .stk{position:fixed;pointer-events:none;user-select:none;z-index:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.22));}
+    .stk-float {animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate;}
+    .stk-wiggle{animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite;}
+    .stk-pulse {animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite;}
+    @keyframes stkfloat  {from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)}}
+    @keyframes stkwiggle {0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))}}
+    @keyframes stkpulse  {0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)}}
+
+    /* HERO */
+    .rec-hero{background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 55%,rgba(248,192,212,.15) 100%);padding:clamp(2.2rem,4vw,3.5rem) 1.5rem clamp(1.8rem,3vw,2.6rem);text-align:center;position:relative;overflow:hidden;border-bottom:1px solid rgba(192,56,112,.1);}
+    .rec-hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 8% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 20px,transparent 20px),
+                       radial-gradient(circle at 92% 20%,rgba(192,56,112,.08) 0,rgba(192,56,112,.08) 14px,transparent 14px),
+                       radial-gradient(circle at 55% 85%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 18px,transparent 18px);
+      background-size:120px 120px,95px 95px,105px 105px;}
+    .hero-orn{font-family:'IM Fell English',serif;font-size:.7rem;color:var(--ink-l);letter-spacing:.22em;opacity:.45;display:block;margin-bottom:1rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.8rem,4.5vw,3rem);color:var(--ink);line-height:1.1;margin-bottom:.4rem;}
+    .hero-title em{color:var(--burgundy);}
+    .hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:clamp(.8rem,1.6vw,.95rem);margin-bottom:1.6rem;}
+    .hero-art{display:inline-block;animation:heroFloat 5s ease-in-out infinite alternate;filter:drop-shadow(0 16px 28px rgba(0,0,0,.13));position:relative;z-index:1;}
+    @keyframes heroFloat{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-14px) rotate(1.5deg)}}
+    .hero-count{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;background:white;border:1px solid rgba(192,56,112,.14);border-radius:999px;padding:.3rem .9rem;font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);box-shadow:0 2px 10px rgba(0,0,0,.05);}
+    .hero-count strong{font-style:normal;font-family:'Playfair Display',serif;font-size:1rem;color:var(--burgundy);}
+
+    /* ADD FORM */
+    .form-wrap{max-width:820px;margin:0 auto;padding:1.8rem 1.2rem .6rem;}
+    .add-form{background:var(--cream);border:1px solid rgba(196,154,74,.16);border-radius:3px;padding:1.4rem 1.6rem;box-shadow:0 2px 14px rgba(0,0,0,.045);}
+    .add-form h2{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);margin-bottom:.9rem;}
+    .form-row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+    .fg{display:flex;flex-direction:column;gap:.22rem;flex:1;min-width:100px;}
+    .fg label{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);}
+    .fg input,.fg select,.fg textarea{border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.5rem .72rem;font-family:'IM Fell English',serif;font-size:.92rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);}
+    .fg input::placeholder,.fg textarea::placeholder{color:rgba(122,92,60,.3);}
+    .fg textarea{resize:vertical;min-height:72px;line-height:1.55;}
+    .add-btn{padding:.52rem 1.3rem;background:var(--brown);color:var(--parchment);border:1px solid rgba(196,154,74,.19);border-radius:2px;font-family:'Lato',sans-serif;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;align-self:flex-end;}
+    .add-btn:hover{background:var(--ink);transform:translateY(-1px);}
+
+    /* star rating input */
+    .star-input-row{display:flex;align-items:center;gap:.4rem;margin-top:.9rem;}
+    .star-input-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);flex-shrink:0;}
+    .star-input{display:flex;gap:.18rem;cursor:pointer;}
+    .si{font-size:1.35rem;color:rgba(160,88,120,.2);transition:color .12s,transform .1s;}
+    .si.lit{color:#e890aa;}
+    .si:hover{transform:scale(1.15);}
+    .form-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-top:.85rem;flex-wrap:wrap;}
+
+    /* FEED */
+    .feed-wrap{max-width:820px;margin:0 auto;padding:.6rem 1.2rem 5rem;}
+    .feed-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0 .9rem;border-bottom:1px solid rgba(192,56,112,.09);margin-bottom:1.2rem;}
+    .feed-title{font-family:'IM Fell English',serif;font-style:italic;font-size:.85rem;color:var(--ink-l);}
+    .feed-sort{display:flex;gap:.3rem;}
+    .fsort-btn{background:none;border:1px solid rgba(196,154,74,.2);border-radius:3px;padding:.2rem .55rem;cursor:pointer;font-size:.65rem;color:var(--ink-l);font-family:'Lato',sans-serif;transition:all .18s;}
+    .fsort-btn.active,.fsort-btn:hover{background:rgba(196,154,74,.12);color:var(--ink);border-color:rgba(196,154,74,.38);}
+
+    .rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.2rem;}
+
+    /* RECOMMENDATION CARD */
+    .rec-card{background:var(--cream);border-radius:3px;padding:1.4rem 1.4rem 1.1rem;box-shadow:0 2px 18px rgba(0,0,0,.06);border:1px solid rgba(196,154,74,.12);position:relative;animation:recIn .35s ease both;transition:transform .25s,box-shadow .25s;cursor:pointer;}
+    .rec-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.1);}
+    @keyframes recIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* genre colour bar on left */
+    .rec-bar{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:3px 0 0 3px;}
+
+    /* quote mark */
+    .rec-quote{font-family:'Playfair Display',serif;font-size:4rem;line-height:.7;color:rgba(192,56,112,.12);position:absolute;top:.7rem;left:1rem;pointer-events:none;user-select:none;}
+
+    /* truncated preview comment */
+    .rec-comment{font-family:'IM Fell English',serif;font-style:italic;font-size:.96rem;color:var(--ink-mid);line-height:1.65;padding-left:.5rem;margin-bottom:.8rem;position:relative;z-index:1;
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .rec-read-more{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--burgundy);opacity:.6;padding-left:.5rem;display:block;margin-bottom:.8rem;}
+
+    /* ── MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(26,8,20,.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px);animation:overlayIn .18s ease both;}
+    @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+    .modal-overlay.closing{animation:overlayOut .2s ease both;}
+    @keyframes overlayOut{from{opacity:1}to{opacity:0}}
+
+    .modal-box{background:var(--cream);border-radius:5px;padding:2rem 2rem 1.6rem;max-width:520px;width:100%;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.28);animation:modalIn .22s cubic-bezier(.34,1.3,.64,1) both;max-height:90vh;overflow-y:auto;}
+    @keyframes modalIn{from{transform:scale(.88) translateY(16px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+    .modal-box.closing{animation:modalOut .18s ease both;}
+    @keyframes modalOut{from{transform:scale(1);opacity:1}to{transform:scale(.9) translateY(10px);opacity:0}}
+
+    .modal-bar{position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:5px 0 0 5px;}
+    .modal-close{position:absolute;top:.8rem;right:.9rem;background:none;border:none;font-size:1.1rem;color:rgba(122,92,60,.3);cursor:pointer;transition:color .15s;line-height:1;padding:2px;}
+    .modal-close:hover{color:var(--burgundy);}
+    .modal-quote{font-family:'Playfair Display',serif;font-size:5rem;line-height:.6;color:rgba(192,56,112,.1);position:absolute;top:1rem;left:1.2rem;pointer-events:none;}
+    .modal-comment{font-family:'IM Fell English',serif;font-style:italic;font-size:1.04rem;color:var(--ink-mid);line-height:1.72;padding-left:.6rem;margin-bottom:1.2rem;position:relative;z-index:1;white-space:pre-wrap;word-break:break-word;}
+    .modal-divider{border:none;border-top:1px solid rgba(196,154,74,.16);margin-bottom:1rem;}
+    .modal-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--ink);line-height:1.3;}
+    .modal-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);margin-top:.12rem;margin-bottom:.6rem;}
+    .modal-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.9rem;}
+    .modal-stars{display:flex;gap:.1rem;}
+    .modal-star{font-size:1rem;}
+    .modal-star.lit{color:#e890aa;}
+    .modal-star.dim{color:rgba(160,88,120,.18);}
+    .modal-genre{font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;background:rgba(184,56,120,.09);color:var(--moss);border-radius:2px;padding:.15rem .5rem;}
+    .modal-sig{font-family:'IM Fell English',serif;font-style:italic;font-size:.78rem;color:var(--ink-l);text-align:right;}
+    .modal-sig strong{font-style:normal;color:var(--burgundy);font-family:'Playfair Display',serif;font-size:.82rem;}
+    .modal-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-top:.4rem;}
+    .modal-del{background:none;border:1px solid rgba(192,56,112,.2);border-radius:3px;padding:.28rem .75rem;font-size:.68rem;color:var(--ink-l);cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;letter-spacing:.04em;}
+    .modal-del:hover{border-color:var(--burgundy);color:var(--burgundy);}
+
+    .rec-divider{border:none;border-top:1px solid rgba(196,154,74,.14);margin-bottom:.75rem;}
+
+    .rec-book{margin-bottom:.22rem;}
+    .rec-book-title{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;color:var(--ink);}
+    .rec-book-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.75rem;color:var(--ink-l);}
+
+    .rec-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
+    .rec-stars{display:flex;gap:.08rem;}
+    .rec-star{font-size:.88rem;}
+    .rec-star.lit{color:#e890aa;}
+    .rec-star.dim{color:rgba(160,88,120,.18);}
+    .rec-genre{font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;background:rgba(184,56,120,.09);color:var(--moss);border-radius:2px;padding:.13rem .44rem;}
+
+    .rec-sig{font-family:'IM Fell English',serif;font-style:italic;font-size:.74rem;color:var(--ink-l);text-align:right;}
+    .rec-sig strong{font-style:normal;color:var(--burgundy);font-family:'Playfair Display',serif;font-size:.78rem;}
+
+    /* like button */
+    .rec-like{display:flex;align-items:center;gap:.3rem;background:none;border:1px solid rgba(192,56,112,.18);border-radius:999px;padding:.22rem .6rem;cursor:pointer;font-size:.68rem;color:var(--ink-l);font-family:'Lato',sans-serif;transition:all .2s;margin-top:.55rem;}
+    .rec-like:hover,.rec-like.liked{background:rgba(192,56,112,.08);border-color:rgba(192,56,112,.35);color:var(--burgundy);}
+    .rec-like .lheart{font-size:.82rem;transition:transform .18s;}
+    .rec-like.liked .lheart{transform:scale(1.25);}
+
+    /* delete */
+    .rec-del{position:absolute;top:.55rem;right:.6rem;background:none;border:none;font-size:.76rem;color:rgba(122,92,60,.18);cursor:pointer;transition:color .18s;padding:2px;line-height:1;}
+    .rec-del:hover{color:var(--burgundy);}
+
+    /* empty */
+    .empty-state{text-align:center;padding:4rem 2rem;}
+    .empty-icon{font-size:2rem;display:block;margin-bottom:.6rem;opacity:.35;}
+    .empty-state p{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.93rem;}
+
+    @media(max-width:560px){
+      nav{padding:.8rem 1rem;}
+      .form-row{flex-direction:column;}
+      .rec-grid{grid-template-columns:1fr;}
+    }
+  </style>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- STICKERS -->
+<div class="stk stk-float" style="top:82px;right:1%;--dur:7.5s;--dly:0s;--r0:rotate(-8deg);--r1:rotate(6deg);">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:7px 12px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.55;text-align:center;max-width:108px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">a book a<br>day keeps<br>reality away</div>
+</div>
+<div class="stk stk-wiggle" style="top:88px;left:1%;--dur:2.8s;--dly:.2s;--ra:-11deg;--rb:9deg;">
+  <div class="emoji-badge" style="border:2px solid;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:2px 3px 10px rgba(0,0,0,.14);">💌</div>
+</div>
+<div class="stk stk-pulse" style="bottom:10%;left:.8%;--dur:3.2s;--dly:.5s;--rot:5deg;">
+  <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="32" cy="32" r="30" fill="white" stroke="#c02858" stroke-width="2.5"/>
+    <circle cx="32" cy="32" r="24" fill="none" stroke="#f090b0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="32" y="24" text-anchor="middle" font-size="7" font-family="Impact,sans-serif" fill="#c02858" font-weight="900">MUST</text>
+    <text x="32" y="36" text-anchor="middle" font-size="9" font-family="Impact,sans-serif" fill="#22081a" font-weight="900">READ</text>
+    <text x="32" y="50" text-anchor="middle" font-size="12">📖</text>
+  </svg>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn" href="read.html">read</a>
+    <a class="nav-btn" href="reading.html">reading</a>
+    <a class="nav-btn" href="tbr.html">tbr</a>
+    <a class="nav-btn" href="wishlist.html">wishlist</a>
+    <a class="nav-btn active" href="rec.html">recs</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- HERO -->
+<div class="rec-hero">
+  <span class="hero-orn">✦ &nbsp; r e c o m m e n d a t i o n s &nbsp; ✦</span>
+  <h1 class="hero-title">what are you <em>raving</em> about?</h1>
+  <p class="hero-sub">write a recommendation — let everyone know what to read next</p>
+
+  <!-- envelope / letter illustration -->
+  <div class="hero-art">
+    <svg width="190" height="128" viewBox="0 0 190 128" xmlns="http://www.w3.org/2000/svg">
+      <!-- shadow -->
+      <ellipse cx="95" cy="124" rx="70" ry="6" fill="rgba(0,0,0,.1)"/>
+      <!-- envelope back -->
+      <rect x="10" y="30" width="170" height="90" rx="6" fill="#f5c0d4"/>
+      <!-- envelope flap (open) -->
+      <path d="M10 30 L95 75 L180 30 Z" fill="#e890aa"/>
+      <path d="M10 30 Q95 8 180 30 L95 72 Z" fill="#f5c0d4" stroke="#e890aa" stroke-width="1"/>
+      <!-- letter inside -->
+      <rect x="28" y="18" width="134" height="86" rx="3" fill="#fff8f0" stroke="rgba(196,154,74,.2)" stroke-width="1"/>
+      <!-- letter lines -->
+      <line x1="40" y1="38" x2="150" y2="38" stroke="rgba(196,154,74,.25)" stroke-width="1.2"/>
+      <line x1="40" y1="50" x2="150" y2="50" stroke="rgba(196,154,74,.2)"  stroke-width="1"/>
+      <line x1="40" y1="62" x2="150" y2="62" stroke="rgba(196,154,74,.18)" stroke-width="1"/>
+      <line x1="40" y1="74" x2="120" y2="74" stroke="rgba(196,154,74,.15)" stroke-width="1"/>
+      <!-- heart seal -->
+      <path d="M95 28 Q95 22 89 22 Q83 22 83 28 Q83 34 95 40 Q107 34 107 28 Q107 22 101 22 Q95 22 95 28Z" fill="#e060a0" opacity=".7"/>
+      <!-- decorative dots on envelope -->
+      <circle cx="30" cy="108" r="3" fill="rgba(255,255,255,.45)"/>
+      <circle cx="160" cy="108" r="3" fill="rgba(255,255,255,.45)"/>
+    </svg>
+  </div>
+
+  <div class="hero-count">
+    <strong id="rec-count">0</strong> recommendation<span id="rec-plural">s</span> so far
+  </div>
+</div>
+
+<!-- ADD FORM -->
+<div class="form-wrap">
+  <div class="add-form">
+    <h2>— share a recommendation</h2>
+    <div class="form-row">
+      <div class="fg" style="flex:2;min-width:150px;">
+        <label>book title *</label>
+        <input id="f-title" type="text" placeholder="what book do you recommend?" autocomplete="off"/>
+      </div>
+      <div class="fg" style="flex:1.4;min-width:120px;">
+        <label>author</label>
+        <input id="f-author" type="text" placeholder="author…" autocomplete="off"/>
+      </div>
+      <div class="fg" style="flex:1;min-width:100px;">
+        <label>genre</label>
+        <select id="f-genre">
+          <option value="">—</option>
+          <option>fiction</option>
+          <option>fantasy</option>
+          <option>sci-fi</option>
+          <option>romance</option>
+          <option>thriller</option>
+          <option>mystery</option>
+          <option>non-fiction</option>
+          <option>poetry</option>
+          <option>classics</option>
+          <option>other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:.6rem;">
+      <div class="fg" style="flex:1;">
+        <label>your recommendation *</label>
+        <textarea id="f-comment" placeholder="why do you love this book? what makes it special?"></textarea>
+      </div>
+    </div>
+    <div class="form-bottom">
+      <div class="star-input-row">
+        <span class="star-input-lbl">rating</span>
+        <div class="star-input" id="star-input">
+          <span class="si" data-v="1">★</span>
+          <span class="si" data-v="2">★</span>
+          <span class="si" data-v="3">★</span>
+          <span class="si" data-v="4">★</span>
+          <span class="si" data-v="5">★</span>
+        </div>
+      </div>
+      <button class="add-btn" onclick="addRec()">✦ recommend</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEED -->
+<div class="feed-wrap">
+  <div class="feed-header">
+    <span class="feed-title">— all recommendations</span>
+    <div class="feed-sort">
+      <button class="fsort-btn active" data-sort="newest" onclick="setSort('newest',this)">newest</button>
+      <button class="fsort-btn" data-sort="rating" onclick="setSort('rating',this)">top rated</button>
+      <button class="fsort-btn" data-sort="liked" onclick="setSort('liked',this)">most liked</button>
+    </div>
+  </div>
+  <div class="rec-grid" id="rec-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <span class="empty-icon">💌</span>
+    <p>no recommendations yet —<br>be the first to share a book you love</p>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="rec-modal" style="display:none;" onclick="closeModal(event)">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-bar" id="modal-bar"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-quote">"</div>
+    <p class="modal-comment" id="modal-comment"></p>
+    <hr class="modal-divider"/>
+    <div class="modal-title"  id="modal-title"></div>
+    <div class="modal-author" id="modal-author"></div>
+    <div class="modal-row">
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+        <div class="modal-stars" id="modal-stars"></div>
+        <span class="modal-genre" id="modal-genre" style="display:none"></span>
+      </div>
+      <div class="modal-sig" id="modal-sig"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-del" id="modal-del" style="display:none" onclick="deleteFromModal()">remove ✕</button>
+      <button class="rec-like" id="modal-like" onclick="likeFromModal()">
+        <span class="lheart">♡</span>
+        <span class="lcount">0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GENRE_COLORS = {
+  fiction:      'var(--burgundy)',
+  fantasy:      'var(--dark2)',
+  'sci-fi':     'var(--brown)',
+  romance:      'var(--rust)',
+  thriller:     'var(--dark)',
+  mystery:      'var(--ink-mid)',
+  'non-fiction':'var(--moss)',
+  poetry:       'var(--burgundy)',
+  classics:     'var(--brown)',
+  other:        'var(--rust)',
+  '':           'var(--burgundy)'
+};
+
+let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"tbr":[],"wishlist":[],"recs":[]}');
+if (!data.recs) data.recs = [];
+if (!user) { window.location.href = 'index.html'; }
+
+document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+
+/* ── star rating ── */
+let selRating = 0;
+const starEls = document.querySelectorAll('.si');
+starEls.forEach(s => {
+  s.addEventListener('mouseenter', () => highlightStars(+s.dataset.v));
+  s.addEventListener('mouseleave', () => highlightStars(selRating));
+  s.addEventListener('click', () => { selRating = +s.dataset.v; highlightStars(selRating); });
+});
+function highlightStars(n) {
+  starEls.forEach(s => s.classList.toggle('lit', +s.dataset.v <= n));
+}
+
+/* ── sort ── */
+let sortMode = 'newest';
+function setSort(mode, el) {
+  sortMode = mode;
+  document.querySelectorAll('.fsort-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+/* ── render ── */
+function render() {
+  const grid  = document.getElementById('rec-grid');
+  const empty = document.getElementById('empty-state');
+  const count = document.getElementById('rec-count');
+  const plural = document.getElementById('rec-plural');
+
+  let recs = [...data.recs];
+  if (sortMode === 'rating') recs.sort((a,b) => (b.rating||0)-(a.rating||0));
+  if (sortMode === 'liked')  recs.sort((a,b) => (b.likes||0)-(a.likes||0));
+  /* newest: already newest-first via unshift */
+
+  count.textContent = recs.length;
+  plural.textContent = recs.length === 1 ? '' : 's';
+
+  if (!recs.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  const me = user.first + (user.last ? ' ' + user.last : '');
+  grid.innerHTML = recs.map((r, idx) => {
+    const barColor  = GENRE_COLORS[r.genre] || GENRE_COLORS[''];
+    const starsHtml = [1,2,3,4,5].map(n =>
+      `<span class="rec-star ${n <= (r.rating||0) ? 'lit' : 'dim'}">★</span>`
+    ).join('');
+    const isLiked = (r.likedBy || []).includes(me);
+    const isMine  = r.recommender === me;
+    const preview = r.comment.length > 120 ? r.comment.slice(0,120).trimEnd() + '…' : r.comment;
+    return `
+    <div class="rec-card" data-id="${r.id}" style="animation-delay:${idx*0.04}s" onclick="openModal('${r.id}')">
+      <div class="rec-bar" style="background:${barColor}"></div>
+      <div class="rec-quote">"</div>
+      <p class="rec-comment">${esc(r.comment)}</p>
+      ${r.comment.length > 120 ? `<span class="rec-read-more">read more →</span>` : ''}
+      <hr class="rec-divider"/>
+      <div class="rec-book">
+        <div class="rec-book-title">${esc(r.title)}</div>
+        ${r.author ? `<div class="rec-book-author">by ${esc(r.author)}</div>` : ''}
+      </div>
+      <div class="rec-meta">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <div class="rec-stars">${starsHtml}</div>
+          ${r.genre ? `<span class="rec-genre">${esc(r.genre)}</span>` : ''}
+        </div>
+        <div class="rec-sig">${r.date}<br><strong>— ${esc(r.recommender)}</strong></div>
+      </div>
+      <button class="rec-like ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();toggleLike('${r.id}')">
+        <span class="lheart">${isLiked ? '♥' : '♡'}</span>
+        <span class="lcount">${r.likes || 0}</span>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+/* ── add ── */
+function addRec() {
+  const title   = document.getElementById('f-title').value.trim();
+  const comment = document.getElementById('f-comment').value.trim();
+  if (!title)   { document.getElementById('f-title').focus(); return; }
+  if (!comment) { document.getElementById('f-comment').focus(); return; }
+
+  const author = document.getElementById('f-author').value.trim();
+  const genre  = document.getElementById('f-genre').value;
+  const me     = user.first + (user.last ? ' ' + user.last : '');
+
+  data.recs.unshift({
+    id: 'rec' + Date.now(),
+    title, author, genre,
+    rating: selRating,
+    comment,
+    recommender: me,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}),
+    likes: 0,
+    likedBy: [],
+  });
+  save();
+
+  document.getElementById('f-title').value   = '';
+  document.getElementById('f-author').value  = '';
+  document.getElementById('f-comment').value = '';
+  document.getElementById('f-genre').value   = '';
+  selRating = 0;
+  highlightStars(0);
+
+  render();
+}
+
+/* ── modal ── */
+let modalId = null;
+
+function openModal(id) {
+  const r = data.recs.find(x => x.id === id);
+  if (!r) return;
+  modalId = id;
+  const me = user.first + (user.last ? ' ' + user.last : '');
+  const isLiked = (r.likedBy || []).includes(me);
+  const isMine  = r.recommender === me;
+  const barColor = GENRE_COLORS[r.genre] || GENRE_COLORS[''];
+
+  document.getElementById('modal-bar').style.background = barColor;
+  document.getElementById('modal-comment').textContent   = r.comment;
+  document.getElementById('modal-title').textContent     = r.title;
+
+  const authorEl = document.getElementById('modal-author');
+  authorEl.textContent = r.author ? 'by ' + r.author : '';
+  authorEl.style.display = r.author ? '' : 'none';
+
+  document.getElementById('modal-stars').innerHTML = [1,2,3,4,5].map(n =>
+    `<span class="modal-star ${n <= (r.rating||0) ? 'lit' : 'dim'}">★</span>`
+  ).join('');
+
+  const genreEl = document.getElementById('modal-genre');
+  if (r.genre) { genreEl.textContent = r.genre; genreEl.style.display = ''; }
+  else genreEl.style.display = 'none';
+
+  document.getElementById('modal-sig').innerHTML = `${r.date}<br><strong>— ${esc(r.recommender)}</strong>`;
+
+  const delBtn  = document.getElementById('modal-del');
+  delBtn.style.display = isMine ? '' : 'none';
+
+  const likeBtn = document.getElementById('modal-like');
+  likeBtn.className = 'rec-like' + (isLiked ? ' liked' : '');
+  likeBtn.querySelector('.lheart').textContent = isLiked ? '♥' : '♡';
+  likeBtn.querySelector('.lcount').textContent = r.likes || 0;
+
+  const overlay = document.getElementById('rec-modal');
+  overlay.style.display = 'flex';
+  overlay.classList.remove('closing');
+  document.getElementById('modal-box').classList.remove('closing');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('rec-modal')) return;
+  const overlay = document.getElementById('rec-modal');
+  const box     = document.getElementById('modal-box');
+  overlay.classList.add('closing');
+  box.classList.add('closing');
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    overlay.classList.remove('closing');
+    box.classList.remove('closing');
+    document.body.style.overflow = '';
+    modalId = null;
+  }, 200);
+}
+
+function likeFromModal() {
+  if (!modalId) return;
+  toggleLike(modalId);
+  /* sync like button inside modal */
+  const r = data.recs.find(x => x.id === modalId);
+  if (!r) return;
+  const me = user.first + (user.last ? ' ' + user.last : '');
+  const isLiked = (r.likedBy || []).includes(me);
+  const btn = document.getElementById('modal-like');
+  btn.className = 'rec-like' + (isLiked ? ' liked' : '');
+  btn.querySelector('.lheart').textContent = isLiked ? '♥' : '♡';
+  btn.querySelector('.lcount').textContent = r.likes || 0;
+}
+
+function deleteFromModal() {
+  if (!modalId) return;
+  const id = modalId;
+  /* close first, then delete */
+  const overlay = document.getElementById('rec-modal');
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  modalId = null;
+  deleteRec(id);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal({}); });
+
+/* ── like ── */
+function toggleLike(id) {
+  const r = data.recs.find(x => x.id === id);
+  if (!r) return;
+  if (!r.likedBy) r.likedBy = [];
+  const me = user.first + (user.last ? ' ' + user.last : '');
+  if (r.likedBy.includes(me)) {
+    r.likedBy = r.likedBy.filter(n => n !== me);
+    r.likes = Math.max(0, (r.likes || 1) - 1);
+  } else {
+    r.likedBy.push(me);
+    r.likes = (r.likes || 0) + 1;
+  }
+  save();
+
+  /* live update without full re-render */
+  const card = document.querySelector(`.rec-card[data-id="${id}"]`);
+  if (!card) return;
+  const btn  = card.querySelector('.rec-like');
+  const isNowLiked = r.likedBy.includes(me);
+  btn.classList.toggle('liked', isNowLiked);
+  btn.querySelector('.lheart').textContent = isNowLiked ? '♥' : '♡';
+  btn.querySelector('.lcount').textContent = r.likes;
+}
+
+/* ── delete ── */
+function deleteRec(id) {
+  data.recs = data.recs.filter(r => r.id !== id);
+  save();
+  render();
+}
+
+/* ── utils ── */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.getElementById('f-title').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('f-comment').focus(); });
+
+render();
+</script>
+</body>
+</html>

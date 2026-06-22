@@ -190,6 +190,7 @@
       .bshelf-plank { left:-16px; right:-16px; }
     }
   </style>
+  <script src="theme.js"></script>
 </head>
 <body>
 
@@ -216,8 +217,10 @@
   <div style="display:flex;gap:.2rem;">
     <a class="nav-btn" href="index.html">home</a>
     <a class="nav-btn active" href="read.html">read</a>
-    <a class="nav-btn" href="index.html#reading">reading</a>
-    <a class="nav-btn" href="index.html#wishlist">wishlist</a>
+    <a class="nav-btn" href="reading.html">reading</a>
+    <a class="nav-btn" href="tbr.html">tbr</a>
+    <a class="nav-btn" href="wishlist.html">wishlist</a>
+    <a class="nav-btn" href="rec.html">recs</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -269,10 +272,10 @@
 <script>
 /* ── data ── */
 const COVERS = [
-  {id:'hotpink',c:'#e0306a'},{id:'rose',c:'#c83878'},{id:'blush',c:'#e87898'},
-  {id:'mauve',c:'#b85880'},{id:'berry',c:'#9a1858'},{id:'coral',c:'#e85878'},
-  {id:'magenta',c:'#cc2888'},{id:'dusty',c:'#d480a0'},{id:'ballet',c:'#e8a8c0'},
-  {id:'wine',c:'#8a1848'},
+  {id:'hotpink',c:'var(--cover-hotpink)'},{id:'rose',c:'var(--cover-rose)'},{id:'blush',c:'var(--cover-blush)'},
+  {id:'mauve',c:'var(--cover-mauve)'},{id:'berry',c:'var(--cover-berry)'},{id:'coral',c:'var(--cover-coral)'},
+  {id:'magenta',c:'var(--cover-magenta)'},{id:'dusty',c:'var(--cover-dusty)'},{id:'ballet',c:'var(--cover-ballet)'},
+  {id:'wine',c:'var(--cover-wine)'},
 ];
 const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
 

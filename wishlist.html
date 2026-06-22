@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>the little library · wishlist</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:#1a0814; --dark2:#26101e; --brown:#6b1838;
+      --burgundy:#c03870; --rust:#d9607a; --gold:#e890aa;
+      --gold-l:#f5c0d4; --parchment:#fde8f0; --cream:#fff2f7;
+      --moss:#b83878; --ink:#22081a; --ink-mid:#541830; --ink-l:#a05878;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;}
+    body{font-family:'Lato',sans-serif;color:var(--ink);background:var(--parchment);display:flex;flex-direction:column;}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--dark2);border-bottom:1px solid rgba(196,154,74,.13);position:relative;z-index:200;flex-shrink:0;}
+    .nav-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--parchment);text-decoration:none;}
+    .nav-logo .g{color:var(--gold);}
+    .nav-btn{background:none;border:none;font-family:'Lato',sans-serif;font-size:.73rem;color:rgba(245,232,204,.42);cursor:pointer;padding:.4rem .9rem;border-radius:2px;transition:color .18s,background .18s;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;display:inline-block;}
+    .nav-btn:hover,.nav-btn.active{color:var(--gold-l);background:rgba(196,154,74,.08);}
+    .nav-user{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:rgba(245,232,204,.27);}
+
+    /* TOP PANEL */
+    .top-panel{background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 55%,rgba(248,192,212,.15) 100%);padding:1.4rem 2rem 1.2rem;border-bottom:1px solid rgba(192,56,112,.1);flex-shrink:0;position:relative;z-index:100;}
+    .top-panel::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 8% 50%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 16px,transparent 16px),
+                       radial-gradient(circle at 92% 30%,rgba(192,56,112,.07) 0,rgba(192,56,112,.07) 12px,transparent 12px);
+      background-size:100px 100px,80px 80px;}
+    .panel-inner{max-width:900px;margin:0 auto;display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;}
+    .panel-title-block{flex:0 0 auto;}
+    .hero-orn{font-family:'IM Fell English',serif;font-size:.68rem;color:var(--ink-l);letter-spacing:.22em;opacity:.45;display:block;margin-bottom:.35rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.6rem,4vw,2.5rem);color:var(--ink);line-height:1.1;}
+    .hero-title em{color:var(--burgundy);}
+    .hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.85rem;margin-top:.25rem;}
+
+    /* ADD FORM */
+    .add-form{flex:1;min-width:260px;}
+    .add-form h2{font-family:'IM Fell English',serif;font-style:italic;font-size:.85rem;color:var(--ink-l);margin-bottom:.6rem;}
+    .form-row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;}
+    .fg{display:flex;flex-direction:column;gap:.18rem;flex:1;min-width:110px;}
+    .fg label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);}
+    .fg input,.fg select{border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.46rem .65rem;font-family:'IM Fell English',serif;font-size:.9rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;}
+    .fg input:focus,.fg select:focus{border-color:var(--gold);}
+    .fg input::placeholder{color:rgba(122,92,60,.3);}
+    .add-btn{padding:.48rem 1.1rem;background:var(--brown);color:var(--parchment);border:1px solid rgba(196,154,74,.19);border-radius:2px;font-family:'Lato',sans-serif;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;flex-shrink:0;align-self:flex-end;}
+    .add-btn:hover{background:var(--ink);transform:translateY(-1px);}
+
+    /* STAR CANVAS */
+    #star-canvas{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 40%,rgba(255,240,248,.9) 0%,rgba(253,232,240,.95) 60%,rgba(248,220,235,1) 100%);}
+    #star-canvas::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle,rgba(200,56,112,.045) 1px,transparent 1px);
+      background-size:32px 32px;}
+
+    /* FLOATING STAR */
+    .w-star{position:absolute;cursor:pointer;transform-origin:center;will-change:transform;user-select:none;}
+    .w-star:hover svg{filter:drop-shadow(0 0 14px rgba(232,184,64,.9)) drop-shadow(0 6px 18px rgba(0,0,0,.22));}
+    @keyframes starBorn{from{transform:scale(0) rotate(-40deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+    @keyframes starDie {from{transform:scale(1);opacity:1}         to{transform:scale(0) rotate(40deg);opacity:0}}
+
+    /* POPUP */
+    .w-popup{position:absolute;background:var(--cream);border:1px solid rgba(192,56,112,.18);border-radius:4px;padding:1.1rem 1.3rem;box-shadow:0 8px 32px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.08);z-index:500;min-width:200px;max-width:260px;}
+    .w-popup::before{content:'★';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.1rem;color:#e8b840;text-shadow:0 2px 8px rgba(232,184,64,.5);}
+    .popup-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1.05rem;color:var(--ink);margin-bottom:.15rem;}
+    .popup-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);margin-bottom:.4rem;}
+    .popup-meta{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.7rem;}
+    .popup-genre{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;background:rgba(192,56,112,.09);color:var(--burgundy);border-radius:2px;padding:.2rem .5rem;}
+    .popup-date{font-size:.62rem;color:var(--ink-l);font-family:'IM Fell English',serif;font-style:italic;}
+    .popup-actions{display:flex;gap:.5rem;justify-content:flex-end;}
+    .popup-close{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;background:none;border:1px solid rgba(160,88,120,.22);border-radius:2px;color:var(--ink-l);padding:.3rem .7rem;cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;}
+    .popup-close:hover{border-color:var(--burgundy);color:var(--burgundy);}
+    .popup-remove{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;background:var(--brown);border:none;border-radius:2px;color:var(--parchment);padding:.3rem .7rem;cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;}
+    .popup-remove:hover{background:var(--ink);}
+
+    /* EMPTY STATE */
+    #empty-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.55;}
+    #empty-hint .eh-star{font-size:2.8rem;display:block;margin-bottom:.7rem;animation:ehFloat 4s ease-in-out infinite alternate;}
+    @keyframes ehFloat{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-14px) rotate(8deg)}}
+    #empty-hint p{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);}
+
+    @media(max-width:600px){
+      nav{padding:.8rem 1rem;}
+      .top-panel{padding:1rem 1rem .9rem;}
+      .panel-inner{flex-direction:column;gap:1rem;}
+    }
+  </style>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn" href="read.html">read</a>
+    <a class="nav-btn" href="reading.html">reading</a>
+    <a class="nav-btn" href="tbr.html">tbr</a>
+    <a class="nav-btn active" href="wishlist.html">wishlist</a>
+    <a class="nav-btn" href="rec.html">recs</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<div class="top-panel">
+  <div class="panel-inner">
+    <div class="panel-title-block">
+      <span class="hero-orn">✦ &nbsp; w i s h l i s t &nbsp; ✦</span>
+      <h1 class="hero-title">books i <em>want</em></h1>
+      <p class="hero-sub">add a wish — a star is born</p>
+    </div>
+    <div class="add-form">
+      <h2>— add to wishlist</h2>
+      <div class="form-row">
+        <div class="fg" style="flex:2;min-width:140px;">
+          <label>title *</label>
+          <input id="f-title" type="text" placeholder="book title…" autocomplete="off"/>
+        </div>
+        <div class="fg" style="flex:1.5;min-width:110px;">
+          <label>author</label>
+          <input id="f-author" type="text" placeholder="author…" autocomplete="off"/>
+        </div>
+        <div class="fg" style="flex:1;min-width:100px;">
+          <label>genre</label>
+          <select id="f-genre">
+            <option value="">—</option>
+            <option>fiction</option>
+            <option>fantasy</option>
+            <option>sci-fi</option>
+            <option>romance</option>
+            <option>thriller</option>
+            <option>mystery</option>
+            <option>non-fiction</option>
+            <option>poetry</option>
+            <option>classics</option>
+            <option>other</option>
+          </select>
+        </div>
+        <button class="add-btn" onclick="addWish()">+ add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="star-canvas">
+  <div id="empty-hint">
+    <span class="eh-star">★</span>
+    <p>your wishlist is empty —<br>add a book and watch a star appear</p>
+  </div>
+</div>
+
+<script>
+/* ── data ── */
+let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+if (!data.wishlist) data.wishlist = [];
+
+if (!user) { window.location.href = 'index.html'; }
+document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+
+/* ── star physics state ── */
+const stars = {}; /* id → {el, x, y, vx, vy, rot, vrot} */
+let raf = null;
+let activePopup = null;
+
+const STAR_SIZE = 86;
+
+/* ── star SVG ── */
+function starSVG(id) {
+  const fid = 'sf' + id.replace(/[^a-z0-9]/gi,'_');
+  return `<svg width="86" height="86" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="${fid}sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="rgba(180,130,0,.35)"/>
+    </filter>
+    <radialGradient id="${fid}rg" cx="38%" cy="32%" r="60%">
+      <stop offset="0%" stop-color="#fff4c0" stop-opacity=".7"/>
+      <stop offset="55%" stop-color="#e8b840" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="${fid}bg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#ffd84a"/>
+      <stop offset="100%" stop-color="#b8860a"/>
+    </radialGradient>
+  </defs>
+  <!-- white halo (slightly larger star) -->
+  <path d="M50,2 Q69,26 97,36 Q79,61 79,91 Q50,82 21,91 Q21,61 3,36 Q31,26 50,2Z"
+        fill="white" filter="url(#${fid}sh)" opacity=".92"/>
+  <!-- golden star body -->
+  <path d="M50,6 Q67,28.5 93,37 Q76.5,59.5 76,87 Q50,79.5 24,87 Q23.5,59.5 7,37 Q33,28.5 50,6Z"
+        fill="url(#${fid}bg)"/>
+  <!-- radial sheen -->
+  <path d="M50,6 Q67,28.5 93,37 Q76.5,59.5 76,87 Q50,79.5 24,87 Q23.5,59.5 7,37 Q33,28.5 50,6Z"
+        fill="url(#${fid}rg)"/>
+  <!-- dashed stitching inside white border -->
+  <path d="M50,11 Q65,31 89,39 Q74,59.5 73.5,83 Q50,76 26.5,83 Q26,59.5 11,39 Q35,31 50,11Z"
+        fill="none" stroke="#b8920a" stroke-width="1.6" stroke-dasharray="4 3.6" stroke-linecap="round" opacity=".7"/>
+  <!-- inner highlight line -->
+  <path d="M50,18 Q63,34 82,41" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.2" stroke-linecap="round"/>
+</svg>`;
+}
+
+/* ── spawn a floating star ── */
+function spawnStar(book, animate) {
+  const canvas = document.getElementById('star-canvas');
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+
+  const el = document.createElement('div');
+  el.className = 'w-star';
+  el.dataset.id = book.id;
+  el.innerHTML = starSVG(book.id);
+
+  /* random start position avoiding edges */
+  const margin = STAR_SIZE + 10;
+  const x = margin + Math.random() * Math.max(0, cw - margin * 2);
+  const y = margin + Math.random() * Math.max(0, ch - margin * 2);
+  const rot = (Math.random() - 0.5) * 30;
+
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+  el.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`;
+
+  /* velocity: gentle random drift */
+  const speed = 0.35 + Math.random() * 0.45;
+  const angle = Math.random() * Math.PI * 2;
+
+  stars[book.id] = {
+    el, book,
+    x, y,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    rot,
+    vrot: (Math.random() - 0.5) * 0.12,
+  };
+
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showPopup(book.id, e.clientX, e.clientY);
+  });
+
+  if (animate) {
+    el.style.animation = 'starBorn .45s cubic-bezier(.34,1.56,.64,1) both';
+    el.addEventListener('animationend', () => { el.style.animation = ''; }, {once:true});
+  }
+
+  canvas.appendChild(el);
+  updateEmpty();
+  if (!raf) loop();
+}
+
+/* ── physics loop ── */
+function loop() {
+  const canvas = document.getElementById('star-canvas');
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  const half = STAR_SIZE / 2;
+
+  for (const id in stars) {
+    const s = stars[id];
+    s.x += s.vx;
+    s.y += s.vy;
+    s.rot += s.vrot;
+
+    /* bounce off walls */
+    if (s.x < half)       { s.x = half;       s.vx =  Math.abs(s.vx); }
+    if (s.x > cw - half)  { s.x = cw - half;  s.vx = -Math.abs(s.vx); }
+    if (s.y < half)       { s.y = half;        s.vy =  Math.abs(s.vy); }
+    if (s.y > ch - half)  { s.y = ch - half;   s.vy = -Math.abs(s.vy); }
+
+    /* slight random drift to keep it lively */
+    s.vx += (Math.random() - 0.5) * 0.018;
+    s.vy += (Math.random() - 0.5) * 0.018;
+
+    /* clamp speed */
+    const spd = Math.hypot(s.vx, s.vy);
+    if (spd > 0.9) { s.vx *= 0.9 / spd; s.vy *= 0.9 / spd; }
+    if (spd < 0.1) { s.vx *= 1.08; s.vy *= 1.08; }
+
+    s.el.style.left = s.x + 'px';
+    s.el.style.top  = s.y + 'px';
+    s.el.style.transform = `translate(-50%,-50%) rotate(${s.rot.toFixed(2)}deg)`;
+  }
+
+  if (Object.keys(stars).length > 0) {
+    raf = requestAnimationFrame(loop);
+  } else {
+    raf = null;
+  }
+}
+
+/* ── popup ── */
+function showPopup(id, clientX, clientY) {
+  closePopup();
+
+  const s = stars[id];
+  if (!s) return;
+  const book = s.book;
+
+  const canvas = document.getElementById('star-canvas');
+  const rect   = canvas.getBoundingClientRect();
+
+  const popup = document.createElement('div');
+  popup.className = 'w-popup';
+  popup.id = 'active-popup';
+
+  popup.innerHTML = `
+    <div class="popup-title">${esc(book.title)}</div>
+    ${book.author ? `<div class="popup-author">by ${esc(book.author)}</div>` : ''}
+    <div class="popup-meta">
+      ${book.genre ? `<span class="popup-genre">${esc(book.genre)}</span>` : ''}
+      <span class="popup-date">${book.date}</span>
+    </div>
+    <div class="popup-actions">
+      <button class="popup-close" onclick="closePopup()">close</button>
+      <button class="popup-remove" onclick="removeWish('${id}')">remove ✕</button>
+    </div>`;
+
+  canvas.appendChild(popup);
+  activePopup = popup;
+
+  /* position: prefer below-right of click, clamp to canvas bounds */
+  let px = clientX - rect.left + 12;
+  let py = clientY - rect.top  + 12;
+  popup.style.left = '0'; popup.style.top = '0';
+  const pw = popup.offsetWidth  || 240;
+  const ph = popup.offsetHeight || 120;
+  if (px + pw > rect.width  - 8) px = Math.max(8, clientX - rect.left - pw - 12);
+  if (py + ph > rect.height - 8) py = Math.max(8, clientY - rect.top  - ph - 12);
+  popup.style.left = px + 'px';
+  popup.style.top  = py + 'px';
+}
+
+function closePopup() {
+  if (activePopup) { activePopup.remove(); activePopup = null; }
+}
+
+/* ── add / remove ── */
+function addWish() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+
+  const author = document.getElementById('f-author').value.trim();
+  const genre  = document.getElementById('f-genre').value;
+  const id     = 'w' + Date.now();
+  const book   = {
+    id, title, author, genre,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+  };
+
+  data.wishlist.push(book);
+  save();
+
+  document.getElementById('f-title').value  = '';
+  document.getElementById('f-author').value = '';
+  document.getElementById('f-genre').value  = '';
+
+  spawnStar(book, true);
+}
+
+function removeWish(id) {
+  closePopup();
+  const s = stars[id];
+  if (!s) return;
+
+  s.el.style.animation = 'starDie .3s ease-in both';
+  s.el.addEventListener('animationend', () => {
+    s.el.remove();
+    delete stars[id];
+    updateEmpty();
+    if (Object.keys(stars).length === 0) { cancelAnimationFrame(raf); raf = null; }
+  }, {once:true});
+
+  data.wishlist = data.wishlist.filter(b => b.id !== id);
+  save();
+}
+
+function updateEmpty() {
+  const hint = document.getElementById('empty-hint');
+  if (hint) hint.style.display = Object.keys(stars).length > 0 ? 'none' : 'block';
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── close popup on canvas click ── */
+document.getElementById('star-canvas').addEventListener('click', () => closePopup());
+
+/* ── enter key on title input ── */
+document.getElementById('f-title').addEventListener('keydown', e => { if (e.key === 'Enter') addWish(); });
+
+/* ── init: load existing wishlist ── */
+data.wishlist.forEach(book => spawnStar(book, false));
+updateEmpty();
+</script>
+</body>
+</html>

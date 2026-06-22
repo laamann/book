@@ -328,6 +328,7 @@
       .hp-banner-flowers { display: none; }
     }
   </style>
+  <script src="theme.js"></script>
 </head>
 <body>
 
@@ -435,8 +436,10 @@
   <div class="nav-links">
     <button class="nav-btn active" data-view="home"     onclick="goTo('home')">home</button>
     <a      class="nav-btn"        data-view="read"     href="read.html">read</a>
-    <button class="nav-btn"        data-view="reading"  onclick="goTo('reading')">reading</button>
-    <button class="nav-btn"        data-view="wishlist" onclick="goTo('wishlist')">wishlist</button>
+    <a      class="nav-btn"        data-view="reading"  href="reading.html">reading</a>
+    <a      class="nav-btn"        data-view="tbr"      href="tbr.html">tbr</a>
+    <a      class="nav-btn"        data-view="wishlist" href="wishlist.html">wishlist</a>
+    <a      class="nav-btn"        data-view="recs"     href="rec.html">recs</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -621,15 +624,33 @@
       <div class="hp-card-num" id="hs-wishlist">0</div>
       <p class="hp-card-lbl">on my wishlist</p>
     </div>
-    <div class="hp-card" onclick="goTo('reading')">
+    <div class="hp-card" onclick="window.location.href='tbr.html'">
       <svg class="hp-card-art" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
-        <path d="M42 15 L42 80 L55 70 L68 80 L68 15 Z" fill="#f5b0c8" stroke="#e06090" stroke-width="2"/>
-        <path d="M42 15 L68 15" stroke="#c03870" stroke-width="2"/>
-        <line x1="48" y1="30" x2="62" y2="30" stroke="#e890aa" stroke-width="1.5"/><line x1="48" y1="40" x2="62" y2="40" stroke="#e890aa" stroke-width="1.5"/><line x1="48" y1="50" x2="62" y2="50" stroke="#e890aa" stroke-width="1.5"/>
-        <path d="M70 60 Q80 55 88 62 Q96 70 88 80 L70 95 L52 80 Q44 70 52 62 Q60 55 70 60 Z" fill="#ffe8f0" stroke="#f090b8" stroke-width="1.5"/>
-        <text x="70" y="82" text-anchor="middle" font-size="14" fill="#c03870">♡</text>
+        <!-- stacked books illustration -->
+        <ellipse cx="55" cy="104" rx="38" ry="5" fill="rgba(0,0,0,.1)"/>
+        <g transform="rotate(-8,55,88)">
+          <rect x="18" y="80" width="58" height="16" rx="2" fill="#9a1858"/>
+          <rect x="18" y="80" width="6"  height="16" rx="2" fill="rgba(0,0,0,.2)"/>
+        </g>
+        <g transform="rotate(5,55,74)">
+          <rect x="22" y="68" width="62" height="16" rx="2" fill="#c83878"/>
+          <rect x="22" y="68" width="6"  height="16" rx="2" fill="rgba(0,0,0,.2)"/>
+        </g>
+        <g transform="rotate(-3,55,60)">
+          <rect x="20" y="54" width="66" height="16" rx="2" fill="#e05878"/>
+          <rect x="20" y="54" width="6"  height="16" rx="2" fill="rgba(0,0,0,.2)"/>
+        </g>
+        <g transform="rotate(2,55,46)">
+          <rect x="24" y="38" width="62" height="18" rx="2" fill="#b83878"/>
+          <rect x="24" y="38" width="6"  height="18" rx="2" fill="rgba(0,0,0,.2)"/>
+          <rect x="24" y="38" width="62" height="18" rx="2" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+        </g>
+        <!-- bookmark -->
+        <rect x="74" y="32" width="7" height="18" rx="1" fill="#f5c0d4"/>
+        <path d="M71 50 L77 44 L83 50" fill="#f5c0d4"/>
       </svg>
-      <p class="hp-card-lbl" style="margin-top:.5rem;font-size:.88rem;color:var(--burgundy);font-style:italic;">keep reading →</p>
+      <div class="hp-card-num" id="hs-tbr">0</div>
+      <p class="hp-card-lbl">to be read</p>
     </div>
   </section>
 
@@ -793,7 +814,8 @@ const COVERS = [
 const selCover = { read: 'hotpink', reading: 'hotpink', wishlist: 'hotpink' };
 
 let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
-let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"tbr":[],"wishlist":[]}');
+if (!data.tbr) data.tbr = [];
 let qIdx = 0, qTimer;
 let readView = 'shelf';
 let popupBookId = null;
@@ -890,6 +912,7 @@ function buildHome() {
   document.getElementById('hs-read').textContent     = data.read.length;
   document.getElementById('hs-reading').textContent  = data.reading.length;
   document.getElementById('hs-wishlist').textContent = data.wishlist.length;
+  document.getElementById('hs-tbr').textContent      = (data.tbr || []).length;
   buildQuotes();
   buildCurr();
 }

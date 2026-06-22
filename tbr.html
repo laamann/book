@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>the little library · to be read</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:#1a0814; --dark2:#26101e; --brown:#6b1838;
+      --burgundy:#c03870; --rust:#d9607a; --gold:#e890aa;
+      --gold-l:#f5c0d4; --parchment:#fde8f0; --cream:#fff2f7;
+      --moss:#b83878; --ink:#22081a; --ink-mid:#541830; --ink-l:#a05878;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;color:var(--ink);min-height:100vh;background:var(--parchment);}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--dark2);border-bottom:1px solid rgba(196,154,74,.13);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--parchment);text-decoration:none;}
+    .nav-logo .g{color:var(--gold);}
+    .nav-btn{background:none;border:none;font-family:'Lato',sans-serif;font-size:.73rem;color:rgba(245,232,204,.42);cursor:pointer;padding:.4rem .9rem;border-radius:2px;transition:color .18s,background .18s;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;display:inline-block;}
+    .nav-btn:hover,.nav-btn.active{color:var(--gold-l);background:rgba(196,154,74,.08);}
+    .nav-user{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:rgba(245,232,204,.27);}
+
+    /* STICKERS */
+    .stk{position:fixed;pointer-events:none;user-select:none;z-index:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.22));}
+    .stk-float {animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate;}
+    .stk-wiggle{animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite;}
+    .stk-pulse {animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite;}
+    @keyframes stkfloat  {from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)}}
+    @keyframes stkwiggle {0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))}}
+    @keyframes stkpulse  {0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)}}
+    .cutout{font-family:'Impact','Arial Black',sans-serif;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:3px 4px 10px rgba(0,0,0,.28);}
+
+    /* HERO */
+    .tbr-hero{background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 55%,rgba(248,192,212,.15) 100%);padding:clamp(2.2rem,4vw,3.5rem) 1.5rem clamp(1.8rem,3vw,2.8rem);text-align:center;position:relative;overflow:hidden;border-bottom:1px solid rgba(192,56,112,.1);}
+    .tbr-hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 8% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 20px,transparent 20px),
+                       radial-gradient(circle at 92% 20%,rgba(192,56,112,.08) 0,rgba(192,56,112,.08) 14px,transparent 14px),
+                       radial-gradient(circle at 55% 85%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 18px,transparent 18px);
+      background-size:120px 120px,95px 95px,105px 105px;}
+    .hero-orn{font-family:'IM Fell English',serif;font-size:.7rem;color:var(--ink-l);letter-spacing:.22em;opacity:.45;display:block;margin-bottom:1rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.8rem,4.5vw,3rem);color:var(--ink);line-height:1.1;margin-bottom:.4rem;}
+    .hero-title em{color:var(--burgundy);}
+    .hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:clamp(.8rem,1.6vw,.95rem);margin-bottom:1.6rem;}
+
+    /* hero book stack */
+    .hero-stack-wrap{display:inline-block;animation:stackFloat 5.5s ease-in-out infinite alternate;filter:drop-shadow(0 16px 28px rgba(0,0,0,.16));position:relative;z-index:1;}
+    @keyframes stackFloat{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-14px) rotate(1.5deg)}}
+
+    .hero-count{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;background:white;border:1px solid rgba(192,56,112,.14);border-radius:999px;padding:.3rem .9rem;font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);box-shadow:0 2px 10px rgba(0,0,0,.05);}
+    .hero-count strong{font-style:normal;font-family:'Playfair Display',serif;font-size:1rem;color:var(--burgundy);}
+
+    /* ADD FORM */
+    .form-wrap{max-width:900px;margin:0 auto;padding:1.8rem 1.2rem .6rem;}
+    .add-form{background:var(--cream);border:1px solid rgba(196,154,74,.16);border-radius:3px;padding:1.3rem 1.6rem;margin-bottom:.6rem;box-shadow:0 2px 14px rgba(0,0,0,.045);}
+    .add-form h2{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);margin-bottom:.9rem;}
+    .form-row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+    .fg{display:flex;flex-direction:column;gap:.22rem;flex:1;min-width:100px;}
+    .fg label{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);}
+    .fg input,.fg select{border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.5rem .72rem;font-family:'IM Fell English',serif;font-size:.92rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;}
+    .fg input:focus,.fg select:focus{border-color:var(--gold);}
+    .fg input::placeholder{color:rgba(122,92,60,.3);}
+    .add-btn{padding:.52rem 1.2rem;background:var(--brown);color:var(--parchment);border:1px solid rgba(196,154,74,.19);border-radius:2px;font-family:'Lato',sans-serif;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;flex-shrink:0;align-self:flex-end;}
+    .add-btn:hover{background:var(--ink);transform:translateY(-1px);}
+    .cover-pick-row{display:flex;align-items:center;gap:.5rem;margin-top:.85rem;flex-wrap:wrap;}
+    .cpl{font-size:.61rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);flex-shrink:0;}
+    .cover-opts{display:flex;gap:.38rem;flex-wrap:wrap;}
+    .cover-opt{width:22px;height:30px;border-radius:1px 3px 3px 1px;cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s;border:2px solid transparent;box-shadow:1px 1px 5px rgba(0,0,0,.28);flex-shrink:0;}
+    .cover-opt:hover{transform:translateY(-2px) scale(1.07);}
+    .cover-opt.sel{border-color:var(--gold-l);transform:translateY(-3px) scale(1.1);box-shadow:0 0 0 2px var(--gold),2px 4px 8px rgba(0,0,0,.3);}
+    .cover-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(0,0,0,.28);border-radius:1px 0 0 1px;}
+    .cover-opt::after {content:'';position:absolute;right:-3px;top:2px;bottom:2px;width:3px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.38) 0,rgba(255,255,255,.38) 1px,rgba(200,188,170,.35) 1px,rgba(200,188,170,.35) 3px);border-radius:0 1px 1px 0;}
+
+    /* SORT / FILTER BAR */
+    .sort-bar{max-width:900px;margin:0 auto;padding:.2rem 1.2rem .8rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+    .sort-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-l);}
+    .sort-btn{background:none;border:1px solid rgba(196,154,74,.2);border-radius:3px;padding:.22rem .6rem;cursor:pointer;font-size:.67rem;color:var(--ink-l);transition:all .18s;font-family:'Lato',sans-serif;letter-spacing:.04em;}
+    .sort-btn.active,.sort-btn:hover{background:rgba(196,154,74,.12);color:var(--ink);border-color:rgba(196,154,74,.38);}
+
+    /* CARDS */
+    .cards-section{max-width:900px;margin:0 auto;padding:0 1.2rem 5rem;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.1rem;}
+
+    .tbr-card{background:var(--cream);border-radius:2px 7px 7px 2px;padding:1.1rem 1rem 1rem 1.4rem;box-shadow:0 2px 18px rgba(0,0,0,.07);border:1px solid rgba(196,154,74,.12);position:relative;animation:fadeUp .32s ease both;transition:transform .25s,box-shadow .25s;}
+    .tbr-card:hover{transform:translateY(-4px) rotate(-.3deg);box-shadow:0 10px 30px rgba(0,0,0,.1);}
+    .tbr-card::after{content:'';position:absolute;right:-4px;top:5px;bottom:5px;width:4px;background:repeating-linear-gradient(to bottom,rgba(196,154,74,.12) 0,rgba(196,154,74,.12) 1px,rgba(250,243,230,.8) 1px,rgba(250,243,230,.8) 3px);border-radius:0 1px 1px 0;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .card-spine{position:absolute;left:0;top:0;bottom:0;width:8px;border-radius:2px 0 0 2px;}
+    .card-num{position:absolute;top:.55rem;right:.6rem;width:22px;height:22px;border-radius:50%;background:rgba(192,56,112,.1);color:var(--burgundy);font-size:.62rem;font-family:'Playfair Display',serif;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1;}
+
+    .card-mini-book{width:44px;height:58px;border-radius:1px 4px 4px 1px;position:relative;margin:0 0 .75rem;box-shadow:2px 2px 9px rgba(0,0,0,.28),inset -3px 0 7px rgba(0,0,0,.22);transform:perspective(280px) rotateY(-9deg);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .card-mini-book::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:rgba(0,0,0,.3);border-radius:1px 0 0 1px;z-index:1;}
+    .card-mini-book::after {content:'';position:absolute;right:-3px;top:2px;bottom:2px;width:3px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.32) 0,rgba(255,255,255,.32) 1px,rgba(210,198,178,.32) 1px,rgba(210,198,178,.32) 3px);border-radius:0 1px 1px 0;}
+    .card-mini-book .ce{position:relative;z-index:2;}
+    .card-mini-book .shine{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 50%);border-radius:0 3px 3px 0;z-index:3;pointer-events:none;}
+
+    .card-title{font-family:'Playfair Display',serif;font-size:.93rem;font-weight:600;color:var(--ink);line-height:1.3;padding-right:1.8rem;}
+    .card-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.73rem;color:var(--ink-l);margin-top:.16rem;}
+    .card-genre{display:inline-block;margin-top:.42rem;font-size:.6rem;padding:.14rem .5rem;border-radius:999px;letter-spacing:.05em;text-transform:uppercase;background:rgba(184,56,120,.1);color:var(--moss);}
+    .card-date{font-size:.62rem;color:rgba(122,92,60,.38);margin-top:.28rem;}
+    .card-notes{margin-top:.6rem;}
+    .card-notes textarea{width:100%;border:1px solid rgba(196,154,74,.15);border-radius:2px;padding:.35rem .5rem;font-size:.77rem;font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-mid);resize:none;background:rgba(245,232,204,.28);outline:none;min-height:44px;}
+    .card-notes textarea:focus{border-color:var(--gold);}
+
+    /* card actions */
+    .card-actions{display:flex;gap:.4rem;margin-top:.8rem;align-items:center;}
+    .start-btn{flex:1;padding:.38rem .6rem;background:var(--brown);color:var(--parchment);border:none;border-radius:2px;font-family:'Lato',sans-serif;font-size:.67rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center;}
+    .start-btn:hover{background:var(--ink);transform:translateY(-1px);}
+    .del-btn{background:none;border:1px solid rgba(192,56,112,.2);border-radius:2px;padding:.33rem .5rem;font-size:.7rem;color:rgba(122,92,60,.35);cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;flex-shrink:0;}
+    .del-btn:hover{border-color:var(--burgundy);color:var(--burgundy);}
+
+    /* start-reading modal */
+    .card-start-form{margin-top:.65rem;padding:.6rem .7rem;background:rgba(245,232,240,.6);border:1px solid rgba(192,56,112,.14);border-radius:2px;animation:fadeUp .22s ease both;}
+    .card-start-form label{font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-l);display:block;margin-bottom:.3rem;}
+    .card-start-form input{width:100%;border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.4rem .6rem;font-family:'IM Fell English',serif;font-size:.9rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;margin-bottom:.5rem;}
+    .card-start-form input:focus{border-color:var(--gold);}
+    .card-start-form .sf-row{display:flex;gap:.4rem;}
+    .sf-go{flex:1;padding:.36rem;background:var(--burgundy);color:white;border:none;border-radius:2px;font-family:'Lato',sans-serif;font-size:.67rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
+    .sf-go:hover{background:var(--brown);}
+    .sf-cancel{background:none;border:1px solid rgba(160,88,120,.2);border-radius:2px;padding:.33rem .6rem;font-size:.67rem;color:var(--ink-l);cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;}
+    .sf-cancel:hover{border-color:var(--burgundy);color:var(--burgundy);}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:4rem 2rem;}
+    .empty-icon{font-size:2rem;display:block;margin-bottom:.6rem;opacity:.35;}
+    .empty-state p{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.93rem;}
+
+    /* ══ TBR JAR ══ */
+    .jar-section{background:linear-gradient(180deg,transparent 0%,rgba(248,220,235,.45) 25%,rgba(245,215,230,.65) 100%);padding:2.8rem 1.5rem 5rem;text-align:center;position:relative;}
+    .jar-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(192,56,112,.18),transparent);}
+    .jar-section .hero-orn{margin-bottom:.55rem;}
+    .jar-headline{font-family:'Playfair Display',serif;font-style:italic;font-size:1.6rem;color:var(--ink);margin-bottom:.3rem;}
+    .jar-headline em{color:var(--burgundy);}
+    .jar-tagline{font-family:'IM Fell English',serif;font-style:italic;font-size:.88rem;color:var(--ink-l);margin-bottom:2.2rem;}
+
+    .jar-scene{display:inline-block;position:relative;user-select:none;}
+    .jar-clickable{cursor:pointer;display:block;transition:filter .25s;filter:drop-shadow(0 12px 28px rgba(192,56,112,.22));}
+    .jar-clickable:hover{filter:drop-shadow(0 18px 38px rgba(192,56,112,.38)) drop-shadow(0 4px 10px rgba(0,0,0,.12));}
+
+    .jar-shaking{animation:jarShake .68s cubic-bezier(.36,.07,.19,.97) both;}
+    @keyframes jarShake{
+      0%{transform:rotate(0) scale(1)}
+      10%{transform:rotate(-6deg) scale(1.04)}
+      23%{transform:rotate(6deg) scale(1.04)}
+      36%{transform:rotate(-4deg) scale(1.02)}
+      49%{transform:rotate(4deg) scale(1.02)}
+      62%{transform:rotate(-2.5deg) scale(1.01)}
+      74%{transform:rotate(2.5deg) scale(1.01)}
+      86%{transform:rotate(-1deg) scale(1)}
+      100%{transform:rotate(0) scale(1)}
+    }
+
+    .jar-count-lbl{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:var(--ink-l);margin-top:.7rem;display:block;opacity:.72;}
+    .jar-hint-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(160,88,120,.48);margin-top:.28rem;display:block;}
+
+    /* slip wrapper (absolutely above jar) */
+    .jar-slip-wrap{position:absolute;bottom:calc(100% - 56px);left:50%;transform:translateX(-50%);z-index:20;pointer-events:none;min-width:216px;}
+    .jar-slip-wrap.has-slip{pointer-events:auto;}
+
+    /* the actual slip */
+    .jar-slip{
+      background:#fffcf5;border-radius:2px;
+      padding:1rem 1.2rem 1.1rem;
+      box-shadow:2px 6px 26px rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.07);
+      position:relative;
+      animation:slipRise .52s cubic-bezier(.34,1.3,.64,1) both;
+      transform-origin:bottom center;
+      background-image:repeating-linear-gradient(transparent,transparent 19px,rgba(196,154,74,.18) 19px,rgba(196,154,74,.18) 20px);
+      background-size:100% 20px;
+      background-position:0 26px;
+    }
+    .jar-slip::before{content:'';position:absolute;top:-6px;left:0;right:0;height:7px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='7'%3E%3Cpath d='M0 7 Q5 0 10 5 Q15 0 20 7' fill='%23fffcf5' stroke='%23e8d8b0' stroke-width='1'/%3E%3C/svg%3E") repeat-x;background-size:20px 7px;}
+    @keyframes slipRise{
+      0%{transform:translateY(65px) rotate(var(--sr,2deg)) scale(.6);opacity:0}
+      55%{opacity:1}
+      100%{transform:translateY(0) rotate(var(--sr,2deg)) scale(1);opacity:1}
+    }
+    @keyframes slipFadeOut{
+      from{transform:translateY(0) rotate(var(--sr,2deg));opacity:1}
+      to{transform:translateY(-36px) rotate(var(--sr,2deg));opacity:0}
+    }
+    .slip-star{font-size:.9rem;display:block;text-align:center;margin-bottom:.4rem;color:var(--burgundy);}
+    .slip-label{font-size:.58rem;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-l);display:block;margin-bottom:.18rem;text-align:center;}
+    .slip-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1.08rem;color:var(--ink);line-height:1.3;text-align:center;margin-bottom:.2rem;}
+    .slip-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.78rem;color:var(--ink-l);text-align:center;}
+    .slip-genre{font-size:.59rem;text-transform:uppercase;letter-spacing:.08em;background:rgba(192,56,112,.09);color:var(--burgundy);border-radius:2px;padding:.15rem .46rem;display:inline-block;margin-top:.3rem;}
+    .slip-close{position:absolute;top:.35rem;right:.45rem;background:none;border:none;font-size:.75rem;color:rgba(122,92,60,.28);cursor:pointer;transition:color .15s;padding:2px;line-height:1;}
+    .slip-close:hover{color:var(--burgundy);}
+
+    @media(max-width:540px){
+      nav{padding:.8rem 1rem;}
+      .form-row{flex-direction:column;}
+      .add-btn{width:100%;}
+    }
+  </style>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- STICKERS -->
+<div class="stk stk-float" style="top:82px;right:1%;--dur:7s;--dly:0s;--r0:rotate(-7deg);--r1:rotate(6deg);">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:7px 11px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.55;text-align:center;max-width:110px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">so many<br>books 📚<br>so little time</div>
+</div>
+<div class="stk stk-wiggle cutout" style="top:88px;left:1%;width:46px;height:50px;font-size:30px;background:#c82878;color:white;border-radius:6px;--dur:2.6s;--dly:.3s;--ra:-10deg;--rb:8deg;">T</div>
+<div class="stk stk-pulse" style="bottom:12%;right:.8%;--dur:3.4s;--dly:.8s;--rot:-5deg;">
+  <div class="emoji-badge" style="border:2px solid;border-radius:50%;width:66px;height:66px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:2px 3px 10px rgba(0,0,0,.15);">🌙</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn" href="read.html">read</a>
+    <a class="nav-btn" href="reading.html">reading</a>
+    <a class="nav-btn active" href="tbr.html">tbr</a>
+    <a class="nav-btn" href="wishlist.html">wishlist</a>
+    <a class="nav-btn" href="rec.html">recs</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- HERO -->
+<div class="tbr-hero">
+  <span class="hero-orn">✦ &nbsp; t o &nbsp; b e &nbsp; r e a d &nbsp; ✦</span>
+  <h1 class="hero-title">the <em>pile</em></h1>
+  <p class="hero-sub">books waiting patiently for their turn</p>
+
+  <!-- animated stacked books SVG -->
+  <div class="hero-stack-wrap">
+    <svg width="210" height="148" viewBox="0 0 210 148" xmlns="http://www.w3.org/2000/svg">
+      <!-- shadow -->
+      <ellipse cx="105" cy="144" rx="72" ry="7" fill="rgba(0,0,0,.13)"/>
+      <!-- book 4 (bottom, slightly sticking out left) -->
+      <g transform="rotate(-7,105,120)">
+        <rect x="22" y="100" width="106" height="28" rx="2" fill="#9a1858"/>
+        <rect x="22" y="100" width="10" height="28" rx="2 0 0 2" fill="rgba(0,0,0,.22)"/>
+        <rect x="22" y="100" width="106" height="28" rx="2" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+        <text x="75" y="119" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="8.5" fill="rgba(255,255,255,.7)">classics</text>
+      </g>
+      <!-- book 3 -->
+      <g transform="rotate(4,105,105)">
+        <rect x="30" y="88" width="112" height="30" rx="2" fill="#c83878"/>
+        <rect x="30" y="88" width="10" height="30" rx="2 0 0 2" fill="rgba(0,0,0,.22)"/>
+        <text x="86" y="108" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="8.5" fill="rgba(255,255,255,.7)">mystery</text>
+      </g>
+      <!-- book 2 -->
+      <g transform="rotate(-3,105,88)">
+        <rect x="28" y="72" width="118" height="30" rx="2" fill="#e05878"/>
+        <rect x="28" y="72" width="10" height="30" rx="2 0 0 2" fill="rgba(0,0,0,.22)"/>
+        <text x="87" y="91" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="8.5" fill="rgba(255,255,255,.7)">romance</text>
+      </g>
+      <!-- book 1 (top) -->
+      <g transform="rotate(2,105,72)">
+        <rect x="34" y="52" width="114" height="34" rx="2" fill="#b83878"/>
+        <rect x="34" y="52" width="10" height="34" rx="2 0 0 2" fill="rgba(0,0,0,.22)"/>
+        <rect x="34" y="52" width="114" height="34" rx="2" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <text x="91" y="73" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="9" fill="rgba(255,255,255,.82)">fantasy</text>
+      </g>
+      <!-- bookmark ribbon on top book -->
+      <rect x="124" y="46" width="10" height="28" rx="1" fill="#f5c0d4"/>
+      <path d="M119 74 L124 68 L129 74" fill="#f5c0d4"/>
+    </svg>
+  </div>
+
+  <div class="hero-count">
+    <span id="hero-count-text">0 books in the pile</span>
+  </div>
+</div>
+
+<!-- ADD FORM -->
+<div class="form-wrap">
+  <div class="add-form">
+    <h2>— add to the pile</h2>
+    <div class="form-row">
+      <div class="fg" style="flex:2;min-width:140px;">
+        <label>title *</label>
+        <input id="f-title" type="text" placeholder="book title…" autocomplete="off"/>
+      </div>
+      <div class="fg" style="flex:1.5;min-width:110px;">
+        <label>author</label>
+        <input id="f-author" type="text" placeholder="author…" autocomplete="off"/>
+      </div>
+      <div class="fg" style="flex:1;min-width:100px;">
+        <label>genre</label>
+        <select id="f-genre">
+          <option value="">—</option>
+          <option>fiction</option>
+          <option>fantasy</option>
+          <option>sci-fi</option>
+          <option>romance</option>
+          <option>thriller</option>
+          <option>mystery</option>
+          <option>non-fiction</option>
+          <option>poetry</option>
+          <option>classics</option>
+          <option>other</option>
+        </select>
+      </div>
+      <button class="add-btn" onclick="addBook()">+ add</button>
+    </div>
+    <div class="cover-pick-row">
+      <span class="cpl">cover colour</span>
+      <div class="cover-opts" id="cover-picker"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SORT BAR -->
+<div class="sort-bar">
+  <span class="sort-lbl">sort by</span>
+  <button class="sort-btn active" data-sort="added" onclick="setSort('added',this)">date added</button>
+  <button class="sort-btn" data-sort="title" onclick="setSort('title',this)">title</button>
+  <button class="sort-btn" data-sort="author" onclick="setSort('author',this)">author</button>
+</div>
+
+<!-- CARDS -->
+<div class="cards-section">
+  <div class="cards-grid" id="cards-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <span class="empty-icon">📚</span>
+    <p>your pile is empty —<br>add a book you're planning to read</p>
+  </div>
+</div>
+
+<!-- TBR JAR -->
+<div class="jar-section">
+  <span class="hero-orn">✦ &nbsp; p i c k &nbsp; a &nbsp; r e a d &nbsp; ✦</span>
+  <h2 class="jar-headline">the <em>tbr jar</em></h2>
+  <p class="jar-tagline">shake it and draw your next book</p>
+
+  <div class="jar-scene" id="jar-scene">
+    <!-- slip appears here -->
+    <div class="jar-slip-wrap" id="jar-slip-wrap"></div>
+
+    <!-- JAR SVG -->
+    <div class="jar-clickable" id="jar-el" onclick="pickFromJar()">
+      <svg width="200" height="234" viewBox="0 0 200 234" xmlns="http://www.w3.org/2000/svg">
+        <!-- shadow -->
+        <ellipse cx="100" cy="228" rx="60" ry="8" fill="rgba(0,0,0,.12)"/>
+
+        <!-- JAR BODY -->
+        <rect x="20" y="60" width="160" height="162" rx="28" fill="#e87898"/>
+        <!-- bottom shade -->
+        <path d="M20 192 Q20 222 48 222 L152 222 Q180 222 180 192 L180 204 Q180 222 152 222 L48 222 Q20 222 20 204Z" fill="rgba(0,0,0,.07)"/>
+        <!-- left glass highlight -->
+        <path d="M34 78 Q27 140 32 202" stroke="rgba(255,255,255,.28)" stroke-width="13" stroke-linecap="round" fill="none"/>
+        <!-- highlight dots -->
+        <circle cx="155" cy="80" r="6" fill="rgba(255,255,255,.24)"/>
+        <circle cx="163" cy="95" r="3.5" fill="rgba(255,255,255,.16)"/>
+
+        <!-- DYNAMIC SLIPS (filled by JS) -->
+        <g id="jar-slips"></g>
+
+        <!-- LABEL -->
+        <rect x="26" y="108" width="148" height="108" rx="13" fill="#fff2f7"/>
+        <rect x="26" y="108" width="148" height="108" rx="13" fill="none" stroke="rgba(220,80,120,.28)" stroke-width="1.8"/>
+        <rect x="31" y="113" width="138" height="98" rx="10" fill="none" stroke="rgba(220,80,120,.13)" stroke-width="1"/>
+        <text x="100" y="152" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="24" fill="#22081a" font-weight="bold">TBR</text>
+        <text x="100" y="172" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="11" fill="#a05878">to be read</text>
+        <text x="100" y="200" text-anchor="middle" font-size="22">📚</text>
+        <text x="48" y="174" text-anchor="middle" font-size="14" fill="#e87898">♡</text>
+        <text x="152" y="174" text-anchor="middle" font-size="14" fill="#e87898">♡</text>
+
+        <!-- LID BAND (covers slip bottoms) -->
+        <rect x="22" y="47" width="156" height="18" rx="5" fill="#c05878"/>
+        <line x1="22" y1="52" x2="178" y2="52" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
+        <line x1="22" y1="57" x2="178" y2="57" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <line x1="22" y1="62" x2="178" y2="62" stroke="rgba(0,0,0,.06)" stroke-width="1"/>
+        <rect x="22" y="47" width="156" height="5" rx="5" fill="rgba(255,255,255,.14)"/>
+
+        <!-- FABRIC CAP -->
+        <path d="M4 46 Q12 8 46 4 Q68 0 100 0 Q132 0 154 4 Q188 8 196 46 Q178 38 156 42 Q130 35 100 37 Q70 35 44 42 Q22 38 4 46Z" fill="#f5b8d0"/>
+        <!-- fold lines -->
+        <line x1="100" y1="50" x2="10"  y2="17" stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+        <line x1="100" y1="50" x2="32"  y2="5"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+        <line x1="100" y1="50" x2="58"  y2="1"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>
+        <line x1="100" y1="50" x2="82"  y2="0"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+        <line x1="100" y1="50" x2="100" y2="0"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+        <line x1="100" y1="50" x2="118" y2="0"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+        <line x1="100" y1="50" x2="142" y2="1"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>
+        <line x1="100" y1="50" x2="168" y2="5"  stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+        <line x1="100" y1="50" x2="190" y2="17" stroke="#d898b8" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+        <!-- string ties -->
+        <path d="M58 22 Q78 38 100 48" fill="none" stroke="#8a3050" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M142 22 Q122 38 100 48" fill="none" stroke="#8a3050" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- wavy fabric bottom edge -->
+        <path d="M4 46 Q14 56 24 48 Q34 58 44 48 Q56 59 66 49 Q76 58 86 48 Q92 57 100 48 Q108 57 114 48 Q124 58 134 49 Q144 59 156 48 Q166 58 176 48 Q186 56 196 46" fill="none" stroke="#e8a0c0" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- knot -->
+        <circle cx="100" cy="49" r="9.5" fill="#d06888"/>
+        <circle cx="100" cy="49" r="6.5" fill="#c05878"/>
+        <circle cx="100" cy="49" r="3.5" fill="#a03858"/>
+      </svg>
+    </div>
+
+    <span class="jar-count-lbl" id="jar-count-lbl">0 slips in the jar</span>
+    <span class="jar-hint-lbl" id="jar-hint-lbl">add books above to fill the jar</span>
+  </div>
+</div>
+
+<script>
+const COVERS = [
+  {id:'hotpink',c:'var(--cover-hotpink)'},{id:'rose',c:'var(--cover-rose)'},{id:'blush',c:'var(--cover-blush)'},
+  {id:'mauve',c:'var(--cover-mauve)'},{id:'berry',c:'var(--cover-berry)'},{id:'coral',c:'var(--cover-coral)'},
+  {id:'magenta',c:'var(--cover-magenta)'},{id:'dusty',c:'var(--cover-dusty)'},{id:'ballet',c:'var(--cover-ballet)'},
+  {id:'wine',c:'var(--cover-wine)'},
+];
+const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
+
+let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[],"tbr":[]}');
+let selCover = 'rose';
+let sortMode = 'added';
+
+if (!data.tbr) data.tbr = [];
+if (!user) { window.location.href = 'index.html'; }
+document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+
+/* ── cover picker ── */
+function initPicker() {
+  const wrap = document.getElementById('cover-picker');
+  COVERS.forEach(cov => {
+    const btn = document.createElement('div');
+    btn.className = 'cover-opt' + (selCover === cov.id ? ' sel' : '');
+    btn.style.background = cov.c;
+    btn.title = cov.id;
+    btn.onclick = () => {
+      selCover = cov.id;
+      wrap.querySelectorAll('.cover-opt').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── sort ── */
+function setSort(mode, el) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+/* ── render ── */
+function render() {
+  const grid  = document.getElementById('cards-grid');
+  const empty = document.getElementById('empty-state');
+
+  let books = [...data.tbr];
+  if (sortMode === 'title')  books.sort((a,b) => a.title.localeCompare(b.title));
+  if (sortMode === 'author') books.sort((a,b) => (a.author||'').localeCompare(b.author||''));
+  /* 'added' keeps original order (newest first via unshift) */
+
+  /* hero count */
+  const n = books.length;
+  document.getElementById('hero-count-text').textContent =
+    n === 0 ? '0 books in the pile'
+    : n === 1 ? '1 book in the pile'
+    : `${n} books in the pile`;
+
+  if (!books.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    updateJarSlips();
+    return;
+  }
+  empty.style.display = 'none';
+
+  updateJarSlips();
+
+  grid.innerHTML = books.map((b, i) => {
+    const cover = COVERS.find(c => c.id === b.cover) || COVERS[0];
+    const emoji = EMOJIS[b.genre] || '📓';
+    const notes = esc(b.notes || '');
+    return `
+    <div class="tbr-card" data-id="${b.id}">
+      <div class="card-spine" style="background:${cover.c}"></div>
+      <div class="card-num">${i+1}</div>
+      <div class="card-mini-book" style="background:${cover.c}">
+        <span class="ce">${emoji}</span>
+        <div class="shine"></div>
+      </div>
+      <div class="card-title">${esc(b.title)}</div>
+      ${b.author ? `<div class="card-author">by ${esc(b.author)}</div>` : ''}
+      ${b.genre  ? `<div class="card-genre">${esc(b.genre)}</div>` : ''}
+      <div class="card-date">${b.date}</div>
+      <div class="card-notes">
+        <textarea placeholder="notes…" oninput="saveNotes('${b.id}',this.value)">${notes}</textarea>
+      </div>
+      <div class="card-actions">
+        <button class="start-btn" onclick="openStartForm('${b.id}')">start reading →</button>
+        <button class="del-btn" onclick="deleteBook('${b.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── start reading: show inline form ── */
+function openStartForm(id) {
+  const card = document.querySelector(`.tbr-card[data-id="${id}"]`);
+  if (!card) return;
+  /* remove any existing form first */
+  const existing = card.querySelector('.card-start-form');
+  if (existing) { existing.remove(); return; }
+
+  const form = document.createElement('div');
+  form.className = 'card-start-form';
+  form.innerHTML = `
+    <label>how many pages does it have?</label>
+    <input type="number" min="1" placeholder="e.g. 320" id="sf-pages-${id}"/>
+    <div class="sf-row">
+      <button class="sf-go" onclick="confirmStart('${id}')">start reading ✓</button>
+      <button class="sf-cancel" onclick="this.closest('.card-start-form').remove()">cancel</button>
+    </div>`;
+  card.querySelector('.card-actions').after(form);
+  form.querySelector('input').focus();
+  form.querySelector('input').addEventListener('keydown', e => { if (e.key === 'Enter') confirmStart(id); });
+}
+
+function confirmStart(id) {
+  const pagesEl = document.getElementById('sf-pages-' + id);
+  const totalPages = parseInt(pagesEl && pagesEl.value) || 0;
+
+  const book = data.tbr.find(b => b.id === id);
+  if (!book) return;
+
+  /* move to reading */
+  data.tbr = data.tbr.filter(b => b.id !== id);
+  const already = data.reading.find(b => b.title === book.title && b.author === book.author);
+  if (!already) {
+    data.reading.unshift({
+      ...book,
+      currentPage: 1,
+      totalPages: totalPages || undefined,
+      date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}),
+    });
+  }
+  save();
+  render();
+}
+
+/* ── notes ── */
+function saveNotes(id, val) {
+  const b = data.tbr.find(b => b.id === id);
+  if (b) { b.notes = val; save(); }
+}
+
+/* ── add / delete ── */
+function addBook() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+
+  const author = document.getElementById('f-author').value.trim();
+  const genre  = document.getElementById('f-genre').value;
+  const id     = 'tbr' + Date.now();
+
+  data.tbr.unshift({
+    id, title, author, genre,
+    cover: selCover,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}),
+  });
+  save();
+
+  document.getElementById('f-title').value  = '';
+  document.getElementById('f-author').value = '';
+  document.getElementById('f-genre').value  = '';
+
+  render();
+}
+
+function deleteBook(id) {
+  data.tbr = data.tbr.filter(b => b.id !== id);
+  save();
+  render();
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── TBR JAR ── */
+const SLIP_FALLBACK = [
+  'var(--cover-hotpink)','var(--cover-rose)','var(--cover-blush)','var(--cover-mauve)',
+  'var(--cover-berry)','var(--cover-coral)','var(--cover-magenta)','var(--cover-dusty)',
+  'var(--cover-wine)','var(--cover-ballet)'
+];
+
+function updateJarSlips() {
+  const g = document.getElementById('jar-slips');
+  const lbl  = document.getElementById('jar-count-lbl');
+  const hint = document.getElementById('jar-hint-lbl');
+  if (!g) return;
+
+  const books = data.tbr;
+  const n = Math.min(books.length, 9);
+
+  /* layout: slips in glass area above label (y 66→108 = 42px visible zone) */
+  const slipW = 13, gap = 4;
+  const areaX = 28, areaW = 144;
+  const totalW = n > 0 ? n * slipW + (n - 1) * gap : 0;
+  const startX = areaX + Math.max(0, (areaW - totalW) / 2);
+  const step   = slipW + gap;
+
+  g.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const b   = books[i];
+    const cov = COVERS.find(c => c.id === b.cover);
+    const col = cov ? cov.c : SLIP_FALLBACK[i % SLIP_FALLBACK.length];
+    const x   = startX + i * step;
+    const rot = ((i * 13) % 17) - 8;      /* deterministic "random" tilt */
+    const h   = 36 + (i % 3) * 6;         /* varying heights */
+    const cx  = x + slipW / 2;
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', 66);
+    rect.setAttribute('width', slipW); rect.setAttribute('height', h);
+    rect.setAttribute('rx', '2'); rect.style.fill = col;
+    rect.setAttribute('transform', `rotate(${rot},${cx},108)`);
+    rect.setAttribute('opacity', '0.9');
+    g.appendChild(rect);
+
+    /* white top strip (paper edge) */
+    const top = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    top.setAttribute('x', x + 1); top.setAttribute('y', 66);
+    top.setAttribute('width', slipW - 2); top.setAttribute('height', 3);
+    top.setAttribute('rx', '1'); top.setAttribute('fill', 'rgba(255,255,255,.46)');
+    top.setAttribute('transform', `rotate(${rot},${cx},108)`);
+    g.appendChild(top);
+  }
+
+  if (lbl)  lbl.textContent  = n === 1 ? '1 slip in the jar' : `${n} slips in the jar`;
+  if (hint) hint.textContent = books.length > 9
+    ? `showing 9 of ${books.length} books — click to pick`
+    : books.length > 0 ? 'click the jar to draw a random book'
+    : 'add books above to fill the jar';
+}
+
+function pickFromJar() {
+  closeSlip(true);
+  shakeJar(() => {
+    if (!data.tbr.length) return;
+    const book = data.tbr[Math.floor(Math.random() * data.tbr.length)];
+    showSlip(book);
+  });
+}
+
+function shakeJar(cb) {
+  const el = document.getElementById('jar-el');
+  if (!el || el.dataset.shaking) return;
+  el.dataset.shaking = '1';
+  el.classList.add('jar-shaking');
+  el.addEventListener('animationend', () => {
+    el.classList.remove('jar-shaking');
+    delete el.dataset.shaking;
+    if (cb) cb();
+  }, {once: true});
+}
+
+function showSlip(book) {
+  const wrap = document.getElementById('jar-slip-wrap');
+  if (!wrap) return;
+  wrap.classList.add('has-slip');
+  const rot = ((Math.random() - 0.5) * 9).toFixed(1);
+  wrap.innerHTML = `
+    <div class="jar-slip" style="--sr:${rot}deg">
+      <button class="slip-close" onclick="closeSlip(false)">✕</button>
+      <span class="slip-star">✦</span>
+      <span class="slip-label">next read</span>
+      <div class="slip-title">${esc(book.title)}</div>
+      ${book.author ? `<div class="slip-author">by ${esc(book.author)}</div>` : ''}
+      ${book.genre  ? `<span class="slip-genre">${esc(book.genre)}</span>`   : ''}
+    </div>`;
+}
+
+function closeSlip(instant) {
+  const wrap = document.getElementById('jar-slip-wrap');
+  if (!wrap || !wrap.classList.contains('has-slip')) return;
+  if (instant) { wrap.innerHTML = ''; wrap.classList.remove('has-slip'); return; }
+  const slip = wrap.querySelector('.jar-slip');
+  if (!slip)  { wrap.innerHTML = ''; wrap.classList.remove('has-slip'); return; }
+  slip.style.animation = 'slipFadeOut .28s ease both';
+  slip.addEventListener('animationend', () => {
+    wrap.innerHTML = '';
+    wrap.classList.remove('has-slip');
+  }, {once: true});
+}
+
+/* ── enter on title input ── */
+document.getElementById('f-title').addEventListener('keydown', e => { if (e.key === 'Enter') addBook(); });
+
+initPicker();
+render();
+</script>
+</body>
+</html>

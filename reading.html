@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>the little library · currently reading</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:#1a0814; --dark2:#26101e; --brown:#6b1838;
+      --burgundy:#c03870; --rust:#d9607a; --gold:#e890aa;
+      --gold-l:#f5c0d4; --parchment:#fde8f0; --cream:#fff2f7;
+      --moss:#b83878; --ink:#22081a; --ink-mid:#541830; --ink-l:#a05878;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;color:var(--ink);min-height:100vh;background:var(--parchment);}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--dark2);border-bottom:1px solid rgba(196,154,74,.13);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--parchment);text-decoration:none;}
+    .nav-logo .g{color:var(--gold);}
+    .nav-btn{background:none;border:none;font-family:'Lato',sans-serif;font-size:.73rem;color:rgba(245,232,204,.42);cursor:pointer;padding:.4rem .9rem;border-radius:2px;transition:color .18s,background .18s;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;display:inline-block;}
+    .nav-btn:hover,.nav-btn.active{color:var(--gold-l);background:rgba(196,154,74,.08);}
+    .nav-user{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:rgba(245,232,204,.27);}
+
+    /* STICKERS */
+    .stk{position:fixed;pointer-events:none;user-select:none;z-index:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.22));}
+    .stk-float {animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate;}
+    .stk-wiggle{animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite;}
+    .stk-pulse {animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite;}
+    @keyframes stkfloat  {from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)}}
+    @keyframes stkwiggle {0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))}}
+    @keyframes stkpulse  {0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)}}
+    .cutout{font-family:'Impact','Arial Black',sans-serif;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:3px 4px 10px rgba(0,0,0,.28);}
+
+    /* HERO */
+    .reading-hero{
+      background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 55%,rgba(248,192,212,.15) 100%);
+      padding:clamp(2.5rem,5vw,4rem) 1.5rem clamp(2rem,4vw,3rem);
+      text-align:center;position:relative;overflow:hidden;
+      border-bottom:1px solid rgba(192,56,112,.1);
+    }
+    .reading-hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 8% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 20px,transparent 20px),
+                       radial-gradient(circle at 92% 20%,rgba(192,56,112,.08) 0,rgba(192,56,112,.08) 14px,transparent 14px),
+                       radial-gradient(circle at 55% 85%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 18px,transparent 18px);
+      background-size:120px 120px,95px 95px,105px 105px;}
+    .hero-orn{font-family:'IM Fell English',serif;font-size:.7rem;color:var(--ink-l);letter-spacing:.22em;opacity:.45;display:block;margin-bottom:1rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.8rem,4.5vw,3rem);color:var(--ink);line-height:1.1;margin-bottom:.45rem;}
+    .hero-title em{color:var(--burgundy);}
+    .hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:clamp(.8rem,1.6vw,.95rem);margin-bottom:1.8rem;}
+
+    /* Hero animated book */
+    .hero-book-wrap{
+      display:inline-block;
+      animation:heroFloat 5s ease-in-out infinite alternate;
+      filter:drop-shadow(0 20px 30px rgba(0,0,0,.14));
+      position:relative;z-index:1;
+    }
+    @keyframes heroFloat{
+      from{transform:translateY(0) rotate(-1.8deg);}
+      to  {transform:translateY(-16px) rotate(1.8deg);}
+    }
+
+    .hero-count{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.4rem;background:white;border:1px solid rgba(192,56,112,.14);border-radius:999px;padding:.3rem .9rem;font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);box-shadow:0 2px 10px rgba(0,0,0,.05);}
+    .hero-count strong{font-style:normal;font-family:'Playfair Display',serif;font-size:1rem;color:var(--burgundy);}
+
+    /* ADD FORM */
+    .form-wrap{max-width:900px;margin:0 auto;padding:1.8rem 1.2rem .6rem;}
+    .add-form{background:var(--cream);border:1px solid rgba(196,154,74,.16);border-radius:3px;padding:1.3rem 1.6rem;margin-bottom:.6rem;box-shadow:0 2px 14px rgba(0,0,0,.045);}
+    .add-form h2{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);margin-bottom:.9rem;}
+    .form-row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+    .fg{display:flex;flex-direction:column;gap:.22rem;flex:1;min-width:100px;}
+    .fg label{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);}
+    .fg input,.fg select{border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.5rem .72rem;font-family:'IM Fell English',serif;font-size:.92rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;}
+    .fg input:focus,.fg select:focus{border-color:var(--gold);}
+    .fg input::placeholder{color:rgba(122,92,60,.3);}
+    .fg.narrow{max-width:88px;min-width:72px;}
+    .add-btn{padding:.52rem 1.2rem;background:var(--brown);color:var(--parchment);border:1px solid rgba(196,154,74,.19);border-radius:2px;font-family:'Lato',sans-serif;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;flex-shrink:0;align-self:flex-end;}
+    .add-btn:hover{background:var(--ink);transform:translateY(-1px);}
+    .cover-pick-row{display:flex;align-items:center;gap:.5rem;margin-top:.85rem;flex-wrap:wrap;}
+    .cpl{font-size:.61rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);flex-shrink:0;}
+    .cover-opts{display:flex;gap:.38rem;flex-wrap:wrap;}
+    .cover-opt{width:22px;height:30px;border-radius:1px 3px 3px 1px;cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s;border:2px solid transparent;box-shadow:1px 1px 5px rgba(0,0,0,.28);flex-shrink:0;}
+    .cover-opt:hover{transform:translateY(-2px) scale(1.07);}
+    .cover-opt.sel{border-color:var(--gold-l);transform:translateY(-3px) scale(1.1);box-shadow:0 0 0 2px var(--gold),2px 4px 8px rgba(0,0,0,.3);}
+    .cover-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(0,0,0,.28);border-radius:1px 0 0 1px;}
+    .cover-opt::after {content:'';position:absolute;right:-3px;top:2px;bottom:2px;width:3px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.38) 0,rgba(255,255,255,.38) 1px,rgba(200,188,170,.35) 1px,rgba(200,188,170,.35) 3px);border-radius:0 1px 1px 0;}
+
+    /* CARDS */
+    .cards-section{max-width:1040px;margin:0 auto;padding:1rem 1.2rem 5rem;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.8rem;}
+
+    .reading-card{
+      background:white;border-radius:4px 14px 14px 4px;
+      padding:1.5rem 1.3rem 1.2rem;
+      border:1px solid rgba(192,56,112,.12);
+      border-left:6px solid var(--burgundy);
+      box-shadow:0 4px 22px rgba(0,0,0,.07);
+      position:relative;
+      animation:fadeUp .38s ease both;
+      transition:transform .25s,box-shadow .25s;
+    }
+    .reading-card:hover{transform:translateY(-5px);box-shadow:0 14px 36px rgba(0,0,0,.11);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)}}
+
+    .card-del{position:absolute;top:.65rem;right:.7rem;background:none;border:none;cursor:pointer;color:rgba(122,92,60,.2);font-size:.8rem;padding:2px;transition:color .18s;line-height:1;}
+    .card-del:hover{color:var(--burgundy);}
+
+    /* Mini animated book */
+    .card-book-wrap{
+      display:flex;justify-content:center;
+      margin-bottom:1.1rem;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.12));
+    }
+    .card-book-wrap svg{
+      animation:cardFloat 6s ease-in-out infinite alternate;
+    }
+    @keyframes cardFloat{
+      from{transform:translateY(0) rotate(-.7deg);}
+      to  {transform:translateY(-9px) rotate(.7deg);}
+    }
+
+    .card-title {font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.3;padding-right:1.2rem;margin-bottom:.15rem;}
+    .card-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.78rem;color:var(--ink-l);margin-bottom:.5rem;}
+    .card-genre {display:inline-block;font-size:.6rem;padding:.13rem .5rem;border-radius:999px;letter-spacing:.05em;text-transform:uppercase;background:rgba(192,56,112,.1);color:var(--burgundy);margin-bottom:.9rem;}
+
+    /* Page display */
+    .page-display{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.28rem;}
+    .page-current{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--ink);line-height:1;}
+    .page-sep   {font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:var(--ink-l);}
+    .page-total {font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink-l);}
+    .pct-text   {font-family:'IM Fell English',serif;font-style:italic;font-size:.84rem;color:var(--burgundy);margin-bottom:.55rem;}
+
+    .prog-bar{background:rgba(192,56,112,.1);border-radius:999px;height:5px;overflow:hidden;margin-bottom:.7rem;}
+    .prog-fill{height:100%;background:linear-gradient(90deg,#c03870,#e880a0);border-radius:999px;transition:width .5s cubic-bezier(.25,.46,.45,.94);}
+
+    /* Slider */
+    .page-slider-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.6rem;}
+    .page-slider-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:999px;background:rgba(192,56,112,.15);outline:none;cursor:pointer;}
+    .page-slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;background:var(--burgundy);cursor:pointer;box-shadow:0 1px 6px rgba(192,56,112,.4);}
+    .page-slider-row input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--burgundy);cursor:pointer;border:none;box-shadow:0 1px 6px rgba(192,56,112,.4);}
+
+    .page-input-row{display:flex;gap:.38rem;margin-bottom:.6rem;}
+    .page-input-row input{width:68px;border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.3rem .48rem;font-size:.8rem;color:var(--ink);background:var(--parchment);outline:none;font-family:'IM Fell English',serif;}
+    .page-input-row input:focus{border-color:var(--gold);}
+    .page-input-row button{background:rgba(192,56,112,.09);border:1px solid rgba(192,56,112,.22);border-radius:2px;padding:.3rem .65rem;font-size:.7rem;color:var(--burgundy);cursor:pointer;font-family:'Lato',sans-serif;transition:background .18s;}
+    .page-input-row button:hover{background:rgba(192,56,112,.18);}
+    .page-input-row label{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-l);align-self:center;}
+
+    .card-notes textarea{width:100%;border:1px solid rgba(196,154,74,.15);border-radius:2px;padding:.38rem .55rem;font-size:.78rem;font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-mid);resize:none;background:rgba(245,232,204,.28);outline:none;min-height:44px;}
+    .card-notes textarea:focus{border-color:var(--gold);}
+    .card-notes textarea::placeholder{color:rgba(122,92,60,.25);}
+
+    /* Empty */
+    .empty-state{text-align:center;padding:4rem 2rem;grid-column:1/-1;}
+    .empty-icon{font-size:2rem;display:block;margin-bottom:.6rem;opacity:.35;}
+    .empty-state p{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.93rem;}
+
+    @media(max-width:520px){
+      .form-row{flex-direction:column;}
+      .add-btn{width:100%;}
+      nav{padding:.8rem 1rem;}
+      .cards-grid{grid-template-columns:1fr;}
+    }
+
+    /* ── FINISH ANIMATION ── */
+    .finish-overlay{
+      position:absolute;inset:0;border-radius:inherit;
+      background:linear-gradient(140deg,var(--brown) 0%,var(--burgundy) 55%,var(--rust) 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      z-index:10;overflow:hidden;
+      animation:overlayIn .52s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes overlayIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+    /* floating sparkles background */
+    .finish-sparkles{position:absolute;inset:0;pointer-events:none;}
+    .finish-spark{
+      position:absolute;font-size:1.2rem;opacity:0;
+      animation:sparkFloat var(--sd,2.4s) var(--sy,0s) ease-out infinite;
+    }
+    @keyframes sparkFloat{
+      0%  {opacity:0;transform:translateY(0) scale(0) rotate(0deg)}
+      22% {opacity:1;transform:translateY(-28px) scale(1.1) rotate(25deg)}
+      100%{opacity:0;transform:translateY(-95px) scale(.25) rotate(220deg)}
+    }
+
+    /* checkmark */
+    .finish-check{
+      font-size:4rem;color:white;line-height:1;position:relative;z-index:2;
+      animation:checkPop .55s .3s cubic-bezier(.34,1.56,.64,1) both;
+      text-shadow:0 4px 22px rgba(0,0,0,.28);
+    }
+    @keyframes checkPop{from{transform:scale(0) rotate(-45deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+    /* "finished!" label */
+    .finish-label{
+      font-family:'Playfair Display',serif;font-style:italic;font-size:1.75rem;
+      color:white;margin-top:.45rem;position:relative;z-index:2;
+      animation:finFadeUp .42s .56s ease both;
+      text-shadow:0 2px 16px rgba(0,0,0,.22);letter-spacing:.02em;
+    }
+    .finish-sub{
+      font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;
+      color:rgba(255,255,255,.72);margin-top:.3rem;position:relative;z-index:2;
+      animation:finFadeUp .4s .72s ease both;
+    }
+    @keyframes finFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* card exit */
+    .card-exit{
+      animation:cardFlyOut .62s cubic-bezier(.36,.07,.19,.97) forwards !important;
+      transform-origin:center center;pointer-events:none;
+    }
+    @keyframes cardFlyOut{
+      0%  {transform:translateY(0) scale(1) rotate(0deg);opacity:1}
+      30% {transform:translateY(-14px) scale(1.05) rotate(1.5deg);opacity:1}
+      100%{transform:translateY(50px) scale(.6) rotate(-5deg);opacity:0}
+    }
+  </style>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- STICKERS -->
+<div class="stk stk-float" style="top:78px;right:1%;--dur:7s;--dly:0s;--r0:rotate(-7deg);--r1:rotate(4deg);">
+  <svg viewBox="0 0 90 90" width="74" height="74" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="45" cy="45" r="42" fill="white" stroke="#c02858" stroke-width="3"/>
+    <circle cx="45" cy="45" r="35" fill="none" stroke="#f090b0" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <circle cx="45" cy="45" r="28" fill="#fff5f8"/>
+    <text x="45" y="27" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">HOT GIRLS</text>
+    <text x="45" y="42" text-anchor="middle" font-size="11.5" font-family="Impact,Arial Black,sans-serif" fill="#22081a" font-weight="900">READ</text>
+    <text x="45" y="56" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">BOOKS</text>
+    <text x="45" y="71" text-anchor="middle" font-size="14">📚</text>
+  </svg>
+</div>
+<div class="stk stk-wiggle cutout" style="top:84px;left:1%;width:44px;height:48px;font-size:30px;background:#c82878;color:white;border-radius:5px;--dur:2.3s;--dly:0s;--ra:-10deg;--rb:8deg;">N</div>
+<div class="stk stk-pulse" style="bottom:10%;left:.7%;--dur:3.4s;--dly:.5s;--rot:5deg;">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 10px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.5;text-align:center;max-width:110px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">just one<br>more page 📖</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn" href="read.html">read</a>
+    <a class="nav-btn active" href="reading.html">reading</a>
+    <a class="nav-btn" href="tbr.html">tbr</a>
+    <a class="nav-btn" href="wishlist.html">wishlist</a>
+    <a class="nav-btn" href="rec.html">recs</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- HERO -->
+<section class="reading-hero">
+  <span class="hero-orn">✦ &nbsp; mid-story &nbsp; ✦</span>
+  <h1 class="hero-title">currently <em>reading</em></h1>
+  <p class="hero-sub">between the first page and the last — living the story</p>
+
+  <div class="hero-book-wrap">
+    <!-- Large decorative open book -->
+    <svg viewBox="0 0 390 248" width="340" height="216" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shadow -->
+      <ellipse cx="195" cy="240" rx="168" ry="9" fill="rgba(0,0,0,0.09)"/>
+      <!-- Cover edges (green) left -->
+      <path d="M16 74 Q16 196 23 215 Q100 226 178 221 L178 216 Q102 221 26 210 Q20 196 20 78 Z" fill="#7a9a52" opacity=".88"/>
+      <!-- Cover edges (green) right -->
+      <path d="M374 74 Q374 196 367 215 Q290 226 212 221 L212 216 Q288 221 364 210 Q370 196 370 78 Z" fill="#7a9a52" opacity=".88"/>
+      <!-- Left page body -->
+      <path d="M23 74 Q100 58 178 65 L178 216 Q102 221 23 215 Z" fill="#f5f0e4"/>
+      <!-- Right page body -->
+      <path d="M212 65 Q290 58 367 74 L367 215 Q290 221 212 216 Z" fill="#f8f4ea"/>
+      <!-- Inner shadow near spine (left) -->
+      <path d="M166 62 Q173 139 172 217 L178 217 L178 62 Z" fill="rgba(0,0,0,0.065)"/>
+      <!-- Inner shadow near spine (right) -->
+      <path d="M212 62 L218 62 Q217 139 218 217 L212 217 Z" fill="rgba(0,0,0,0.065)"/>
+      <!-- Spine -->
+      <path d="M178 62 Q185 60 190 60 Q195 60 202 62 L202 217 Q195 219 190 219 Q185 219 178 217 Z" fill="#9a7858"/>
+      <line x1="190" y1="62" x2="190" y2="218" stroke="rgba(255,255,255,0.2)" stroke-width="2.5"/>
+      <line x1="180" y1="63" x2="180" y2="217" stroke="rgba(0,0,0,0.1)" stroke-width="1.5"/>
+      <line x1="200" y1="63" x2="200" y2="217" stroke="rgba(0,0,0,0.1)" stroke-width="1.5"/>
+      <!-- Page lines LEFT -->
+      <line x1="36" y1="86"  x2="168" y2="83"  stroke="rgba(140,105,75,.13)" stroke-width="1"/>
+      <line x1="36" y1="98"  x2="168" y2="96"  stroke="rgba(140,105,75,.12)" stroke-width="1"/>
+      <line x1="36" y1="110" x2="168" y2="108" stroke="rgba(140,105,75,.10)" stroke-width="1"/>
+      <line x1="36" y1="122" x2="168" y2="120" stroke="rgba(140,105,75,.09)" stroke-width="1"/>
+      <line x1="36" y1="134" x2="168" y2="133" stroke="rgba(140,105,75,.08)" stroke-width="1"/>
+      <line x1="36" y1="146" x2="168" y2="145" stroke="rgba(140,105,75,.07)" stroke-width="1"/>
+      <line x1="36" y1="158" x2="168" y2="157" stroke="rgba(140,105,75,.07)" stroke-width="1"/>
+      <line x1="36" y1="170" x2="168" y2="169" stroke="rgba(140,105,75,.06)" stroke-width="1"/>
+      <line x1="36" y1="182" x2="168" y2="181" stroke="rgba(140,105,75,.06)" stroke-width="1"/>
+      <line x1="36" y1="194" x2="168" y2="193" stroke="rgba(140,105,75,.05)" stroke-width="1"/>
+      <line x1="36" y1="206" x2="168" y2="205" stroke="rgba(140,105,75,.05)" stroke-width="1"/>
+      <!-- Page lines RIGHT -->
+      <line x1="222" y1="83"  x2="354" y2="86"  stroke="rgba(140,105,75,.13)" stroke-width="1"/>
+      <line x1="222" y1="96"  x2="354" y2="98"  stroke="rgba(140,105,75,.12)" stroke-width="1"/>
+      <line x1="222" y1="108" x2="354" y2="110" stroke="rgba(140,105,75,.10)" stroke-width="1"/>
+      <line x1="222" y1="120" x2="354" y2="122" stroke="rgba(140,105,75,.09)" stroke-width="1"/>
+      <line x1="222" y1="133" x2="354" y2="134" stroke="rgba(140,105,75,.08)" stroke-width="1"/>
+      <line x1="222" y1="145" x2="354" y2="146" stroke="rgba(140,105,75,.07)" stroke-width="1"/>
+      <line x1="222" y1="157" x2="354" y2="158" stroke="rgba(140,105,75,.07)" stroke-width="1"/>
+      <line x1="222" y1="169" x2="354" y2="170" stroke="rgba(140,105,75,.06)" stroke-width="1"/>
+      <line x1="222" y1="181" x2="354" y2="182" stroke="rgba(140,105,75,.06)" stroke-width="1"/>
+      <line x1="222" y1="193" x2="354" y2="194" stroke="rgba(140,105,75,.05)" stroke-width="1"/>
+      <line x1="222" y1="205" x2="354" y2="206" stroke="rgba(140,105,75,.05)" stroke-width="1"/>
+      <!-- Page stack edges left (read) -->
+      <line x1="23"  y1="211" x2="178" y2="214" stroke="#ddd5bb" stroke-width="1.5"/>
+      <line x1="21"  y1="208" x2="178" y2="211" stroke="#e0d8c2" stroke-width="1.2"/>
+      <line x1="19"  y1="205" x2="178" y2="208" stroke="#ddd5bb" stroke-width="1"/>
+      <line x1="18"  y1="202" x2="178" y2="205" stroke="#dad2b8" stroke-width=".9"/>
+      <line x1="17"  y1="199" x2="178" y2="202" stroke="#d8d0b6" stroke-width=".8"/>
+      <!-- Page stack edges right (unread) -->
+      <line x1="212" y1="214" x2="367" y2="211" stroke="#ddd5bb" stroke-width="1.5"/>
+      <line x1="212" y1="211" x2="369" y2="208" stroke="#e0d8c2" stroke-width="1.2"/>
+      <line x1="212" y1="208" x2="371" y2="205" stroke="#ddd5bb" stroke-width="1"/>
+      <line x1="212" y1="205" x2="372" y2="202" stroke="#dad2b8" stroke-width=".9"/>
+      <line x1="212" y1="202" x2="373" y2="199" stroke="#d8d0b6" stroke-width=".8"/>
+      <!-- Cover bottom edge -->
+      <path d="M16 208 Q100 224 178 219 L178 216 Q100 221 18 205 Z" fill="#5c7a38" opacity=".88"/>
+      <path d="M212 219 Q290 224 374 208 L370 205 Q290 221 212 216 Z" fill="#5c7a38" opacity=".88"/>
+      <!-- Subtle page curl on outer edges -->
+      <path d="M38 66 Q42 140 40 214" stroke="rgba(180,150,110,.12)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M352 66 Q348 140 350 214" stroke="rgba(180,150,110,.12)" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <div class="hero-count">
+    currently reading <strong id="book-count">0</strong> book<span id="book-plural">s</span>
+  </div>
+</section>
+
+<!-- ADD FORM -->
+<div class="form-wrap">
+  <div class="add-form">
+    <h2>add a book you're reading now</h2>
+    <div class="form-row">
+      <div class="fg" style="flex:2;min-width:130px;"><label>title</label><input id="r-title" type="text" placeholder="book title…"/></div>
+      <div class="fg" style="flex:1.4;min-width:110px;"><label>author</label><input id="r-author" type="text" placeholder="author…"/></div>
+      <div class="fg" style="min-width:105px;"><label>genre</label>
+        <select id="r-genre">
+          <option value="">— genre —</option><option>fiction</option><option>fantasy</option>
+          <option>sci-fi</option><option>romance</option><option>thriller</option>
+          <option>mystery</option><option>non-fiction</option><option>poetry</option>
+          <option>classics</option><option>other</option>
+        </select>
+      </div>
+      <div class="fg narrow"><label>on page</label><input id="r-page" type="number" min="0" placeholder="0"/></div>
+      <div class="fg narrow"><label>total pages</label><input id="r-total" type="number" min="1" placeholder="300"/></div>
+      <button class="add-btn" onclick="addBook()">+ add</button>
+    </div>
+    <div class="cover-pick-row">
+      <span class="cpl">cover colour</span>
+      <div class="cover-opts" id="cp-reading"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CARDS -->
+<div class="cards-section">
+  <div class="cards-grid" id="cards-grid"></div>
+</div>
+
+<script>
+const COVERS = [
+  {id:'hotpink',c:'var(--cover-hotpink)'},{id:'rose',c:'var(--cover-rose)'},{id:'blush',c:'var(--cover-blush)'},
+  {id:'mauve',c:'var(--cover-mauve)'},{id:'berry',c:'var(--cover-berry)'},{id:'coral',c:'var(--cover-coral)'},
+  {id:'magenta',c:'var(--cover-magenta)'},{id:'dusty',c:'var(--cover-dusty)'},{id:'ballet',c:'var(--cover-ballet)'},
+  {id:'wine',c:'var(--cover-wine)'},
+];
+const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
+
+let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let selCover = 'hotpink';
+
+if (!user) { window.location.href = 'index.html'; }
+document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
+initPicker();
+render();
+
+/* ── Cover picker ── */
+function initPicker() {
+  const wrap = document.getElementById('cp-reading');
+  COVERS.forEach(cov => {
+    const btn = document.createElement('div');
+    btn.className = 'cover-opt' + (selCover === cov.id ? ' sel' : '');
+    btn.style.background = cov.c;
+    btn.title = cov.id;
+    btn.onclick = () => {
+      selCover = cov.id;
+      wrap.querySelectorAll('.cover-opt').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── Add / delete ── */
+function addBook() {
+  const title  = document.getElementById('r-title').value.trim();
+  const author = document.getElementById('r-author').value.trim();
+  const genre  = document.getElementById('r-genre').value;
+  const page   = parseInt(document.getElementById('r-page').value)  || 0;
+  const total  = parseInt(document.getElementById('r-total').value) || 0;
+  if (!title) { document.getElementById('r-title').focus(); return; }
+  data.reading.unshift({
+    id: Date.now(), title, author, genre, notes:'', cover: selCover,
+    currentPage: page, totalPages: total,
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+  });
+  save();
+  ['r-title','r-author'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('r-genre').value = '';
+  document.getElementById('r-page').value  = '';
+  document.getElementById('r-total').value = '';
+  render();
+}
+
+['r-title','r-author'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') addBook(); });
+});
+
+function delBook(id) {
+  data.reading = data.reading.filter(x => x.id !== id);
+  save(); render();
+}
+
+function save() { localStorage.setItem('tll-data', JSON.stringify(data)); }
+
+/* ── Render ── */
+function render() {
+  const n = data.reading.length;
+  document.getElementById('book-count').textContent = n;
+  document.getElementById('book-plural').textContent = n === 1 ? '' : 's';
+  const grid = document.getElementById('cards-grid');
+  if (!n) {
+    grid.innerHTML = `<div class="empty-state"><span class="empty-icon">📖</span><p>no open books yet — what are you diving into?</p></div>`;
+    return;
+  }
+  grid.innerHTML = data.reading.map((b, i) => bookCard(b, i)).join('');
+  data.reading.forEach(b => {
+    const sl = document.getElementById('sl-' + b.id);
+    const ta = document.getElementById('tn-' + b.id);
+    if (sl) {
+      sl.addEventListener('input',  e => liveUpdate(b.id, +e.target.value));
+      sl.addEventListener('change', e => { savePageChange(b.id, +e.target.value); });
+    }
+    if (ta) ta.addEventListener('input', e => setNotes(b.id, e.target.value));
+  });
+}
+
+function getPct(b) {
+  if (!b.totalPages) return 0;
+  return Math.min(100, Math.round((b.currentPage / b.totalPages) * 100));
+}
+
+/* Live DOM update (no re-render) while slider moves */
+function liveUpdate(id, val) {
+  const b = data.reading.find(x => x.id === id);
+  if (!b) return;
+  b.currentPage = Math.max(0, Math.min(val, b.totalPages || val));
+  const p = getPct(b);
+  const card = document.querySelector('[data-id="' + id + '"]');
+  if (!card) return;
+  const curEl  = card.querySelector('.page-current');
+  const pctEl  = card.querySelector('.pct-text');
+  const fillEl = card.querySelector('.prog-fill');
+  const piEl   = document.getElementById('pi-' + id);
+  const bookEl = card.querySelector('.card-book-wrap');
+  if (curEl)  curEl.textContent  = b.currentPage;
+  if (pctEl)  pctEl.textContent  = p + '% read';
+  if (fillEl) fillEl.style.width = p + '%';
+  if (piEl)   piEl.value         = b.currentPage;
+  const cov = COVERS.find(c => c.id === (b.cover||'hotpink')) || COVERS[0];
+  if (bookEl) bookEl.innerHTML = miniBookSVG(p, cov.c, b.title, b.currentPage);
+}
+
+function savePageChange(id, val) {
+  const b = data.reading.find(x => x.id === id);
+  if (!b) return;
+  b.currentPage = Math.max(0, Math.min(val, b.totalPages || val));
+  save();
+  if (b.totalPages && b.currentPage >= b.totalPages) triggerFinish(id);
+}
+
+function updatePageFromInput(id) {
+  const b   = data.reading.find(x => x.id === id);
+  const inp = document.getElementById('pi-' + id);
+  if (!b || !inp) return;
+  b.currentPage = Math.max(0, Math.min(parseInt(inp.value) || 0, b.totalPages || 99999));
+  save();
+  if (b.totalPages && b.currentPage >= b.totalPages) { triggerFinish(id); return; }
+  render();
+}
+
+/* ── Finish animation → move to read shelf ── */
+function triggerFinish(id) {
+  const card = document.querySelector('[data-id="' + id + '"]');
+  if (!card || card.dataset.finishing) return;
+  card.dataset.finishing = '1';
+  card.style.overflow = 'hidden';
+
+  // Sparkle symbols at random-ish positions
+  const glyphs = ['✦','★','✦','✨','★','✦','✨','★'];
+  const sparks = glyphs.map((g, i) => {
+    const left = 5 + i * 12;
+    const top  = 55 + (i % 3) * 12;
+    const dur  = (1.8 + (i % 3) * 0.4).toFixed(1);
+    const dly  = (i * 0.22).toFixed(2);
+    return `<span class="finish-spark" style="left:${left}%;top:${top}%;--sd:${dur}s;--sy:${dly}s">${g}</span>`;
+  }).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'finish-overlay';
+  overlay.innerHTML = `
+    <div class="finish-sparkles">${sparks}</div>
+    <div class="finish-check">✓</div>
+    <div class="finish-label">finished!</div>
+    <div class="finish-sub">moving to your shelf…</div>
+  `;
+  card.appendChild(overlay);
+
+  // After overlay is visible, fly the card out
+  setTimeout(() => {
+    card.classList.add('card-exit');
+    setTimeout(() => {
+      const b = data.reading.find(x => x.id === id);
+      if (b) {
+        data.reading = data.reading.filter(x => x.id !== id);
+        // Move to read shelf (avoid duplicate by title+author)
+        const already = data.read.find(x =>
+          x.title === b.title && x.author === b.author
+        );
+        if (!already) {
+          data.read.unshift({
+            ...b,
+            currentPage: undefined, totalPages: undefined,
+            date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+          });
+        }
+        save();
+      }
+      render();
+    }, 650);
+  }, 2600);
+}
+
+function setNotes(id, val) {
+  const b = data.reading.find(x => x.id === id);
+  if (b) { b.notes = val; save(); }
+}
+
+/* ── Build card HTML ── */
+function bookCard(b, idx) {
+  const cov   = COVERS.find(c => c.id === (b.cover||'hotpink')) || COVERS[0];
+  const p     = getPct(b);
+  const genre = b.genre ? `<span class="card-genre">${esc(b.genre)}</span>` : '';
+
+  const pageDisplay = b.totalPages
+    ? `<div class="page-display">
+        <span class="page-current">${b.currentPage || 0}</span>
+        <span class="page-sep">of</span>
+        <span class="page-total">${b.totalPages}</span>
+      </div>
+      <div class="pct-text">${p}% read</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div>
+      <div class="page-slider-row">
+        <input type="range" id="sl-${b.id}" min="0" max="${b.totalPages}" value="${b.currentPage||0}"/>
+      </div>
+      <div class="page-input-row">
+        <input type="number" id="pi-${b.id}" min="0" max="${b.totalPages}" value="${b.currentPage||0}" placeholder="page"/>
+        <button onclick="updatePageFromInput(${b.id})">update</button>
+        <label>update page</label>
+      </div>`
+    : `<div class="page-display">
+        <span class="page-current">${b.currentPage || 0}</span>
+        <span class="page-sep">pages read</span>
+      </div>
+      <div class="page-input-row" style="margin-top:.5rem">
+        <input type="number" id="pi-${b.id}" min="0" value="${b.currentPage||0}" placeholder="page"/>
+        <button onclick="updatePageFromInput(${b.id})">update</button>
+      </div>`;
+
+  const delay = (idx * 0.9) % 4;
+
+  return `<div class="reading-card" data-id="${b.id}">
+    <button class="card-del" onclick="delBook(${b.id})" title="remove">✕</button>
+    <div class="card-book-wrap" style="animation-delay:${delay}s">${miniBookSVG(p, cov.c, b.title, b.currentPage)}</div>
+    <div class="card-title">${esc(b.title)}</div>
+    ${b.author ? `<div class="card-author">by ${esc(b.author)}</div>` : ''}
+    ${genre}
+    ${pageDisplay}
+    <div class="card-notes"><textarea id="tn-${b.id}" rows="2" placeholder="thoughts, feelings, a favourite line…">${b.notes||''}</textarea></div>
+  </div>`;
+}
+
+/* ── Open book SVG per card ── */
+function miniBookSVG(pct, coverColor, title, currentPage) {
+  // Page stack: left = read, right = unread
+  const MAX = 9;
+  const leftCount  = Math.round(pct / 100 * MAX);
+  const rightCount = MAX - leftCount;
+
+  // Truncate title to fit ~22 chars at font-size 8.5
+  const raw = String(title || '');
+  const displayTitle = raw.length > 22 ? raw.slice(0, 21) + '…' : raw;
+  const pageLabel = (currentPage != null && currentPage !== 0) ? 'p. ' + currentPage : '';
+
+  let leftStack = '';
+  for (let i = 0; i < leftCount; i++) {
+    const y = (176 + i * 2.4).toFixed(1);
+    const op = Math.max(0.18, 0.72 - i * 0.06).toFixed(2);
+    leftStack += `<line x1="22" y1="${y}" x2="162" y2="${(+y+1.3).toFixed(1)}" stroke="#ccc4a2" stroke-width="1.5" opacity="${op}"/>`;
+  }
+  let rightStack = '';
+  for (let i = 0; i < rightCount; i++) {
+    const y = (176 + i * 2.4).toFixed(1);
+    const op = Math.max(0.18, 0.72 - i * 0.06).toFixed(2);
+    rightStack += `<line x1="178" y1="${(+y+1.3).toFixed(1)}" x2="318" y2="${y}" stroke="#ccc4a2" stroke-width="1.5" opacity="${op}"/>`;
+  }
+
+  return `<svg viewBox="0 0 340 224" width="316" height="208" xmlns="http://www.w3.org/2000/svg">
+  <!-- Drop shadow -->
+  <ellipse cx="170" cy="218" rx="154" ry="8" fill="rgba(0,0,0,0.09)"/>
+
+  <!-- Cover edges LEFT -->
+  <path d="M14 62 Q14 176 21 196 Q90 208 162 204 L162 199 Q91 203 23 191 Q18 176 18 66 Z" fill="${coverColor}" opacity=".84"/>
+  <!-- Cover edges RIGHT -->
+  <path d="M326 62 Q326 176 319 196 Q250 208 178 204 L178 199 Q249 203 317 191 Q322 176 322 66 Z" fill="${coverColor}" opacity=".84"/>
+
+  <!-- Left page body -->
+  <path d="M21 62 Q90 48 162 54 L162 199 Q91 203 21 197 Z" fill="#f3ede0"/>
+  <!-- Right page body -->
+  <path d="M178 54 Q250 48 319 62 L319 197 Q249 203 178 199 Z" fill="#f6f2e6"/>
+
+  <!-- Inner gutter shadow left -->
+  <path d="M150 50 Q157 130 156 199 L162 199 L162 50 Z" fill="rgba(0,0,0,0.07)"/>
+  <!-- Inner gutter shadow right -->
+  <path d="M178 50 L184 50 Q183 130 184 199 L178 199 Z" fill="rgba(0,0,0,0.07)"/>
+
+  <!-- Spine -->
+  <path d="M162 50 Q167 48 170 48 Q173 48 178 50 L178 199 Q173 201 170 201 Q167 201 162 199 Z" fill="#9c7a56"/>
+  <line x1="169" y1="50" x2="169" y2="201" stroke="rgba(255,255,255,0.22)" stroke-width="2.2"/>
+  <line x1="164" y1="51" x2="164" y2="200" stroke="rgba(0,0,0,0.09)" stroke-width="1.2"/>
+  <line x1="176" y1="51" x2="176" y2="200" stroke="rgba(0,0,0,0.09)" stroke-width="1.2"/>
+
+  <!-- ════ LEFT PAGE ════ -->
+  <!-- Header: book title -->
+  <line x1="30" y1="65" x2="152" y2="63" stroke="rgba(100,72,48,.28)" stroke-width="1"/>
+  <text x="30" y="62" font-family="Georgia,'Times New Roman',serif" font-size="8.5" font-style="italic" fill="rgba(62,38,22,.72)">${esc(displayTitle)}</text>
+  <line x1="30" y1="69" x2="152" y2="67" stroke="rgba(100,72,48,.14)" stroke-width=".7"/>
+
+  <!-- Wavy imaginary text lines — LEFT -->
+  <path d="M30 80  Q67 77  104 80  Q132 83  152 79 " stroke="rgba(82,54,34,.23)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 91  Q62 89  94  92  Q124 95  152 91 " stroke="rgba(82,54,34,.21)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 102 Q70 100 110 103 Q136 105 152 102" stroke="rgba(82,54,34,.20)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 113 Q60 111 90  114 Q112 116 128 113" stroke="rgba(82,54,34,.19)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M38 124 Q74 122 110 125 Q136 127 152 123" stroke="rgba(82,54,34,.18)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 135 Q64 133 98  136 Q128 138 152 135" stroke="rgba(82,54,34,.17)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 146 Q68 144 106 147 Q132 149 152 146" stroke="rgba(82,54,34,.16)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M30 157 Q58 155 86  158 Q108 160 122 157" stroke="rgba(82,54,34,.16)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M38 168 Q72 166 106 169 Q132 171 152 168" stroke="rgba(82,54,34,.15)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+
+  <!-- ════ RIGHT PAGE ════ -->
+  <!-- Header: page number -->
+  <text x="312" y="62" text-anchor="end" font-family="Georgia,'Times New Roman',serif" font-size="8.5" font-style="italic" fill="rgba(62,38,22,.60)">${pageLabel}</text>
+  <line x1="188" y1="65" x2="312" y2="63" stroke="rgba(100,72,48,.28)" stroke-width="1"/>
+  <line x1="188" y1="69" x2="312" y2="67" stroke="rgba(100,72,48,.14)" stroke-width=".7"/>
+
+  <!-- Wavy imaginary text lines — RIGHT -->
+  <path d="M188 80  Q224 77  260 80  Q290 83  312 79 " stroke="rgba(82,54,34,.23)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 91  Q222 89  256 92  Q286 95  312 91 " stroke="rgba(82,54,34,.21)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 102 Q226 100 264 103 Q292 105 312 102" stroke="rgba(82,54,34,.20)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 113 Q220 111 252 114 Q282 116 312 113" stroke="rgba(82,54,34,.19)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 124 Q226 122 264 125 Q292 127 312 123" stroke="rgba(82,54,34,.18)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 135 Q222 133 256 136 Q286 138 312 135" stroke="rgba(82,54,34,.17)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 146 Q228 144 268 147 Q294 149 312 146" stroke="rgba(82,54,34,.16)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M188 157 Q218 155 248 158 Q274 160 296 157" stroke="rgba(82,54,34,.16)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M196 168 Q230 166 264 169 Q292 171 312 168" stroke="rgba(82,54,34,.15)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+
+  <!-- Page stack edges — left = read, right = unread -->
+  ${leftStack}
+  ${rightStack}
+
+  <!-- Cover bottom edge -->
+  <path d="M14 191 Q91 207 162 203 L162 199 Q91 203 19 189 Z" fill="${coverColor}" opacity=".72"/>
+  <path d="M178 203 Q249 207 326 191 L322 189 Q249 203 178 199 Z" fill="${coverColor}" opacity=".72"/>
+  </svg>`;
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
