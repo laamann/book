@@ -181,6 +181,33 @@
     .empty-icon  { font-size:2rem; display:block; margin-bottom:.6rem; opacity:.35; }
     .empty-state p { font-family:'IM Fell English',serif; font-style:italic; color:var(--ink-l); font-size:.93rem; }
 
+    /* edit mode */
+    .add-form.editing{border-color:rgba(192,56,112,.35);background:rgba(248,220,235,.35);}
+    .edit-notice{font-family:'IM Fell English',serif;font-style:italic;font-size:.74rem;color:var(--burgundy);margin-bottom:.6rem;display:none;}
+    .add-form.editing .edit-notice{display:block;}
+    .cancel-edit{background:none;border:1px solid rgba(192,56,112,.25);color:var(--ink-l);font-family:'Lato',sans-serif;font-size:.72rem;padding:.5rem .9rem;border-radius:2px;cursor:pointer;transition:all .18s;align-self:flex-end;flex-shrink:0;}
+    .cancel-edit:hover{border-color:var(--burgundy);color:var(--burgundy);}
+    .bsp-edit{margin-top:.4rem;background:none;border:1px solid rgba(196,154,74,.28);border-radius:3px;padding:.26rem .75rem;font-size:.66rem;color:var(--ink-l);cursor:pointer;font-family:'Lato',sans-serif;width:100%;transition:background .18s;text-align:center;display:block;}
+    .bsp-edit:hover{background:rgba(196,154,74,.1);}
+    .bsp-edit-inp{width:100%;border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.38rem .52rem;font-family:'IM Fell English',serif;font-size:.88rem;color:var(--ink);background:var(--parchment);outline:none;margin-bottom:.38rem;}
+    .bsp-edit-inp:focus{border-color:var(--gold);}
+    .bsp-edit-sel{width:100%;border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.38rem .52rem;font-family:'IM Fell English',serif;font-size:.88rem;color:var(--ink);background:var(--parchment);outline:none;margin-bottom:.55rem;}
+    .bsp-save{background:var(--brown);color:var(--parchment);border:none;border-radius:3px;padding:.3rem .8rem;font-size:.68rem;cursor:pointer;font-family:'Lato',sans-serif;width:100%;transition:background .18s;}
+    .bsp-save:hover{background:var(--ink);}
+    /* sort bar for grid */
+    .grid-sort{max-width:860px;margin:0 auto;padding:.2rem 1.2rem .6rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+    .gs-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-l);}
+    .gs-btn{background:none;border:1px solid rgba(196,154,74,.2);border-radius:3px;padding:.22rem .58rem;cursor:pointer;font-size:.66rem;color:var(--ink-l);transition:all .18s;font-family:'Lato',sans-serif;}
+    .gs-btn.active,.gs-btn:hover{background:rgba(196,154,74,.12);color:var(--ink);border-color:rgba(196,154,74,.38);}
+    /* hamburger nav */
+    .nav-ham{display:none;background:none;border:1px solid rgba(196,154,74,.3);color:var(--parchment);border-radius:3px;padding:.26rem .5rem;cursor:pointer;font-size:1.1rem;line-height:1;}
+    @media(max-width:700px){
+      nav{flex-wrap:wrap;}
+      .nav-ham{display:block;order:1;}
+      .nav-user{order:2;}
+      .nav-links{display:none;width:100%;order:3;padding:.4rem .8rem .6rem;border-top:1px solid rgba(196,154,74,.1);}
+      .nav-links.open{display:flex;flex-direction:column;}
+    }
     @media(max-width:520px) {
       .form-row { flex-direction:column; }
       .add-btn  { width:100%; }
@@ -194,33 +221,19 @@
 </head>
 <body>
 
-<!-- STICKERS -->
-<div class="stk stk-float" style="top:80px;right:1.2%;--dur:7s;--dly:0s;--r0:rotate(-8deg);--r1:rotate(5deg);">
-  <svg viewBox="0 0 90 90" width="78" height="78" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="45" cy="45" r="42" fill="white" stroke="#c02858" stroke-width="3"/>
-    <circle cx="45" cy="45" r="35" fill="none" stroke="#f090b0" stroke-width="1.2" stroke-dasharray="4,3"/>
-    <circle cx="45" cy="45" r="28" fill="#fff5f8"/>
-    <text x="45" y="27" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">HOT GIRLS</text>
-    <text x="45" y="42" text-anchor="middle" font-size="11.5" font-family="Impact,Arial Black,sans-serif" fill="#22081a" font-weight="900">READ</text>
-    <text x="45" y="56" text-anchor="middle" font-size="8" font-family="Impact,Arial Black,sans-serif" fill="#c02858" font-weight="900">BOOKS</text>
-    <text x="45" y="71" text-anchor="middle" font-size="14">📚</text>
-  </svg>
-</div>
-<div class="stk stk-wiggle cutout" style="top:90px;left:1.2%;width:46px;height:50px;font-size:32px;background:#c82878;color:white;border-radius:6px;--dur:2.4s;--dly:0s;--ra:-11deg;--rb:9deg;">R</div>
-<div class="stk stk-pulse" style="bottom:14%;left:.8%;--dur:3.2s;--dly:.6s;--rot:4deg;">
-  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 10px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.5;text-align:center;max-width:115px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">one more<br>chapter 📖</div>
-</div>
 
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
-  <div style="display:flex;gap:.2rem;">
+  <button class="nav-ham" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
     <a class="nav-btn" href="index.html">home</a>
     <a class="nav-btn active" href="read.html">read</a>
     <a class="nav-btn" href="reading.html">reading</a>
     <a class="nav-btn" href="tbr.html">tbr</a>
     <a class="nav-btn" href="wishlist.html">wishlist</a>
     <a class="nav-btn" href="rec.html">recs</a>
+    <a class="nav-btn" href="music.html">music</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -236,7 +249,8 @@
 <!-- ADD FORM -->
 <div class="form-wrap">
   <div class="add-form">
-    <h2>add a book you've finished</h2>
+    <p class="edit-notice" id="edit-notice">✎ editing — update fields and save</p>
+    <h2 id="form-heading">add a book you've finished</h2>
     <div class="form-row">
       <div class="fg" style="flex:2;min-width:130px;"><label>title</label><input id="read-title" type="text" placeholder="book title…"/></div>
       <div class="fg" style="flex:1.4;"><label>author</label><input id="read-author" type="text" placeholder="author…"/></div>
@@ -248,7 +262,8 @@
           <option>classics</option><option>other</option>
         </select>
       </div>
-      <button class="add-btn" onclick="addBook()">+ add</button>
+      <button class="add-btn" id="add-btn" onclick="addBook()">+ add</button>
+      <button class="cancel-edit" id="cancel-edit" style="display:none" onclick="cancelEdit()">✕ cancel</button>
     </div>
     <div class="cover-pick-row">
       <span class="cpl">cover</span>
@@ -467,11 +482,14 @@ const DECOS = {
 };
 
 /* ── state ── */
-let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
-let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
-let selCover = 'hotpink';
-let view     = 'shelf';
-let popupId  = null;
+let user      = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data      = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let selCover  = 'hotpink';
+let view      = 'shelf';
+let popupId   = null;
+let popupEl   = null;
+let editingId = null;
+let gridSort  = 'added';
 
 if (!user) { window.location.href = 'index.html'; }
 document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
@@ -495,12 +513,20 @@ function initPicker() {
   });
 }
 
-/* ── add / delete ── */
+/* ── add / delete / edit ── */
 function addBook() {
   const title  = document.getElementById('read-title').value.trim();
   const author = document.getElementById('read-author').value.trim();
   const genre  = document.getElementById('read-genre').value;
   if (!title) { document.getElementById('read-title').focus(); return; }
+
+  if (editingId) {
+    const b = data.read.find(x => x.id === editingId);
+    if (b) { b.title = title; b.author = author; b.genre = genre; b.cover = selCover; }
+    cancelEdit();
+    save(); render(); return;
+  }
+
   data.read.unshift({
     id: Date.now(), title, author, genre, notes:'', cover: selCover, rating: 0,
     date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
@@ -515,7 +541,35 @@ function addBook() {
   document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') addBook(); });
 });
 
+function startEdit(id) {
+  const b = data.read.find(x => x.id === id);
+  if (!b) return;
+  editingId = id;
+  closePopup();
+  document.getElementById('read-title').value  = b.title;
+  document.getElementById('read-author').value = b.author || '';
+  document.getElementById('read-genre').value  = b.genre  || '';
+  selCover = b.cover || 'hotpink';
+  document.querySelectorAll('#cp-read .cover-opt').forEach(el => el.classList.toggle('sel', el.title === selCover));
+  document.querySelector('.add-form').classList.add('editing');
+  document.getElementById('add-btn').textContent = '✓ update';
+  document.getElementById('cancel-edit').style.display = '';
+  document.querySelector('.form-wrap').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('read-title').focus();
+}
+
+function cancelEdit() {
+  editingId = null;
+  document.getElementById('read-title').value  = '';
+  document.getElementById('read-author').value = '';
+  document.getElementById('read-genre').value  = '';
+  document.querySelector('.add-form').classList.remove('editing');
+  document.getElementById('add-btn').textContent = '+ add';
+  document.getElementById('cancel-edit').style.display = 'none';
+}
+
 function delBook(id) {
+  if (!confirm('remove this book from your shelf?')) return;
   data.read = data.read.filter(x => x.id !== id);
   save(); closePopup(); render();
 }
@@ -530,6 +584,14 @@ function setView(v) {
   closePopup(); render();
 }
 
+/* ── sort for grid ── */
+function setGridSort(mode, el) {
+  gridSort = mode;
+  document.querySelectorAll('.gs-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  render();
+}
+
 /* ── render ── */
 function render() {
   document.getElementById('book-count').textContent = data.read.length;
@@ -537,11 +599,20 @@ function render() {
   if (view === 'shelf') {
     wrap.innerHTML = `<div class="bookcase-section">${buildBookcase()}</div>`;
   } else {
+    const sortBar = `<div class="grid-sort">
+      <span class="gs-lbl">sort</span>
+      <button class="gs-btn${gridSort==='added'?' active':''}" onclick="setGridSort('added',this)">date added</button>
+      <button class="gs-btn${gridSort==='title'?' active':''}" onclick="setGridSort('title',this)">title</button>
+      <button class="gs-btn${gridSort==='rating'?' active':''}" onclick="setGridSort('rating',this)">rating</button>
+    </div>`;
     if (!data.read.length) {
-      wrap.innerHTML = `<div class="empty-state"><span class="empty-icon">🍵</span><p>your shelf is waiting for its first story…</p></div>`;
+      wrap.innerHTML = sortBar + `<div class="empty-state"><span class="empty-icon">🍵</span><p>your shelf is waiting for its first story…</p></div>`;
       return;
     }
-    wrap.innerHTML = `<div class="grid-wrap"><div class="books-grid">${data.read.map(bookCard).join('')}</div></div>`;
+    let books = [...data.read];
+    if (gridSort === 'title')  books.sort((a,b) => a.title.localeCompare(b.title));
+    if (gridSort === 'rating') books.sort((a,b) => (b.rating||0)-(a.rating||0));
+    wrap.innerHTML = sortBar + `<div class="grid-wrap"><div class="books-grid">${books.map(bookCard).join('')}</div></div>`;
     data.read.forEach(b => {
       const ta = document.getElementById('n-'+b.id);
       if (ta) ta.addEventListener('input', e => setNotes(b.id, e.target.value));
@@ -619,6 +690,7 @@ function openPopup(id, el) {
     <div class="bsp-stars">${stars}</div>
     <div class="bsp-date">${b.date}</div>
     <textarea class="bsp-notes" rows="2" placeholder="a note, a feeling…" oninput="setNotes(${b.id},this.value)">${b.notes||''}</textarea>
+    <button class="bsp-edit" onclick="startEdit(${b.id})">✎ edit details</button>
     <button class="bsp-del" onclick="delBook(${b.id})">✕ remove from shelf</button>
   `;
   popup.classList.add('visible');
@@ -664,6 +736,7 @@ function bookCard(b) {
   const stars = [1,2,3,4,5].map(i => `<span class="star${i<=b.rating?' lit':''}" onclick="gridRating(${b.id},${i})">★</span>`).join('');
   return `<div class="book-card">
     <button class="del-btn" onclick="delBook(${b.id})" title="remove">✕</button>
+    <button class="del-btn" style="right:1.7rem;color:rgba(122,92,60,.19);" onclick="startEdit(${b.id})" title="edit">✎</button>
     <div class="bspine"></div>
     <div class="mini-cover" style="background:${cov.c};"><span class="ce">${emoji}</span><div class="shine"></div></div>
     <div class="btitle">${esc(b.title)}</div>

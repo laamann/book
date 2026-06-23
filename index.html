@@ -317,6 +317,19 @@
     .svt-btn{background:none;border:1px solid rgba(196,154,74,.2);border-radius:3px;padding:.28rem .65rem;cursor:pointer;font-size:.7rem;color:var(--ink-l);transition:all .18s;font-family:'Lato',sans-serif;letter-spacing:.04em;}
     .svt-btn.active,.svt-btn:hover{background:rgba(196,154,74,.12);color:var(--ink);border-color:rgba(196,154,74,.38);}
 
+    /* enhanced stats bar */
+    .hp-stats-bar{display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap;padding:1.1rem 1.5rem;background:var(--cream);border-bottom:1px solid rgba(192,56,112,.1);}
+    .hsb-item{text-align:center;}
+    .hsb-lbl{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-l);margin-bottom:.2rem;}
+    .hsb-val{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--ink);}
+    /* hamburger */
+    .nav-ham{display:none;background:none;border:1px solid rgba(196,154,74,.3);color:var(--parchment);border-radius:3px;padding:.26rem .5rem;cursor:pointer;font-size:1.1rem;line-height:1;}
+    @media(max-width:700px){
+      #main-nav{flex-wrap:wrap;}
+      .nav-ham{display:block;}
+      .nav-links{display:none;width:100%;padding:.4rem .8rem .6rem;border-top:1px solid rgba(196,154,74,.1);}
+      .nav-links.open{display:flex;flex-direction:column;}
+    }
     @media (max-width: 500px) {
       .form-row { flex-direction: column; }
       .add-btn { width: 100%; }
@@ -433,6 +446,7 @@
 <!-- ══════ NAV ══════ -->
 <nav id="main-nav" style="display:none">
   <div class="nav-logo" onclick="goTo('home')">the <span class="g">little</span> library</div>
+  <button class="nav-ham" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">☰</button>
   <div class="nav-links">
     <button class="nav-btn active" data-view="home"     onclick="goTo('home')">home</button>
     <a      class="nav-btn"        data-view="read"     href="read.html">read</a>
@@ -440,6 +454,7 @@
     <a      class="nav-btn"        data-view="tbr"      href="tbr.html">tbr</a>
     <a      class="nav-btn"        data-view="wishlist" href="wishlist.html">wishlist</a>
     <a      class="nav-btn"        data-view="recs"     href="rec.html">recs</a>
+    <a      class="nav-btn"        data-view="music"    href="music.html">music</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -652,6 +667,13 @@
       <div class="hp-card-num" id="hs-tbr">0</div>
       <p class="hp-card-lbl">to be read</p>
     </div>
+  </section>
+
+  <!-- ENHANCED STATS BAR -->
+  <section class="hp-stats-bar" id="hp-stats-bar" style="display:none;">
+    <div class="hsb-item"><span class="hsb-lbl">avg rating</span><span class="hsb-val" id="hs-avg">—</span></div>
+    <div class="hsb-item"><span class="hsb-lbl">top genre</span><span class="hsb-val" id="hs-genre">—</span></div>
+    <div class="hsb-item"><span class="hsb-lbl">books this year</span><span class="hsb-val" id="hs-year">0</span></div>
   </section>
 
   <!-- FLORAL QUOTE + CURRENTLY READING -->
@@ -913,6 +935,27 @@ function buildHome() {
   document.getElementById('hs-reading').textContent  = data.reading.length;
   document.getElementById('hs-wishlist').textContent = data.wishlist.length;
   document.getElementById('hs-tbr').textContent      = (data.tbr || []).length;
+
+  /* enhanced stats bar */
+  const statsBar = document.getElementById('hp-stats-bar');
+  if (data.read.length > 0) {
+    const ratedBooks = data.read.filter(b => b.rating > 0);
+    const avgRating  = ratedBooks.length
+      ? (ratedBooks.reduce((s, b) => s + b.rating, 0) / ratedBooks.length).toFixed(1)
+      : null;
+    const genreCounts = {};
+    data.read.forEach(b => { if (b.genre) genreCounts[b.genre] = (genreCounts[b.genre] || 0) + 1; });
+    const topGenre = Object.keys(genreCounts).sort((a, b) => genreCounts[b] - genreCounts[a])[0] || null;
+    const thisYear = new Date().getFullYear();
+    const booksThisYear = data.read.filter(b => b.date && b.date.includes(String(thisYear))).length;
+    statsBar.style.display = 'flex';
+    document.getElementById('hs-avg').textContent   = avgRating ? '★ ' + avgRating : '—';
+    document.getElementById('hs-genre').textContent = topGenre || '—';
+    document.getElementById('hs-year').textContent  = booksThisYear;
+  } else {
+    statsBar.style.display = 'none';
+  }
+
   buildQuotes();
   buildCurr();
 }

@@ -157,6 +157,23 @@
     .empty-icon{font-size:2rem;display:block;margin-bottom:.6rem;opacity:.35;}
     .empty-state p{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.93rem;}
 
+    /* edit mode */
+    .add-form.editing{border-color:rgba(192,56,112,.35);background:rgba(248,220,235,.35);}
+    .edit-notice{font-family:'IM Fell English',serif;font-style:italic;font-size:.74rem;color:var(--burgundy);margin-bottom:.6rem;display:none;}
+    .add-form.editing .edit-notice{display:block;}
+    .cancel-edit{background:none;border:1px solid rgba(192,56,112,.25);color:var(--ink-l);font-family:'Lato',sans-serif;font-size:.72rem;padding:.5rem .9rem;border-radius:2px;cursor:pointer;transition:all .18s;align-self:flex-end;flex-shrink:0;}
+    .cancel-edit:hover{border-color:var(--burgundy);color:var(--burgundy);}
+    .card-edit{position:absolute;top:.65rem;right:2rem;background:none;border:none;cursor:pointer;color:rgba(122,92,60,.22);font-size:.8rem;padding:2px;transition:color .18s;line-height:1;}
+    .card-edit:hover{color:var(--moss);}
+    /* hamburger */
+    .nav-ham{display:none;background:none;border:1px solid rgba(196,154,74,.3);color:var(--parchment);border-radius:3px;padding:.26rem .5rem;cursor:pointer;font-size:1.1rem;line-height:1;}
+    @media(max-width:700px){
+      nav{flex-wrap:wrap;}
+      .nav-ham{display:block;order:1;}
+      .nav-user{order:2;}
+      .nav-links{display:none;width:100%;order:3;padding:.4rem .8rem .6rem;border-top:1px solid rgba(196,154,74,.1);}
+      .nav-links.open{display:flex;flex-direction:column;}
+    }
     @media(max-width:520px){
       .form-row{flex-direction:column;}
       .add-btn{width:100%;}
@@ -239,17 +256,53 @@
 <div class="stk stk-pulse" style="bottom:10%;left:.7%;--dur:3.4s;--dly:.5s;--rot:5deg;">
   <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 10px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.5;text-align:center;max-width:110px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">just one<br>more page 📖</div>
 </div>
+<!-- "This is my Happy place" torn paper top-left offset -->
+<div class="stk stk-wiggle" style="top:88px;left:1%;--dur:4s;--dly:.3s;--ra:-6deg;--rb:5deg;">
+  <svg width="160" height="65" viewBox="0 0 160 65" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 16 Q10 7 20 12 Q30 5 42 11 Q54 6 66 12 Q78 7 92 12 Q105 7 118 12 Q130 7 142 12 Q150 8 156 16 L154 52 Q148 58 138 53 Q126 59 114 53 Q102 59 90 53 Q78 59 66 53 Q54 59 42 53 Q30 59 20 53 Q10 59 6 52 Z" fill="#f8f3e8" stroke="rgba(0,0,0,.07)" stroke-width="1"/>
+    <text x="80" y="33" text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="#4a3828" font-style="italic">This is my</text>
+    <text x="80" y="49" text-anchor="middle" font-size="13" font-family="Georgia,serif" fill="#8b5e28" font-style="italic" font-weight="bold">Happy place 🌸</text>
+  </svg>
+</div>
+<!-- All you need is love heart bottom-right -->
+<div class="stk stk-float" style="bottom:8%;right:.7%;--dur:6.5s;--dly:.7s;--r0:rotate(-8deg);--r1:rotate(5deg);">
+  <svg width="92" height="92" viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+    <path d="M46 82 Q8 56 6 30 Q6 13 20 13 Q32 13 46 28 Q60 13 72 13 Q86 13 86 30 Q84 56 46 82Z" fill="#c03060"/>
+    <path d="M46 74 Q14 52 12 30 Q12 18 22 18 Q32 18 46 32 Q60 18 70 18 Q80 18 80 30 Q78 52 46 74Z" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+    <text x="46" y="38" text-anchor="middle" font-size="9.5" font-family="Georgia,serif" fill="white" font-style="italic">all you</text>
+    <text x="46" y="51" text-anchor="middle" font-size="9.5" font-family="Georgia,serif" fill="white" font-style="italic">need is</text>
+    <text x="46" y="64" text-anchor="middle" font-size="9.5" font-family="Georgia,serif" fill="white" font-style="italic">love</text>
+  </svg>
+</div>
+<!-- Sorry I'm all booked up mid-right -->
+<div class="stk stk-pulse" style="top:42%;right:.7%;--dur:5s;--dly:1.2s;--rot:-5deg;">
+  <svg width="108" height="118" viewBox="0 0 108 118" xmlns="http://www.w3.org/2000/svg">
+    <path d="M54 4 Q82 4 96 20 Q110 38 108 62 Q106 86 90 102 Q74 118 54 116 Q34 116 18 102 Q2 86 0 62 Q-2 38 12 20 Q26 4 54 4Z" fill="#f5e8d4" stroke="#d8c0a0" stroke-width="1.5"/>
+    <ellipse cx="54" cy="78" rx="24" ry="22" fill="#e0c8b0"/>
+    <ellipse cx="44" cy="62" rx="6" ry="7" fill="#e8d0b8"/><ellipse cx="64" cy="62" rx="6" ry="7" fill="#e8d0b8"/>
+    <ellipse cx="44" cy="62" rx="4" ry="5" fill="#f8c0c8"/><ellipse cx="64" cy="62" rx="4" ry="5" fill="#f8c0c8"/>
+    <rect x="34" y="72" width="14" height="12" rx="2" fill="#c03060" transform="rotate(-8 41 78)"/>
+    <rect x="60" y="72" width="14" height="12" rx="2" fill="#2050a0" transform="rotate(8 67 78)"/>
+    <circle cx="48" cy="70" r="3" fill="white"/><circle cx="60" cy="70" r="3" fill="white"/>
+    <circle cx="49" cy="70" r="1.5" fill="#1a1a1a"/><circle cx="61" cy="70" r="1.5" fill="#1a1a1a"/>
+    <text x="54" y="22" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">Sorry, I'm</text>
+    <text x="54" y="36" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">all booked</text>
+    <text x="54" y="50" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">up 📖</text>
+  </svg>
+</div>
 
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
-  <div style="display:flex;gap:.2rem;">
+  <button class="nav-ham" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
     <a class="nav-btn" href="index.html">home</a>
     <a class="nav-btn" href="read.html">read</a>
     <a class="nav-btn active" href="reading.html">reading</a>
     <a class="nav-btn" href="tbr.html">tbr</a>
     <a class="nav-btn" href="wishlist.html">wishlist</a>
     <a class="nav-btn" href="rec.html">recs</a>
+    <a class="nav-btn" href="music.html">music</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -335,6 +388,7 @@
 <!-- ADD FORM -->
 <div class="form-wrap">
   <div class="add-form">
+    <p class="edit-notice" id="edit-notice">✎ editing — update and save</p>
     <h2>add a book you're reading now</h2>
     <div class="form-row">
       <div class="fg" style="flex:2;min-width:130px;"><label>title</label><input id="r-title" type="text" placeholder="book title…"/></div>
@@ -349,7 +403,8 @@
       </div>
       <div class="fg narrow"><label>on page</label><input id="r-page" type="number" min="0" placeholder="0"/></div>
       <div class="fg narrow"><label>total pages</label><input id="r-total" type="number" min="1" placeholder="300"/></div>
-      <button class="add-btn" onclick="addBook()">+ add</button>
+      <button class="add-btn" id="add-btn" onclick="addBook()">+ add</button>
+      <button class="cancel-edit" id="cancel-edit" style="display:none" onclick="cancelEdit()">✕ cancel</button>
     </div>
     <div class="cover-pick-row">
       <span class="cpl">cover colour</span>
@@ -372,9 +427,10 @@ const COVERS = [
 ];
 const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
 
-let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
-let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
-let selCover = 'hotpink';
+let user      = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data      = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let selCover  = 'hotpink';
+let editingId = null;
 
 if (!user) { window.location.href = 'index.html'; }
 document.getElementById('nav-user').textContent = user.last ? user.first + ' ' + user.last : user.first;
@@ -398,7 +454,7 @@ function initPicker() {
   });
 }
 
-/* ── Add / delete ── */
+/* ── Add / edit / delete ── */
 function addBook() {
   const title  = document.getElementById('r-title').value.trim();
   const author = document.getElementById('r-author').value.trim();
@@ -406,6 +462,11 @@ function addBook() {
   const page   = parseInt(document.getElementById('r-page').value)  || 0;
   const total  = parseInt(document.getElementById('r-total').value) || 0;
   if (!title) { document.getElementById('r-title').focus(); return; }
+  if (editingId) {
+    const b = data.reading.find(x => x.id === editingId);
+    if (b) { b.title = title; b.author = author; b.genre = genre; b.cover = selCover; }
+    cancelEdit(); save(); render(); return;
+  }
   data.reading.unshift({
     id: Date.now(), title, author, genre, notes:'', cover: selCover,
     currentPage: page, totalPages: total,
@@ -419,11 +480,38 @@ function addBook() {
   render();
 }
 
+function startEdit(id) {
+  const b = data.reading.find(x => x.id === id);
+  if (!b) return;
+  editingId = id;
+  document.getElementById('r-title').value  = b.title;
+  document.getElementById('r-author').value = b.author || '';
+  document.getElementById('r-genre').value  = b.genre  || '';
+  const cov = COVERS.find(c => c.id === (b.cover || 'hotpink')) || COVERS[0];
+  selCover = cov.id;
+  document.querySelectorAll('#cp-reading .cover-opt').forEach(el => {
+    el.classList.toggle('sel', el.title === selCover);
+  });
+  document.querySelector('.add-form').classList.add('editing');
+  document.getElementById('cancel-edit').style.display = '';
+  document.querySelector('.form-wrap').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('r-title').focus();
+}
+
+function cancelEdit() {
+  editingId = null;
+  ['r-title','r-author'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('r-genre').value = '';
+  document.querySelector('.add-form').classList.remove('editing');
+  document.getElementById('cancel-edit').style.display = 'none';
+}
+
 ['r-title','r-author'].forEach(id => {
   document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') addBook(); });
 });
 
 function delBook(id) {
+  if (!confirm('remove this book?')) return;
   data.reading = data.reading.filter(x => x.id !== id);
   save(); render();
 }
@@ -588,6 +676,7 @@ function bookCard(b, idx) {
 
   return `<div class="reading-card" data-id="${b.id}">
     <button class="card-del" onclick="delBook(${b.id})" title="remove">✕</button>
+    <button class="card-edit" onclick="startEdit(${b.id})" title="edit">✎</button>
     <div class="card-book-wrap" style="animation-delay:${delay}s">${miniBookSVG(p, cov.c, b.title, b.currentPage)}</div>
     <div class="card-title">${esc(b.title)}</div>
     ${b.author ? `<div class="card-author">by ${esc(b.author)}</div>` : ''}

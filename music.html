@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>the little library · music</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lato:wght@300;400;700&display=swap');
+    :root {
+      --dark:#1a0814; --dark2:#26101e; --brown:#6b1838;
+      --burgundy:#c03870; --rust:#d9607a; --gold:#e890aa;
+      --gold-l:#f5c0d4; --parchment:#fde8f0; --cream:#fff2f7;
+      --moss:#b83878; --ink:#22081a; --ink-mid:#541830; --ink-l:#a05878;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;color:var(--ink);min-height:100vh;background:var(--parchment);}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--dark2);border-bottom:1px solid rgba(196,154,74,.13);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--parchment);text-decoration:none;}
+    .nav-logo .g{color:var(--gold);}
+    .nav-btn{background:none;border:none;font-family:'Lato',sans-serif;font-size:.73rem;color:rgba(245,232,204,.42);cursor:pointer;padding:.4rem .9rem;border-radius:2px;transition:color .18s,background .18s;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;display:inline-block;}
+    .nav-btn:hover,.nav-btn.active{color:var(--gold-l);background:rgba(196,154,74,.08);}
+    .nav-user{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:rgba(245,232,204,.27);}
+
+    /* STICKERS */
+    .stk{position:fixed;pointer-events:none;user-select:none;z-index:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.22));}
+    .stk-float {animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate;}
+    .stk-wiggle{animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite;}
+    .stk-pulse {animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite;}
+    @keyframes stkfloat  {from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)}}
+    @keyframes stkwiggle {0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))}}
+    @keyframes stkpulse  {0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)}}
+
+    /* HERO */
+    .music-hero{background:linear-gradient(160deg,#fff2f7 0%,#fde8f0 52%,rgba(248,192,212,.18) 100%);padding:clamp(2rem,4vw,3.2rem) 1.5rem 1.8rem;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid rgba(192,56,112,.1);}
+    .music-hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 8% 25%,rgba(248,192,212,.22) 0,rgba(248,192,212,.22) 20px,transparent 20px),
+                       radial-gradient(circle at 92% 20%,rgba(192,56,112,.08) 0,rgba(192,56,112,.08) 14px,transparent 14px),
+                       radial-gradient(circle at 55% 85%,rgba(245,192,212,.14) 0,rgba(245,192,212,.14) 18px,transparent 18px);
+      background-size:120px 120px,95px 95px,105px 105px;}
+    .hero-orn{font-family:'IM Fell English',serif;font-size:.7rem;color:var(--ink-l);letter-spacing:.22em;opacity:.45;display:block;margin-bottom:.8rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.8rem,4.5vw,3rem);color:var(--ink);line-height:1.1;margin-bottom:.35rem;}
+    .hero-title em{color:var(--burgundy);}
+    .hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:clamp(.8rem,1.6vw,.95rem);margin-bottom:1.8rem;}
+
+    /* TURNTABLE */
+    .turntable-wrap{display:inline-block;position:relative;cursor:pointer;filter:drop-shadow(0 20px 40px rgba(0,0,0,.18));transition:filter .3s;}
+    .turntable-wrap:hover{filter:drop-shadow(0 24px 48px rgba(192,56,112,.22));}
+
+    /* Spinning vinyl */
+    #vinyl-disc{transform-box:fill-box;transform-origin:50% 50%;}
+    #vinyl-disc.spinning{animation:spinRecord 2s linear infinite;}
+    @keyframes spinRecord{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+    /* Play hint overlay on turntable */
+    .turntable-hint{font-family:'IM Fell English',serif;font-style:italic;font-size:.72rem;color:var(--ink-l);opacity:.5;margin-top:.55rem;}
+
+    /* NOW PLAYING */
+    .now-playing{display:none;align-items:center;gap:.7rem;background:white;border:1px solid rgba(192,56,112,.2);border-radius:999px;padding:.4rem 1.2rem .4rem .6rem;margin:.8rem auto 0;max-width:360px;box-shadow:0 2px 14px rgba(0,0,0,.07);}
+    .now-playing.visible{display:inline-flex;}
+    .np-eq{display:flex;align-items:flex-end;gap:2px;height:14px;}
+    .np-bar{width:3px;border-radius:2px;background:var(--burgundy);animation:eqBounce 0.6s ease-in-out infinite alternate;}
+    .np-bar:nth-child(2){animation-delay:.15s;animation-duration:.5s;}
+    .np-bar:nth-child(3){animation-delay:.3s;animation-duration:.7s;}
+    @keyframes eqBounce{from{height:4px}to{height:14px}}
+    .np-text{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:var(--ink-l);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px;}
+    .np-name{color:var(--ink);font-style:normal;font-weight:600;}
+    .np-stop{background:none;border:none;cursor:pointer;font-size:.78rem;color:rgba(122,60,80,.35);padding:2px 4px;margin-left:.2rem;border-radius:50%;transition:color .15s,background .15s;line-height:1;flex-shrink:0;}
+    .np-stop:hover{color:var(--burgundy);background:rgba(192,56,112,.08);}
+
+    /* SPOTIFY PLAYER */
+    .player-wrap{max-width:660px;margin:0 auto;padding:1rem 1.2rem 0;position:relative;z-index:1;}
+    .spotify-frame-box{border-radius:12px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14);display:none;background:#121212;}
+    .spotify-frame-box.visible{display:block;animation:fadeUp .3s ease both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    #spotify-iframe{border:none;width:100%;display:block;}
+
+    /* FORM */
+    .form-wrap{max-width:700px;margin:0 auto;padding:1.8rem 1.2rem .6rem;}
+    .add-form{background:var(--cream);border:1px solid rgba(196,154,74,.16);border-radius:3px;padding:1.4rem 1.6rem;box-shadow:0 2px 14px rgba(0,0,0,.045);}
+    .add-form h2{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);margin-bottom:.9rem;}
+    .form-row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+    .fg{display:flex;flex-direction:column;gap:.22rem;flex:1;min-width:160px;}
+    .fg label{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-l);}
+    .fg input{border:1px solid rgba(196,154,74,.22);border-radius:2px;padding:.5rem .72rem;font-family:'IM Fell English',serif;font-size:.92rem;color:var(--ink);background:var(--parchment);outline:none;transition:border-color .2s;}
+    .fg input:focus{border-color:var(--gold);}
+    .fg input::placeholder{color:rgba(122,92,60,.3);}
+    .add-btn{padding:.52rem 1.3rem;background:var(--brown);color:var(--parchment);border:1px solid rgba(196,154,74,.19);border-radius:2px;font-family:'Lato',sans-serif;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;align-self:flex-end;flex-shrink:0;}
+    .add-btn:hover{background:var(--ink);transform:translateY(-1px);}
+    .form-hint{font-family:'IM Fell English',serif;font-style:italic;font-size:.7rem;color:var(--ink-l);opacity:.6;margin-top:.5rem;}
+
+    /* FEED */
+    .feed-wrap{max-width:700px;margin:0 auto;padding:.6rem 1.2rem 5rem;}
+    .feed-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0 .9rem;border-bottom:1px solid rgba(192,56,112,.09);margin-bottom:1.2rem;}
+    .feed-title{font-family:'IM Fell English',serif;font-style:italic;font-size:.85rem;color:var(--ink-l);}
+    .pl-count{font-family:'Playfair Display',serif;font-size:.82rem;color:var(--burgundy);}
+
+    .pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
+    .pl-card{background:var(--cream);border-radius:3px;padding:1.2rem 1.2rem 1rem;box-shadow:0 2px 18px rgba(0,0,0,.06);border:1px solid rgba(196,154,74,.12);position:relative;animation:plIn .35s ease both;transition:transform .22s,box-shadow .22s;}
+    .pl-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.09);}
+    .pl-card.active-card{border-color:rgba(192,56,112,.3);box-shadow:0 4px 20px rgba(192,56,112,.12);}
+    @keyframes plIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .pl-bar{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:3px 0 0 3px;background:linear-gradient(180deg,var(--burgundy),var(--rust));}
+
+    .pl-top{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.6rem;}
+    .pl-icon{width:44px;height:44px;border-radius:3px;background:linear-gradient(135deg,var(--brown),var(--burgundy));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .pl-info{flex:1;min-width:0;}
+    .pl-name{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pl-desc{font-family:'IM Fell English',serif;font-style:italic;font-size:.78rem;color:var(--ink-l);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+    .pl-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+    .pl-sig{font-family:'IM Fell English',serif;font-style:italic;font-size:.72rem;color:var(--ink-l);}
+    .pl-sig strong{font-style:normal;color:var(--burgundy);font-family:'Playfair Display',serif;font-size:.76rem;}
+    .pl-actions{display:flex;gap:.4rem;align-items:center;}
+
+    .pl-play{display:flex;align-items:center;gap:.35rem;padding:.32rem .85rem;background:var(--brown);color:var(--parchment);border:none;border-radius:2px;font-family:'Lato',sans-serif;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
+    .pl-play:hover{background:var(--ink);}
+    .pl-play.now-active{background:var(--burgundy);}
+    .play-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-l);animation:npPulse 1s ease-in-out infinite;}
+    @keyframes npPulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .pl-open{display:flex;align-items:center;gap:.3rem;padding:.32rem .7rem;background:none;border:1px solid rgba(196,154,74,.25);border-radius:2px;font-family:'Lato',sans-serif;font-size:.68rem;color:var(--ink-l);cursor:pointer;text-decoration:none;transition:all .18s;}
+    .pl-open:hover{border-color:var(--gold);color:var(--ink);}
+    .pl-del{background:none;border:1px solid rgba(192,56,112,.18);border-radius:2px;padding:.32rem .6rem;font-size:.68rem;color:var(--ink-l);cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;}
+    .pl-del:hover{border-color:var(--burgundy);color:var(--burgundy);}
+
+    .empty-state{text-align:center;padding:4rem 2rem;}
+    .empty-icon{font-size:2rem;display:block;margin-bottom:.6rem;opacity:.35;}
+    .empty-state p{font-family:'IM Fell English',serif;font-style:italic;color:var(--ink-l);font-size:.93rem;}
+
+    /* firebase setup banner */
+    .firebase-banner{background:#fffbf0;border:1px solid rgba(196,154,74,.35);border-left:4px solid var(--gold);border-radius:3px;padding:1.1rem 1.4rem;max-width:700px;margin:1.5rem auto 0;display:none;}
+    .firebase-banner h3{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--ink);margin-bottom:.45rem;}
+    .firebase-banner p{font-family:'IM Fell English',serif;font-style:italic;font-size:.84rem;color:var(--ink-l);line-height:1.6;}
+    .firebase-banner code{font-family:monospace;font-size:.78rem;background:rgba(196,154,74,.12);padding:.08rem .32rem;border-radius:2px;color:var(--ink-mid);font-style:normal;}
+    @media(max-width:560px){
+      nav{padding:.8rem 1rem;}
+      .nav-btn{font-size:.65rem;padding:.35rem .6rem;}
+      .form-row{flex-direction:column;}
+      .pl-grid{grid-template-columns:1fr;}
+    }
+  </style>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- STICKERS -->
+<div class="stk stk-float" style="top:85px;right:.8%;--dur:7.5s;--dly:0s;--r0:rotate(-7deg);--r1:rotate(5deg);">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:7px 12px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.55;text-align:center;max-width:112px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">music for<br>book lovers 🎵</div>
+</div>
+<div class="stk stk-wiggle" style="top:90px;left:.8%;--dur:3s;--dly:.3s;--ra:-10deg;--rb:8deg;">
+  <svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="36" cy="36" r="34" fill="#f5c0d0" stroke="#c03060" stroke-width="2"/>
+    <circle cx="36" cy="36" r="26" fill="none" stroke="#e08098" stroke-width="1" stroke-dasharray="3,2"/>
+    <circle cx="36" cy="36" r="6" fill="#c03060"/>
+    <circle cx="36" cy="10" r="3" fill="#c03060"/><circle cx="36" cy="62" r="3" fill="#c03060"/>
+    <circle cx="10" cy="36" r="3" fill="#c03060"/><circle cx="62" cy="36" r="3" fill="#c03060"/>
+    <text x="36" y="41" text-anchor="middle" font-size="13">🎵</text>
+  </svg>
+</div>
+<div class="stk stk-pulse" style="bottom:10%;left:.7%;--dur:4s;--dly:.6s;--rot:5deg;">
+  <svg width="130" height="70" viewBox="0 0 130 70" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="65" cy="35" rx="62" ry="32" fill="#3a8050" stroke="white" stroke-width="2.5"/>
+    <ellipse cx="65" cy="35" rx="55" ry="26" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-dasharray="3,2.5"/>
+    <text x="65" y="24" text-anchor="middle" font-size="9.5" font-family="Impact,sans-serif" fill="white" letter-spacing="1.5">SARCASTIC</text>
+    <text x="65" y="37" text-anchor="middle" font-size="9.5" font-family="Impact,sans-serif" fill="white" letter-spacing="1.5">SIDE</text>
+    <text x="65" y="50" text-anchor="middle" font-size="9.5" font-family="Impact,sans-serif" fill="white" letter-spacing="1.5">CHARACTER</text>
+  </svg>
+</div>
+<div class="stk stk-float" style="bottom:12%;right:.7%;--dur:9s;--dly:.5s;--r0:rotate(-4deg);--r1:rotate(5deg);">
+  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:6px 11px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.5;text-align:center;max-width:118px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">a playlist<br>a day 🎶</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
+  <div style="display:flex;gap:.2rem;flex-wrap:wrap;">
+    <a class="nav-btn" href="index.html">home</a>
+    <a class="nav-btn" href="read.html">read</a>
+    <a class="nav-btn" href="reading.html">reading</a>
+    <a class="nav-btn" href="tbr.html">tbr</a>
+    <a class="nav-btn" href="wishlist.html">wishlist</a>
+    <a class="nav-btn" href="rec.html">recs</a>
+    <a class="nav-btn active" href="music.html">music</a>
+  </div>
+  <div class="nav-user" id="nav-user"></div>
+</nav>
+
+<!-- HERO -->
+<div class="music-hero">
+  <span class="hero-orn">✦ &nbsp; m u s i c &nbsp; ✦</span>
+  <h1 class="hero-title">reading <em>soundtrack</em></h1>
+  <p class="hero-sub">share playlists that make the perfect reading companion — click the record to pause</p>
+
+  <!-- BIG TURNTABLE -->
+  <div class="turntable-wrap" onclick="toggleVinyl()" title="click to pause / resume">
+    <svg viewBox="0 0 500 430" width="min(480px,90vw)" xmlns="http://www.w3.org/2000/svg">
+      <!-- shadow -->
+      <ellipse cx="250" cy="425" rx="195" ry="7" fill="rgba(0,0,0,.13)"/>
+
+      <!-- ═══ LID ═══ -->
+      <rect x="28" y="12" width="444" height="218" rx="16" fill="#e8a8b8" stroke="#2a0c1a" stroke-width="2.5"/>
+      <rect x="40" y="24" width="420" height="196" rx="10" fill="#fad8e4" stroke="#2a0c1a" stroke-width="1.5"/>
+      <!-- inner shadow top -->
+      <rect x="40" y="24" width="420" height="32" rx="10" fill="rgba(200,80,100,.06)"/>
+
+      <!-- ── POPPIES ── -->
+      <!-- Stems -->
+      <path d="M346 230 Q352 192 348 150 Q346 125 356 96" stroke="#2e6820" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M372 230 Q380 190 382 158 Q384 128 390 100" stroke="#2e6820" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M400 230 Q404 205 408 180 Q410 158 416 138" stroke="#2e6820" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Leaves -->
+      <path d="M350 162 Q326 148 322 125 Q344 140 350 162Z" fill="#2e6820"/>
+      <path d="M382 172 Q406 155 410 132 Q384 150 382 172Z" fill="#2e6820"/>
+      <path d="M356 130 Q338 115 340 96 Q358 112 356 130Z" fill="#3a7828"/>
+
+      <!-- Big magenta poppy (top) -->
+      <g transform="translate(358,90)">
+        <ellipse cx="0" cy="0" rx="40" ry="34" fill="#b01850" transform="rotate(-30)"/>
+        <ellipse cx="0" cy="0" rx="40" ry="34" fill="#c82060" transform="rotate(15)"/>
+        <ellipse cx="0" cy="0" rx="40" ry="34" fill="#a81048" transform="rotate(50)"/>
+        <ellipse cx="0" cy="0" rx="28" ry="24" fill="#d02870" transform="rotate(0)"/>
+        <ellipse cx="0" cy="0" rx="16" ry="14" fill="#200820"/>
+        <circle cx="0" cy="0" r="10" fill="#180618"/>
+        <!-- stamens -->
+        <circle cx="3" cy="-5" r="2" fill="#e8a020"/><circle cx="-4" cy="-4" r="2" fill="#e8a020"/>
+        <circle cx="6" cy="0" r="1.5" fill="#e8b030"/><circle cx="-6" cy="1" r="1.5" fill="#e8b030"/>
+        <circle cx="1" cy="6" r="2" fill="#e8a020"/>
+      </g>
+
+      <!-- Red/coral poppy (lower) -->
+      <g transform="translate(326,168)">
+        <ellipse cx="0" cy="0" rx="34" ry="28" fill="#d02040" transform="rotate(-25)"/>
+        <ellipse cx="0" cy="0" rx="34" ry="28" fill="#c81838" transform="rotate(20)"/>
+        <ellipse cx="0" cy="0" rx="34" ry="28" fill="#e03050" transform="rotate(55)"/>
+        <ellipse cx="0" cy="0" rx="22" ry="18" fill="#e84060"/>
+        <circle cx="0" cy="0" r="9" fill="#180618"/>
+        <circle cx="0" cy="0" r="6" fill="#100410"/>
+        <circle cx="2" cy="-4" r="1.8" fill="#e8a020"/><circle cx="-3" cy="-3" r="1.8" fill="#e8a020"/>
+        <circle cx="4" cy="1" r="1.5" fill="#e8b030"/>
+      </g>
+
+      <!-- Small bud -->
+      <g transform="translate(416,132)">
+        <ellipse cx="0" cy="0" rx="10" ry="18" fill="#902040" transform="rotate(-12)"/>
+        <ellipse cx="0" cy="4" rx="8" ry="14" fill="#a82858"/>
+        <ellipse cx="0" cy="-2" rx="5" ry="6" fill="#2e6820"/>
+      </g>
+
+      <!-- Script text in lid -->
+      <text x="160" y="148" font-family="Georgia,serif" font-size="28" fill="#8a1838" font-style="italic" opacity=".65">the little library</text>
+      <text x="164" y="172" font-family="Georgia,serif" font-size="13" fill="#a05878" font-style="italic" opacity=".5">♫ reading soundtrack ♫</text>
+
+      <!-- ═══ BASE BODY ═══ -->
+      <rect x="28" y="222" width="444" height="185" rx="16" fill="#e0a0b4" stroke="#2a0c1a" stroke-width="2.5"/>
+      <!-- Top edge highlight -->
+      <rect x="28" y="222" width="444" height="9" rx="4" fill="rgba(255,255,255,.22)"/>
+      <!-- Hinge strip -->
+      <rect x="34" y="220" width="432" height="7" rx="3" fill="#2a0c1a"/>
+
+      <!-- Turntable platter platform -->
+      <ellipse cx="192" cy="310" rx="132" ry="12" fill="#c88098" opacity=".5"/>
+      <ellipse cx="192" cy="305" rx="126" ry="10" fill="#d090a8"/>
+
+      <!-- ═══ VINYL RECORD ═══ -->
+      <g transform="translate(192,300)">
+        <!-- Drop shadow -->
+        <circle r="120" fill="rgba(0,0,0,.2)" transform="translate(3,4)"/>
+        <!-- Spinning group -->
+        <g id="vinyl-disc">
+          <!-- Record body -->
+          <circle r="118" fill="#120810"/>
+          <!-- Sheen -->
+          <circle r="118" fill="url(#vinylSheen)" opacity=".4"/>
+          <!-- Grooves -->
+          <circle r="112" fill="none" stroke="#1c1020" stroke-width="1.4"/>
+          <circle r="105" fill="none" stroke="#180c1c" stroke-width="1.2"/>
+          <circle r="98"  fill="none" stroke="#1c1020" stroke-width="1.4"/>
+          <circle r="91"  fill="none" stroke="#180c1c" stroke-width="1.2"/>
+          <circle r="84"  fill="none" stroke="#1c1020" stroke-width="1.4"/>
+          <circle r="77"  fill="none" stroke="#180c1c" stroke-width="1.2"/>
+          <circle r="70"  fill="none" stroke="#1c1020" stroke-width="1.4"/>
+          <circle r="63"  fill="none" stroke="#180c1c" stroke-width="1.2"/>
+          <circle r="56"  fill="none" stroke="#1c1020" stroke-width="1.4"/>
+          <circle r="49"  fill="none" stroke="#180c1c" stroke-width="1.2"/>
+          <circle r="42"  fill="none" stroke="#1c1020" stroke-width="1.2"/>
+          <!-- Label -->
+          <circle r="36"  fill="#b82850"/>
+          <circle r="33"  fill="#c83060"/>
+          <!-- Label inner ring -->
+          <circle r="30"  fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+          <!-- Label lines (text area) -->
+          <line x1="-18" y1="-6" x2="18" y2="-6" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+          <line x1="-14" y1="1"  x2="14" y2="1"  stroke="rgba(255,255,255,.2)"  stroke-width="1"/>
+          <line x1="-10" y1="8"  x2="10" y2="8"  stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+          <!-- Spindle hole -->
+          <circle r="5"  fill="#f0c8d4"/>
+          <circle r="2.5" fill="#1a0814"/>
+        </g>
+      </g>
+
+      <!-- SVG defs for vinyl sheen -->
+      <defs>
+        <radialGradient id="vinylSheen" cx="35%" cy="30%" r="65%">
+          <stop offset="0%"   stop-color="white" stop-opacity=".15"/>
+          <stop offset="50%"  stop-color="white" stop-opacity="0"/>
+          <stop offset="100%" stop-color="white" stop-opacity=".05"/>
+        </radialGradient>
+      </defs>
+
+      <!-- ═══ TONEARM ═══ -->
+      <!-- Pivot base -->
+      <circle cx="378" cy="248" r="13" fill="#3a1828" stroke="#1a0814" stroke-width="1.8"/>
+      <circle cx="378" cy="248" r="7"  fill="#c8a0b8"/>
+      <circle cx="378" cy="248" r="3"  fill="#1a0814"/>
+      <!-- Arm shaft -->
+      <line x1="378" y1="248" x2="292" y2="305" stroke="#2a1020" stroke-width="5" stroke-linecap="round"/>
+      <line x1="378" y1="248" x2="293" y2="304" stroke="#c0a0b0" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Headshell -->
+      <rect x="282" y="298" width="20" height="9" rx="3" fill="#dcc0c8" stroke="#1a0814" stroke-width="1" transform="rotate(-32 292 303)"/>
+      <!-- Stylus -->
+      <line x1="291" y1="308" x2="286" y2="318" stroke="#1a0814" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="286" cy="319" r="2.5" fill="#d8a0b0"/>
+
+      <!-- ═══ CONTROLS (right side) ═══ -->
+      <!-- Speed knob -->
+      <circle cx="408" cy="282" r="18" fill="#cc88a0" stroke="#2a0c1a" stroke-width="2"/>
+      <circle cx="408" cy="282" r="11" fill="#b87090"/>
+      <line x1="408" y1="274" x2="408" y2="268" stroke="#2a0c1a" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Pitch knob -->
+      <circle cx="450" cy="282" r="13" fill="#cc88a0" stroke="#2a0c1a" stroke-width="1.8"/>
+      <circle cx="450" cy="282" r="7"  fill="#b87090"/>
+      <line x1="450" y1="276" x2="453" y2="270" stroke="#2a0c1a" stroke-width="2" stroke-linecap="round"/>
+      <!-- Button panel -->
+      <rect x="395" y="308" width="66" height="40" rx="6" fill="#c880a0" stroke="#2a0c1a" stroke-width="1.5"/>
+      <circle cx="412" cy="328" r="9" fill="#b06888" stroke="#2a0c1a" stroke-width="1.2"/>
+      <circle cx="447" cy="328" r="9" fill="#b06888" stroke="#2a0c1a" stroke-width="1.2"/>
+
+      <!-- ═══ CASE BOTTOM DETAILS ═══ -->
+      <!-- Left luggage panel -->
+      <rect x="44" y="332" width="84" height="58" rx="6" fill="#cc88a0" stroke="#2a0c1a" stroke-width="1.5"/>
+      <!-- Right luggage panel -->
+      <rect x="368" y="332" width="84" height="58" rx="6" fill="#cc88a0" stroke="#2a0c1a" stroke-width="1.5"/>
+
+      <!-- Center latch -->
+      <rect x="210" y="354" width="80" height="28" rx="5" fill="#b87090" stroke="#2a0c1a" stroke-width="1.5"/>
+      <rect x="224" y="362" width="52" height="12" rx="3" fill="#2a0c1a"/>
+      <circle cx="250" cy="368" r="4" fill="#f0c0d0"/>
+
+      <!-- Screws -->
+      <circle cx="54"  cy="340" r="4.5" fill="#b87090" stroke="#2a0c1a" stroke-width="1"/>
+      <line x1="51.5" y1="340" x2="56.5" y2="340" stroke="#2a0c1a" stroke-width="1.2"/>
+      <line x1="54"   y1="337.5" x2="54" y2="342.5" stroke="#2a0c1a" stroke-width="1.2"/>
+      <circle cx="118" cy="340" r="4.5" fill="#b87090" stroke="#2a0c1a" stroke-width="1"/>
+      <line x1="115.5" y1="340" x2="120.5" y2="340" stroke="#2a0c1a" stroke-width="1.2"/>
+      <line x1="118"   y1="337.5" x2="118" y2="342.5" stroke="#2a0c1a" stroke-width="1.2"/>
+      <circle cx="378" cy="340" r="4.5" fill="#b87090" stroke="#2a0c1a" stroke-width="1"/>
+      <line x1="375.5" y1="340" x2="380.5" y2="340" stroke="#2a0c1a" stroke-width="1.2"/>
+      <line x1="378"   y1="337.5" x2="378" y2="342.5" stroke="#2a0c1a" stroke-width="1.2"/>
+      <circle cx="444" cy="340" r="4.5" fill="#b87090" stroke="#2a0c1a" stroke-width="1"/>
+      <line x1="441.5" y1="340" x2="446.5" y2="340" stroke="#2a0c1a" stroke-width="1.2"/>
+      <line x1="444"   y1="337.5" x2="444" y2="342.5" stroke="#2a0c1a" stroke-width="1.2"/>
+
+      <!-- Handle -->
+      <path d="M210 393 Q250 378 290 393" stroke="#2a0c1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <rect x="203" y="387" width="20" height="13" rx="4" fill="#b87090" stroke="#2a0c1a" stroke-width="1.5"/>
+      <rect x="277" y="387" width="20" height="13" rx="4" fill="#b87090" stroke="#2a0c1a" stroke-width="1.5"/>
+
+      <!-- Legs -->
+      <rect x="50"  y="403" width="24" height="9" rx="3" fill="#2a0c1a"/>
+      <rect x="426" y="403" width="24" height="9" rx="3" fill="#2a0c1a"/>
+    </svg>
+  </div>
+
+  <p class="turntable-hint" id="turntable-hint">click a playlist below to start playing ♫</p>
+
+  <!-- NOW PLAYING -->
+  <div class="now-playing" id="now-playing">
+    <div class="np-eq">
+      <div class="np-bar" style="height:6px"></div>
+      <div class="np-bar" style="height:10px"></div>
+      <div class="np-bar" style="height:4px"></div>
+    </div>
+    <span class="np-text">now playing: <span class="np-name" id="np-name">—</span></span>
+    <button class="np-stop" onclick="stopPlaylist()" title="stop playing">✕</button>
+  </div>
+</div>
+
+<!-- SPOTIFY PLAYER -->
+<div class="player-wrap">
+  <div class="spotify-frame-box" id="player-box">
+    <iframe id="spotify-iframe"
+      height="152"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy">
+    </iframe>
+  </div>
+</div>
+
+<!-- ADD PLAYLIST FORM -->
+<div class="form-wrap" id="add-form-wrap">
+  <div class="add-form">
+    <h2>— add a playlist</h2>
+    <div class="form-row">
+      <div class="fg" style="flex:1.4;">
+        <label>playlist name *</label>
+        <input id="f-name" type="text" placeholder="e.g. dark academia reading vibes" autocomplete="off"/>
+      </div>
+      <div class="fg" style="flex:2;">
+        <label>spotify url *</label>
+        <input id="f-url" type="text" placeholder="https://open.spotify.com/playlist/…" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:.6rem;">
+      <div class="fg" style="flex:1;">
+        <label>description</label>
+        <input id="f-desc" type="text" placeholder="perfect for rainy evenings with a fantasy novel…" autocomplete="off"/>
+      </div>
+      <button class="add-btn" onclick="addPlaylist()">♫ add</button>
+    </div>
+    <p class="form-hint">paste any spotify playlist link — open.spotify.com/playlist/… or spotify:playlist:…</p>
+  </div>
+</div>
+
+<!-- FIREBASE SETUP BANNER (shown only when config is not filled in) -->
+<div class="firebase-banner" id="firebase-banner">
+  <h3>♩ firebase not connected yet</h3>
+  <p>shared playlists use Firebase Realtime Database. To enable them, open <code>music.html</code>, find the <code>firebaseConfig</code> block near the bottom, and replace the <code>PASTE_YOUR_…</code> placeholders with your project values from <a href="https://console.firebase.google.com" target="_blank" style="color:var(--burgundy)">console.firebase.google.com</a> → Project Settings → Your apps.<br><br>Until then, adding playlists is disabled.</p>
+</div>
+
+<!-- PLAYLIST FEED -->
+<div class="feed-wrap">
+  <div class="feed-header">
+    <span class="feed-title">— reading playlists</span>
+    <span class="pl-count" id="pl-count"></span>
+  </div>
+  <div class="pl-grid" id="pl-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <span class="empty-icon">🎵</span>
+    <p>no playlists yet — be the first to share<br>your reading soundtrack</p>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+/* ══════════════════════════════════════════════
+   FIREBASE CONFIG — paste your project values here
+   (get them from Firebase Console → Project Settings → Your apps)
+   ══════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            "PASTE_YOUR_API_KEY",
+  authDomain:        "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL:       "https://PASTE_YOUR_PROJECT_ID-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "PASTE_YOUR_PROJECT_ID",
+  storageBucket:     "PASTE_YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId:             "PASTE_YOUR_APP_ID"
+};
+
+/* ── Firebase setup check ── */
+const firebaseReady = !JSON.stringify(firebaseConfig).includes('PASTE_YOUR');
+if (!firebaseReady) {
+  document.getElementById('firebase-banner').style.display = 'block';
+  document.getElementById('add-form-wrap').style.display   = 'none';
+}
+
+firebase.initializeApp(firebaseConfig);
+const db          = firebase.database();
+const playlistRef = db.ref('playlists');
+
+/* ── User (stays local) ── */
+let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
+if (!user) { window.location.href = 'index.html'; }
+const me = user.first + (user.last ? ' ' + user.last : '');
+document.getElementById('nav-user').textContent = me;
+
+/* ── Shared playlist list (filled by Firebase listener) ── */
+let playlists = [];
+
+/* ── Spotify helpers ── */
+function extractSpotifyId(raw) {
+  const s = raw.trim();
+  const patterns = [
+    /open\.spotify\.com\/playlist\/([A-Za-z0-9]+)/,
+    /spotify:playlist:([A-Za-z0-9]+)/,
+  ];
+  for (const p of patterns) {
+    const m = s.match(p);
+    if (m) return m[1];
+  }
+  if (/^[A-Za-z0-9]{22}$/.test(s)) return s;
+  return null;
+}
+function embedUrl(id) {
+  return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
+}
+
+/* ── Vinyl state ── */
+let currentId  = null;
+let isSpinning = false;
+const vinyl = document.getElementById('vinyl-disc');
+
+function startSpin() {
+  vinyl.classList.add('spinning');
+  isSpinning = true;
+  document.getElementById('now-playing').classList.add('visible');
+  document.getElementById('turntable-hint').textContent = 'click the record to pause ♫';
+}
+function stopSpin() {
+  vinyl.classList.remove('spinning');
+  isSpinning = false;
+  document.getElementById('turntable-hint').textContent = currentId
+    ? 'click the record to resume ♫'
+    : 'click a playlist below to start playing ♫';
+}
+function toggleVinyl() {
+  if (!currentId) return;
+  if (isSpinning) stopSpin(); else startSpin();
+}
+function stopPlaylist() {
+  stopSpin();
+  currentId = null;
+  document.getElementById('now-playing').classList.remove('visible');
+  document.getElementById('player-box').classList.remove('visible');
+  document.getElementById('spotify-iframe').src = '';
+  document.getElementById('np-name').textContent = '—';
+  document.getElementById('turntable-hint').textContent = 'click a playlist below to start playing ♫';
+  document.querySelectorAll('.pl-play').forEach(b => { b.classList.remove('now-active'); b.innerHTML = '▶ play'; });
+  document.querySelectorAll('.pl-card').forEach(c => c.classList.remove('active-card'));
+}
+
+/* ── Load a playlist into the player ── */
+function loadPlaylist(fbKey) {
+  const pl = playlists.find(p => p._key === fbKey);
+  if (!pl) return;
+
+  if (currentId === fbKey) { toggleVinyl(); return; }
+
+  currentId = fbKey;
+  const iframe = document.getElementById('spotify-iframe');
+  const box    = document.getElementById('player-box');
+  iframe.src = embedUrl(pl.spotifyId);
+  box.classList.add('visible');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('np-name').textContent = pl.name;
+  startSpin();
+
+  document.querySelectorAll('.pl-play').forEach(b => { b.classList.remove('now-active'); b.innerHTML = '▶ play'; });
+  document.querySelectorAll('.pl-card').forEach(c => c.classList.remove('active-card'));
+  const card = document.querySelector(`.pl-card[data-id="${fbKey}"]`);
+  if (card) {
+    card.classList.add('active-card');
+    const btn = card.querySelector('.pl-play');
+    btn.innerHTML = '<span class="play-dot"></span> playing';
+    btn.classList.add('now-active');
+  }
+}
+
+/* ── Add playlist → Firebase ── */
+function addPlaylist() {
+  const name = document.getElementById('f-name').value.trim();
+  const url  = document.getElementById('f-url').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+
+  if (!name) { document.getElementById('f-name').focus(); return; }
+  if (!url)  { document.getElementById('f-url').focus(); return; }
+
+  const spotId = extractSpotifyId(url);
+  if (!spotId) {
+    document.getElementById('f-url').style.borderColor = 'var(--burgundy)';
+    setTimeout(() => document.getElementById('f-url').style.borderColor = '', 1500);
+    return;
+  }
+
+  playlistRef.push({
+    name, desc, spotifyId: spotId,
+    addedBy:   me,
+    date:      new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }),
+    timestamp: Date.now(),
+  });
+
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-url').value  = '';
+  document.getElementById('f-desc').value = '';
+}
+
+/* ── Delete from Firebase ── */
+function deletePlaylist(fbKey) {
+  if (currentId === fbKey) stopPlaylist();
+  playlistRef.child(fbKey).remove();
+}
+
+/* ── Render ── */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+const EMOJIS = ['🎵','🎶','📖','✨','🌙','🍂','☕','🌸','🎼','🕯️'];
+
+function render() {
+  const grid  = document.getElementById('pl-grid');
+  const empty = document.getElementById('empty-state');
+  const count = document.getElementById('pl-count');
+
+  count.textContent = playlists.length ? `${playlists.length} playlist${playlists.length === 1 ? '' : 's'}` : '';
+
+  if (!playlists.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = playlists.map((pl, i) => {
+    const isMine   = pl.addedBy === me;
+    const isActive = pl._key === currentId;
+    const emoji    = EMOJIS[i % EMOJIS.length];
+    return `
+    <div class="pl-card ${isActive ? 'active-card' : ''}" data-id="${pl._key}" style="animation-delay:${i*0.05}s">
+      <div class="pl-bar"></div>
+      <div class="pl-top">
+        <div class="pl-icon">${emoji}</div>
+        <div class="pl-info">
+          <div class="pl-name">${esc(pl.name)}</div>
+          ${pl.desc ? `<div class="pl-desc">${esc(pl.desc)}</div>` : ''}
+        </div>
+      </div>
+      <div class="pl-footer">
+        <div class="pl-sig">${pl.date}<br><strong>— ${esc(pl.addedBy)}</strong></div>
+        <div class="pl-actions">
+          ${isActive && isSpinning
+            ? `<button class="pl-play now-active" onclick="loadPlaylist('${pl._key}')"><span class="play-dot"></span> playing</button>`
+            : `<button class="pl-play" onclick="loadPlaylist('${pl._key}')">▶ play</button>`
+          }
+          <a class="pl-open" href="https://open.spotify.com/playlist/${pl.spotifyId}" target="_blank" rel="noopener">↗ spotify</a>
+          ${isMine ? `<button class="pl-del" onclick="deletePlaylist('${pl._key}')">✕</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Firebase real-time listener ── */
+playlistRef.orderByChild('timestamp').on('value', snapshot => {
+  const val = snapshot.val() || {};
+  playlists = Object.entries(val)
+    .map(([key, pl]) => ({ ...pl, _key: key }))
+    .sort((a, b) => b.timestamp - a.timestamp);
+  render();
+});
+
+/* Enter key shortcuts */
+document.getElementById('f-url').addEventListener('keydown', e => { if (e.key === 'Enter') addPlaylist(); });
+document.getElementById('f-name').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('f-url').focus(); });
+</script>
+</body>
+</html>

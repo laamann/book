@@ -81,25 +81,99 @@
     @keyframes ehFloat{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-14px) rotate(8deg)}}
     #empty-hint p{font-family:'IM Fell English',serif;font-style:italic;font-size:.9rem;color:var(--ink-l);}
 
+    /* edit mode */
+    .add-form.editing{border:1px solid rgba(192,56,112,.35);background:rgba(248,220,235,.35);border-radius:3px;padding:.6rem .8rem;}
+    .edit-notice{font-family:'IM Fell English',serif;font-style:italic;font-size:.74rem;color:var(--burgundy);margin-bottom:.45rem;display:none;}
+    .add-form.editing .edit-notice{display:block;}
+    .cancel-edit{background:none;border:1px solid rgba(192,56,112,.25);color:var(--ink-l);font-family:'Lato',sans-serif;font-size:.72rem;padding:.46rem .9rem;border-radius:2px;cursor:pointer;transition:all .18s;align-self:flex-end;flex-shrink:0;}
+    .cancel-edit:hover{border-color:var(--burgundy);color:var(--burgundy);}
+    .popup-edit{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;background:none;border:1px solid rgba(160,88,120,.22);border-radius:2px;color:var(--ink-l);padding:.3rem .7rem;cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;}
+    .popup-edit:hover{border-color:var(--moss);color:var(--moss);}
+    /* hamburger */
+    .nav-ham{display:none;background:none;border:1px solid rgba(196,154,74,.3);color:var(--parchment);border-radius:3px;padding:.26rem .5rem;cursor:pointer;font-size:1.1rem;line-height:1;}
+    @media(max-width:700px){
+      nav{flex-wrap:wrap;overflow:visible;}
+      .nav-ham{display:block;}
+      .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--dark2);z-index:300;padding:.4rem .8rem .6rem;border-top:1px solid rgba(196,154,74,.1);}
+      .nav-links.open{display:flex;flex-direction:column;}
+    }
     @media(max-width:600px){
       nav{padding:.8rem 1rem;}
       .top-panel{padding:1rem 1rem .9rem;}
       .panel-inner{flex-direction:column;gap:1rem;}
     }
+
+    /* STICKERS */
+    .stk{position:fixed;pointer-events:none;user-select:none;z-index:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.22));}
+    .stk-float {animation:stkfloat  var(--dur,6s) var(--dly,0s) ease-in-out infinite alternate;}
+    .stk-wiggle{animation:stkwiggle var(--dur,2.2s) var(--dly,0s) ease-in-out infinite;}
+    .stk-pulse {animation:stkpulse  var(--dur,3s) var(--dly,0s) ease-in-out infinite;}
+    @keyframes stkfloat  {from{transform:var(--r0,rotate(-6deg)) translateY(0)} to{transform:var(--r1,rotate(6deg)) translateY(-14px)}}
+    @keyframes stkwiggle {0%,100%{transform:rotate(var(--ra,-9deg))} 50%{transform:rotate(var(--rb,9deg))}}
+    @keyframes stkpulse  {0%,100%{transform:rotate(var(--rot,0deg)) scale(1)} 50%{transform:rotate(var(--rot,0deg)) scale(1.12)}}
   </style>
   <script src="theme.js"></script>
 </head>
 <body>
 
-<nav>
+<!-- STICKERS -->
+<!-- HOT girls READ books top-right -->
+<div class="stk stk-float" style="top:82px;right:.8%;--dur:8s;--dly:0s;--r0:rotate(-6deg);--r1:rotate(5deg);">
+  <svg width="125" height="118" viewBox="0 0 125 118" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="121" height="114" rx="14" fill="white" stroke="#ffb0c8" stroke-width="2.5"/>
+    <circle cx="20" cy="20" r="8" fill="#ff6090" opacity=".7"/>
+    <circle cx="105" cy="20" r="8" fill="#ff6090" opacity=".7"/>
+    <text x="62" y="32" text-anchor="middle" font-size="24" font-family="Impact,Arial Black,sans-serif" fill="#e82858" font-weight="900" letter-spacing="1">HOT</text>
+    <text x="62" y="58" text-anchor="middle" font-size="18" font-family="Georgia,serif" fill="#ff5888" font-style="italic">girls</text>
+    <text x="62" y="83" text-anchor="middle" font-size="22" font-family="Impact,Arial Black,sans-serif" fill="#e82858" font-weight="900">READ</text>
+    <text x="62" y="108" text-anchor="middle" font-size="18" font-family="Georgia,serif" fill="#ff5888" font-style="italic">books</text>
+  </svg>
+</div>
+<!-- Flower heart bottom-right -->
+<div class="stk stk-pulse" style="bottom:9%;right:.8%;--dur:4.5s;--dly:.5s;--rot:6deg;">
+  <svg width="86" height="86" viewBox="0 0 86 86" xmlns="http://www.w3.org/2000/svg">
+    <path d="M43 78 Q10 56 8 32 Q8 16 22 16 Q33 16 43 30 Q53 16 64 16 Q78 16 78 32 Q76 56 43 78Z" fill="none" stroke="#6ab870" stroke-width="3"/>
+    <path d="M43 68 Q16 50 14 32 Q14 22 24 22 Q33 22 43 35 Q53 22 62 22 Q72 22 72 32 Q70 50 43 68Z" fill="none" stroke="#8ac890" stroke-width="2"/>
+    <circle cx="43" cy="18" r="5" fill="#6ab870"/><circle cx="26" cy="28" r="4" fill="#6ab870"/><circle cx="60" cy="28" r="4" fill="#6ab870"/>
+    <circle cx="16" cy="44" r="3.5" fill="#8ac890"/><circle cx="70" cy="44" r="3.5" fill="#8ac890"/>
+    <text x="43" y="54" text-anchor="middle" font-size="18">📖</text>
+  </svg>
+</div>
+<!-- Sorry I'm all booked up bottom-left -->
+<div class="stk stk-wiggle" style="bottom:8%;left:.7%;--dur:3.8s;--dly:.9s;--ra:-7deg;--rb:6deg;">
+  <svg width="110" height="120" viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
+    <path d="M55 4 Q82 4 97 20 Q112 38 110 62 Q108 86 92 103 Q76 118 55 117 Q34 117 18 103 Q2 86 0 62 Q-2 38 13 20 Q28 4 55 4Z" fill="#f5e8d4" stroke="#d8c0a0" stroke-width="1.5"/>
+    <ellipse cx="55" cy="80" rx="23" ry="21" fill="#e2cbb0"/>
+    <ellipse cx="45" cy="64" rx="5.5" ry="7" fill="#ead0b8"/><ellipse cx="65" cy="64" rx="5.5" ry="7" fill="#ead0b8"/>
+    <ellipse cx="45" cy="64" rx="3.5" ry="5" fill="#f8c0c8"/><ellipse cx="65" cy="64" rx="3.5" ry="5" fill="#f8c0c8"/>
+    <rect x="34" y="74" width="13" height="11" rx="2" fill="#c03060" transform="rotate(-8 40 79)"/>
+    <rect x="63" y="74" width="13" height="11" rx="2" fill="#204888" transform="rotate(8 69 79)"/>
+    <circle cx="49" cy="72" r="2.8" fill="white"/><circle cx="61" cy="72" r="2.8" fill="white"/>
+    <circle cx="50" cy="72" r="1.4" fill="#1a1a1a"/><circle cx="62" cy="72" r="1.4" fill="#1a1a1a"/>
+    <text x="55" y="24" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">Sorry, I'm</text>
+    <text x="55" y="38" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">all booked</text>
+    <text x="55" y="52" text-anchor="middle" font-size="9" font-family="Georgia,serif" fill="#c03060" font-style="italic">up 📖</text>
+  </svg>
+</div>
+<!-- "to the moon" brush mid-left -->
+<div class="stk stk-float" style="top:42%;left:.6%;--dur:9s;--dly:.3s;--r0:rotate(-4deg);--r1:rotate(4deg);">
+  <svg width="150" height="50" viewBox="0 0 150 50" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 15 Q26 5 75 10 Q124 14 142 7 L140 35 Q122 43 75 39 Q26 43 10 37 Z" fill="#c8a878" opacity=".9"/>
+    <text x="75" y="28" text-anchor="middle" font-size="13.5" font-family="Georgia,serif" fill="#6b4820" font-style="italic" letter-spacing="1.5">to the moon ✨</text>
+  </svg>
+</div>
+
+<nav style="position:relative;">
   <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
-  <div style="display:flex;gap:.2rem;">
+  <button class="nav-ham" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
     <a class="nav-btn" href="index.html">home</a>
     <a class="nav-btn" href="read.html">read</a>
     <a class="nav-btn" href="reading.html">reading</a>
     <a class="nav-btn" href="tbr.html">tbr</a>
     <a class="nav-btn active" href="wishlist.html">wishlist</a>
     <a class="nav-btn" href="rec.html">recs</a>
+    <a class="nav-btn" href="music.html">music</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -112,6 +186,7 @@
       <p class="hero-sub">add a wish — a star is born</p>
     </div>
     <div class="add-form">
+      <p class="edit-notice" id="edit-notice">✎ editing — update and save</p>
       <h2>— add to wishlist</h2>
       <div class="form-row">
         <div class="fg" style="flex:2;min-width:140px;">
@@ -138,7 +213,8 @@
             <option>other</option>
           </select>
         </div>
-        <button class="add-btn" onclick="addWish()">+ add</button>
+        <button class="add-btn" id="add-btn" onclick="addWish()">+ add</button>
+        <button class="cancel-edit" id="cancel-edit" style="display:none" onclick="cancelEdit()">✕ cancel</button>
       </div>
     </div>
   </div>
@@ -153,8 +229,9 @@
 
 <script>
 /* ── data ── */
-let user = JSON.parse(localStorage.getItem('tll-user') || 'null');
-let data = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let user      = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data      = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[]}');
+let editingId = null;
 if (!data.wishlist) data.wishlist = [];
 
 if (!user) { window.location.href = 'index.html'; }
@@ -316,6 +393,7 @@ function showPopup(id, clientX, clientY) {
     </div>
     <div class="popup-actions">
       <button class="popup-close" onclick="closePopup()">close</button>
+      <button class="popup-edit" onclick="startEdit('${id}');closePopup()">✎ edit</button>
       <button class="popup-remove" onclick="removeWish('${id}')">remove ✕</button>
     </div>`;
 
@@ -338,19 +416,28 @@ function closePopup() {
   if (activePopup) { activePopup.remove(); activePopup = null; }
 }
 
-/* ── add / remove ── */
+/* ── add / edit / remove ── */
 function addWish() {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
 
   const author = document.getElementById('f-author').value.trim();
   const genre  = document.getElementById('f-genre').value;
-  const id     = 'w' + Date.now();
-  const book   = {
+
+  if (editingId) {
+    const b = data.wishlist.find(x => x.id === editingId);
+    if (b) {
+      b.title = title; b.author = author; b.genre = genre;
+      if (stars[editingId]) stars[editingId].book = b;
+    }
+    cancelEdit(); save(); return;
+  }
+
+  const id   = 'w' + Date.now();
+  const book = {
     id, title, author, genre,
     date: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
   };
-
   data.wishlist.push(book);
   save();
 
@@ -361,7 +448,30 @@ function addWish() {
   spawnStar(book, true);
 }
 
+function startEdit(id) {
+  const b = data.wishlist.find(x => x.id === id);
+  if (!b) return;
+  editingId = id;
+  document.getElementById('f-title').value  = b.title;
+  document.getElementById('f-author').value = b.author || '';
+  document.getElementById('f-genre').value  = b.genre  || '';
+  document.querySelector('.add-form').classList.add('editing');
+  document.getElementById('cancel-edit').style.display = '';
+  document.querySelector('.top-panel').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('f-title').focus();
+}
+
+function cancelEdit() {
+  editingId = null;
+  document.getElementById('f-title').value  = '';
+  document.getElementById('f-author').value = '';
+  document.getElementById('f-genre').value  = '';
+  document.querySelector('.add-form').classList.remove('editing');
+  document.getElementById('cancel-edit').style.display = 'none';
+}
+
 function removeWish(id) {
+  if (!confirm('remove this wish?')) return;
   closePopup();
   const s = stars[id];
   if (!s) return;

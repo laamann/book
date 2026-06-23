@@ -190,6 +190,22 @@
     .slip-close{position:absolute;top:.35rem;right:.45rem;background:none;border:none;font-size:.75rem;color:rgba(122,92,60,.28);cursor:pointer;transition:color .15s;padding:2px;line-height:1;}
     .slip-close:hover{color:var(--burgundy);}
 
+    /* edit mode */
+    .add-form.editing{border-color:rgba(192,56,112,.35);background:rgba(248,220,235,.35);}
+    .edit-notice{font-family:'IM Fell English',serif;font-style:italic;font-size:.74rem;color:var(--burgundy);margin-bottom:.6rem;display:none;}
+    .add-form.editing .edit-notice{display:block;}
+    .cancel-edit{background:none;border:1px solid rgba(192,56,112,.25);color:var(--ink-l);font-family:'Lato',sans-serif;font-size:.72rem;padding:.5rem .9rem;border-radius:2px;cursor:pointer;transition:all .18s;align-self:flex-end;flex-shrink:0;}
+    .cancel-edit:hover{border-color:var(--burgundy);color:var(--burgundy);}
+    .card-edit-btn{background:none;border:1px solid rgba(192,56,112,.2);border-radius:2px;padding:.33rem .5rem;font-size:.7rem;color:rgba(122,92,60,.35);cursor:pointer;font-family:'Lato',sans-serif;transition:all .18s;flex-shrink:0;}
+    .card-edit-btn:hover{border-color:var(--moss);color:var(--moss);}
+    /* hamburger */
+    .nav-ham{display:none;background:none;border:1px solid rgba(196,154,74,.3);color:var(--parchment);border-radius:3px;padding:.26rem .5rem;cursor:pointer;font-size:1.1rem;line-height:1;}
+    @media(max-width:700px){
+      nav{flex-wrap:wrap;justify-content:space-between;}
+      .nav-ham{display:block;}
+      .nav-links{display:none;width:100%;padding:.4rem .8rem .6rem;border-top:1px solid rgba(196,154,74,.1);}
+      .nav-links.open{display:flex;flex-direction:column;}
+    }
     @media(max-width:540px){
       nav{padding:.8rem 1rem;}
       .form-row{flex-direction:column;}
@@ -200,25 +216,19 @@
 </head>
 <body>
 
-<!-- STICKERS -->
-<div class="stk stk-float" style="top:82px;right:1%;--dur:7s;--dly:0s;--r0:rotate(-7deg);--r1:rotate(6deg);">
-  <div style="background:#fff9e8;border:2.5px solid #e8c000;border-radius:10px;padding:7px 11px;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#b87800;line-height:1.55;text-align:center;max-width:110px;box-shadow:2px 3px 8px rgba(0,0,0,.16);">so many<br>books 📚<br>so little time</div>
-</div>
-<div class="stk stk-wiggle cutout" style="top:88px;left:1%;width:46px;height:50px;font-size:30px;background:#c82878;color:white;border-radius:6px;--dur:2.6s;--dly:.3s;--ra:-10deg;--rb:8deg;">T</div>
-<div class="stk stk-pulse" style="bottom:12%;right:.8%;--dur:3.4s;--dly:.8s;--rot:-5deg;">
-  <div class="emoji-badge" style="border:2px solid;border-radius:50%;width:66px;height:66px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:2px 3px 10px rgba(0,0,0,.15);">🌙</div>
-</div>
 
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="index.html">the <span class="g">little</span> library</a>
-  <div style="display:flex;gap:.2rem;">
+  <button class="nav-ham" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
     <a class="nav-btn" href="index.html">home</a>
     <a class="nav-btn" href="read.html">read</a>
     <a class="nav-btn" href="reading.html">reading</a>
     <a class="nav-btn active" href="tbr.html">tbr</a>
     <a class="nav-btn" href="wishlist.html">wishlist</a>
     <a class="nav-btn" href="rec.html">recs</a>
+    <a class="nav-btn" href="music.html">music</a>
   </div>
   <div class="nav-user" id="nav-user"></div>
 </nav>
@@ -274,6 +284,7 @@
 <!-- ADD FORM -->
 <div class="form-wrap">
   <div class="add-form">
+    <p class="edit-notice" id="edit-notice">✎ editing — update and save</p>
     <h2>— add to the pile</h2>
     <div class="form-row">
       <div class="fg" style="flex:2;min-width:140px;">
@@ -300,7 +311,8 @@
           <option>other</option>
         </select>
       </div>
-      <button class="add-btn" onclick="addBook()">+ add</button>
+      <button class="add-btn" id="add-btn" onclick="addBook()">+ add</button>
+      <button class="cancel-edit" id="cancel-edit" style="display:none" onclick="cancelEdit()">✕ cancel</button>
     </div>
     <div class="cover-pick-row">
       <span class="cpl">cover colour</span>
@@ -410,10 +422,11 @@ const COVERS = [
 ];
 const EMOJIS = {fiction:'📖',fantasy:'🔮','sci-fi':'🚀',romance:'🌹',thriller:'🌑',mystery:'🕵️','non-fiction':'📰',poetry:'🌸',classics:'🏛️',other:'📚','':'📓'};
 
-let user     = JSON.parse(localStorage.getItem('tll-user') || 'null');
-let data     = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[],"tbr":[]}');
-let selCover = 'rose';
-let sortMode = 'added';
+let user      = JSON.parse(localStorage.getItem('tll-user') || 'null');
+let data      = JSON.parse(localStorage.getItem('tll-data') || '{"read":[],"reading":[],"wishlist":[],"tbr":[]}');
+let selCover  = 'rose';
+let sortMode  = 'added';
+let editingId = null;
 
 if (!data.tbr) data.tbr = [];
 if (!user) { window.location.href = 'index.html'; }
@@ -494,6 +507,7 @@ function render() {
       </div>
       <div class="card-actions">
         <button class="start-btn" onclick="openStartForm('${b.id}')">start reading →</button>
+        <button class="card-edit-btn" onclick="startEdit('${b.id}')">✎</button>
         <button class="del-btn" onclick="deleteBook('${b.id}')">✕</button>
       </div>
     </div>`;
@@ -550,15 +564,20 @@ function saveNotes(id, val) {
   if (b) { b.notes = val; save(); }
 }
 
-/* ── add / delete ── */
+/* ── add / edit / delete ── */
 function addBook() {
-  const title = document.getElementById('f-title').value.trim();
+  const title  = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
-
   const author = document.getElementById('f-author').value.trim();
   const genre  = document.getElementById('f-genre').value;
-  const id     = 'tbr' + Date.now();
 
+  if (editingId) {
+    const b = data.tbr.find(x => x.id === editingId);
+    if (b) { b.title = title; b.author = author; b.genre = genre; b.cover = selCover; }
+    cancelEdit(); save(); render(); return;
+  }
+
+  const id = 'tbr' + Date.now();
   data.tbr.unshift({
     id, title, author, genre,
     cover: selCover,
@@ -569,11 +588,37 @@ function addBook() {
   document.getElementById('f-title').value  = '';
   document.getElementById('f-author').value = '';
   document.getElementById('f-genre').value  = '';
-
   render();
 }
 
+function startEdit(id) {
+  const b = data.tbr.find(x => x.id === id);
+  if (!b) return;
+  editingId = id;
+  document.getElementById('f-title').value  = b.title;
+  document.getElementById('f-author').value = b.author || '';
+  document.getElementById('f-genre').value  = b.genre  || '';
+  selCover = b.cover || 'rose';
+  document.querySelectorAll('#cover-picker .cover-opt').forEach(el => {
+    el.classList.toggle('sel', el.title === selCover);
+  });
+  document.querySelector('.add-form').classList.add('editing');
+  document.getElementById('cancel-edit').style.display = '';
+  document.querySelector('.form-wrap').scrollIntoView({ behavior:'smooth' });
+  document.getElementById('f-title').focus();
+}
+
+function cancelEdit() {
+  editingId = null;
+  document.getElementById('f-title').value  = '';
+  document.getElementById('f-author').value = '';
+  document.getElementById('f-genre').value  = '';
+  document.querySelector('.add-form').classList.remove('editing');
+  document.getElementById('cancel-edit').style.display = 'none';
+}
+
 function deleteBook(id) {
+  if (!confirm('remove this book from the pile?')) return;
   data.tbr = data.tbr.filter(b => b.id !== id);
   save();
   render();
